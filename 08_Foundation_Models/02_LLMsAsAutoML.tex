@@ -1,0 +1,147 @@
+\documentclass[main]{subfiles}
+
+
+\title[AutoML: Introduction]{AutoML Motivation}
+\subtitle{Why is Machine Learning not Easy?}
+\author[Marius Lindauer]{Marius Lindauer}
+\date{}
+
+\titlebackground*{images/AutoML_Agentic}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+\begin{frame}{Motivation: Automating Algorithm Design}
+    \begin{itemize}
+        \item \textbf{Challenge:} Traditional algorithm design is labor-intensive, requiring deep domain expertise and manual trial-and-error.
+        \item \textbf{Shift:} Large Language Models (LLMs) possess capabilities beyond text generation:
+        \begin{itemize}
+            \item Code synthesis and reasoning.
+            \item (Partially?) Considering the semantic context of optimization problems.
+        \end{itemize}
+        \item \textbf{Goal:} Move from \textit{Manual Design} to \textit{Automated Design} via LLMs.
+        \item \textbf{Core Concept:} LLMs can function not just as assistants, but as core components in the algorithmic pipeline, e.g., generating ideas, implementing code, and acting as search operators.
+        \item[$\leadsto$] Taxonomy by \liturl{Lui et al. 2026}{https://dl.acm.org/doi/full/10.1145/3787585}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{LLM as Optimizer}
+    \textbf{Definition:} The LLM acts as a black-box optimizer that iteratively refines solutions based on natural language feedback and optimization history.
+    
+    \vspace{0.5em}
+    \textbf{Algorithmic Process:}
+    \begin{enumerate}
+        \item \textbf{Input:} Problem description $D$, history of solutions $H = \{(\conf_1, \cost(\conf_1)), \dots, (\conf_k, \cost(\conf_k))\}$.
+        \item \textbf{Prompting:} Instruct LLM to ``generate a better solution based on these patterns.''
+        \item \textbf{Output:} New candidate solution $\conf_{new}$.
+    \end{enumerate}
+
+    \textbf{Limitations:}
+    \begin{itemize}
+        \item Limited interpretability and no theoretical guarantees
+        \item Sensitivity of prompts, domain priors and LLM
+        \item Computational and token cost at scale
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{LLM as Predictor}
+    \textbf{Definition:} The LLM functions as a surrogate model to estimate the quality or behavior of a solution without running expensive evaluations.
+    
+    \vspace{0.5em}
+    \textbf{Key Mechanisms:}
+    \begin{itemize}
+        \item \textbf{Regression:} Predicting a scalar fitness score (e.g., accuracy of a DNN).
+        \item \textbf{Classification:} Determining if a solution is ``Better'' or ``Worse''.
+        \item \textbf{Zero-Shot Reasoning:} Leveraging pre-trained knowledge to evaluate candidates where data is scarce.
+    \end{itemize}
+
+    \vspace{0.5em}
+    Given a solution $\conf$, approximate the objective function $\cost(\conf)$:
+    $$ \hat{\cost}(\conf) = \text{LLM}(\conf, \text{Context}) $$
+    Used effectively in Neural Architecture Search (NAS) and scientific discovery to filter candidates before simulation.
+\end{frame}
+
+\begin{frame}{LLM as Extractor}
+    \textbf{Definition:} The LLM mines hidden features, constraints, or heuristics from unstructured problem descriptions to aid traditional algorithms.
+    
+    \vspace{0.5em}
+    \textbf{Workflow:}
+    \begin{itemize}
+        \item \textbf{Input:} Unstructured text/code (e.g., ``Optimize routing for a fleet with limited fuel...'').
+        \item \textbf{Process:} Semantic parsing and knowledge distillation.
+        \item \textbf{Output:} Structured artifacts (JSON, Embeddings, problem features).
+    \end{itemize}
+    
+    \vspace{0.5em}
+    \textbf{Application:}
+    \begin{itemize}
+        \item Extracting problem features (e.g., node count, constraints) to select the best optimizer ($\to$ algorithm selection).
+        \item Warm-starting optimization by identifying domain-specific heuristics from literature or documentation.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{LLM as Designer}
+    \textbf{Definition:} The LLM generates the algorithm itself (code/functions) rather than just the solution to a specific instance \liturl{Romera-Paredes et al. 2023}{https://www.nature.com/articles/s41586-023-06924-6}\liturl{Zhang et al. 2025}{https://arxiv.org/abs/2505.22954}\liturl{van Stein and Bäck}{https://arxiv.org/abs/2405.20132}
+    
+    \vspace{0.5em}
+    \textbf{The Paradigm:}
+    \begin{itemize}
+        \item \textbf{Space:} Search within \textit{Program Space} (Code), not Solution Space.
+        \item \textbf{Mechanism:} Evolutionary Algorithm driven by LLMs.
+        \begin{enumerate}
+            \item \textit{Initialization:} Seed program.
+            \item \textit{Mutation/Crossover:} LLM rewrites code to introduce variations.
+            \item \textit{Evaluation:} Execute code on test cases.
+            \item \textit{Selection:} Keep high-performing code snippets.
+        \end{enumerate}
+    \end{itemize}
+    
+    \textbf{Impact:} Capable of discovering novel heuristics (e.g., for AutoML or BO~\liturl{Li et al. 2025}{https://arxiv.org/abs/2505.21034}) that outperform human-designed baselines.
+\end{frame}
+
+% SLIDE 6: Comparative Summary of Roles
+\begin{frame}{Comparing the Taxonomy Roles}
+    The distinction lies in the \textbf{Output} and the \textbf{Abstraction Level}:
+
+    \vspace{1em}
+    \begin{table}
+        \centering
+        \begin{tabular}{lll}
+            \toprule
+            \textbf{Paradigm} & \textbf{Primary Role} & \textbf{Output Artifact} \\
+            \midrule 
+            \textbf{LLM as Optimizer} & Optimizer & \textit{Instance Solution} (e.g., a route) \\
+            \textbf{LLM as Predictor} & Predictor & \textit{Evaluation Metric} (Score/Label) \\
+            \textbf{LLM as Extractor} & Extractor & \textit{Structured Features} (Knowledge) \\
+            \textbf{LLM as Designer} & Designer & \textit{Executable Algorithm} (Python Code) \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    $\leadsto$ Combinations of these concepts are also possible.
+
+\end{frame}
+
+\begin{frame}{Summary and Future Outlook}
+    \begin{itemize}
+        \item \textbf{Paradigm Shift:} Algorithm design is moving from a purely analytical human task to a semantic, automated process driven by Large Language Models.
+        \item \textbf{Hybrid Intelligence:} The most successful approaches combine the creativity/reasoning of LLMs with the rigorous evaluation of classical evolutionary search.
+        \item \textbf{Beyond Translation:} LLMs are not just translating ideas to code; they are serving as \textit{search operators} that navigate the landscape of possible algorithms.
+        \item \textbf{Future Direction:} Towards self-evolving software systems where the optimizer, predictor, and designer loops are fully autonomous.
+        \item \textbf{Challenges:} 
+        \begin{itemize}
+            \item Code quality is still rather poor and hard to maintain $\to$ technical debt
+            \item Security can be compromised
+            \item[$\leadsto$] Rather to generate prototypes and less fully mature products
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\end{document}
+

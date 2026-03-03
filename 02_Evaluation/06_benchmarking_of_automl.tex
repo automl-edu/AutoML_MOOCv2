@@ -1,0 +1,108 @@
+\documentclass[main]{subfiles}
+
+
+\title[Evaluation and Benchmarking]{Evaluation and Benchmarking}
+\subtitle{Benchmarking of AutoML}
+\author[Marcel Wever]{Marcel Wever}
+\date{}
+
+\titlebackground*{images/AutoML_ML_Evaluation}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Benchmarking of AutoML}
+\begin{itemize}
+    \item Benchmarking = systematic comparison of methods across a defined set of tasks
+    \item Goal: draw general conclusions about relative performance that go beyond a single dataset
+    \item A benchmark consists of:
+    \begin{itemize}
+        \item A task suite: A collection of datasets or problem instances
+        \item A protocol: fixed evaluation procedure, time budgets, and hardware specification
+        \item A performance measure: the metric used to compare systems
+    \end{itemize}
+    \item Good benchmarks are reproducible, fair, and representative of real-world use
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The No Free Lunch Perspective}
+    \begin{itemize}
+        \item No Free Lunch (NFL) theorem: no algorithm dominates all others across all possible tasks
+        \item Consequence: the result of a comparison depends on the choice of task suite
+        \item A benchmark implicitly defines a distribution over tasks, results only generalize to tasks drawn from a similar distribution
+        \item \textbf{Cherry-picking datasets} to favor one's own system is a common and serious threat to validity
+        \item A credible benchmark should cover diverse tasks: varying size, feature types, class imbalance, and difficulty
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Desiderata for a Fair Benchmark}
+    \begin{itemize}
+        \item Reproducibility: Fixed random seeds, public datasets, containerized environments
+        \item Controlled resources: Same time budget, memory limit, and hardware for all systems
+        \item Nested evaluation: Outer test folds held out from all systems, inner loop used for search
+        \item Task diversity: Sufficient variety to avoid conclusions driven by a single dataset
+        \item Baselines: Always include simple baselines (e.g., random search, single well-tuned model) to contextualize results
+        \item Openness: Code, data splits, and raw results publicly available for scrutiny
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Exiting AutoML Benchmarks}
+    \begin{itemize}
+        \item OpenML-CC18: 72 curated classification datasets from OpenML, widely used as a default task suite
+        \item AutoML Benchmark: Standardized framework for comparing AutoML systems with controlled resources and reproducible splits
+        \item HPOBench / HPO-B: Focused benchmarks for hyperparameter optimization, providing surrogate evaluations or lookup tables for cheap repeated experiments
+        \item YAHPO Gym: Surrogate-based benchmark suite covering a large space of HPO scenarios efficiently
+        \item PD1: HPO for modern deep learning architectures (ResNets and Transformer)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Aggregating Results Across Tasks}
+    \begin{itemize}
+        \item Raw performance scores are not directly comparable across datasets (different scales, metrics)
+        \item Common normalization strategies:
+        \begin{itemize}
+            \item Rank-based: Rank systems per dataset, then average ranks, robust but loses magnitude information
+            \item Normalized score: Scale performance relative to a baseline and a reference ceiling per dataset
+        \end{itemize}
+        \item After normalization, apply the statistical testing workflow from earlier:
+        \begin{itemize}
+            \item Friedman test for overall differences
+            \item Post-hoc tests with correction (Nemenyi / Holm) for pairwise comparisons
+            \item Visualize with critical difference diagrams
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Threats to Validity}
+    \begin{itemize}
+        \item Time budget sensitivity: Rankings can change substantially with different budgets, always report results at multiple budgets or as anytime curves
+        \item Hardware heterogeneity: Wall-clock time is hardware-dependent; document and control carefully
+        \item Dataset leakage: Public datasets may have been used during system development, giving an unfair advantage
+        \item Metric choice: A system optimized for accuracy may rank differently when evaluated on AUC or log-loss
+        \item Stochasticity: Single-run comparisons are insufficient; always use multiple runs and report uncertainty
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Summary} 
+
+Most important insights from this video:
+
+\begin{enumerate}
+    \item A benchmark is only as credible as its task suite, protocol, and openness
+    \item Cherry-picking datasets undermines any conclusion
+    \item Fair benchmarking requires controlled resources, nested evaluation, and multiple runs with reported uncertainty
+    \item Raw scores across datasets must be normalized (e.g., via ranks) before aggregation, followed by appropriate statistical tests
+    \item Benchmark results are always relative to a specific task distribution and time budget
+    \item Generalization beyond that scope requires caution
+\end{enumerate}
+
+\end{frame}
+
+\end{document}

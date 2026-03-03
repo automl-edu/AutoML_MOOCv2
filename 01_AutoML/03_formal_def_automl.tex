@@ -1,0 +1,115 @@
+\documentclass[main]{subfiles}
+
+
+\title[AutoML: Introduction]{AutoML Motivation}
+\subtitle{How to Define AutoML Formally?}
+\author[Marius Lindauer]{Marius Lindauer}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Machine Learning Task}
+
+Let  
+
+\begin{description}
+    \item[$\dataset$] be a dataset, typically in the form of $\dataset = (\xI{i},\yI{i})_{i \in 1 \ldots N}$ with $N$ data points,
+    \item[$\Hspace$] be a hypothesis space with all possible predictive models $\fh$ under consideration,
+\end{description}
+
+the machine learning task is to learn a predictive model $\fh \in \Hspace$\\ that minimizes the empirical risk of errors:
+
+$$ \fh \in \argmin_{f \in \Hspace} \riske(f \mid \dataset) $$
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Empirical Risk: Assessing How Well a Model Performs?}
+
+Let  
+
+\begin{description}
+    \item[$\dataset$] be a dataset, typically in the form of $\dataset = (\xI{i},\yI{i})_{i \in 1 \ldots N}$ with $N$ data points,
+    \item[$\loss$] be a loss function on two labels,
+\end{description}
+
+the empirical risk of a model $f$ is defined by:
+
+$$\riske(f) := \sum_{i=1}^{N} \loss\left(\yI{i}, f(\xI{i})\right)$$
+
+\bigskip 
+
+Note: Some papers also use $\mathcal{L}$ to denote the (empirical) loss.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{How to Get the Model?}
+
+Let  
+
+\begin{description}
+    \item[$\dataset$] be a dataset, typically in the form of $\dataset = (\xI{i},\yI{i})_{i \in 1 \ldots N}$ with $N$ data points,
+    \item[$\pcs$] be a configuration space of all considered design decisions (e.g., hyperparameters or architectural decisions)\footnote{On the previous slides, we implicitly assumed a fixed $\conf$. With considering $\conf$ explicitly, we open up the hypothesis space.}, 
+    \item[$\Hspace$] be a hypothesis space with all possible predictive models $\f$ under consideration, and 
+
+\end{description}
+
+such that $\mathcal{I}$, being a learning algorithm (a.k.a. inducer), infers the model from the data and a configuration $\conf \in \pcs$:
+
+\vspace*{-1em}
+\begin{eqnarray}
+\mathcal{I}: \datasets \times \pcs \to \Hspace \qquad (\dataset, \conf) \mapsto f\\
+\text{s.t. } \fh \in \argmin_{f \in \Hspace} \riske(f \mid \dataset)
+\end{eqnarray}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{\alert{Automated} Machine Learning Problem}
+
+Let  
+
+\begin{description}
+    \item[$\datasettrain$] be a training dataset,
+    \item[$\datasetval$] be a validation dataset\footnote{typically disjoint from $\datasettrain$}, and
+    \item[$\pcs$] be a configuration space of all considered design decisions (e.g., hyperparameters or architectural decisions),
+    \item[$\riskg$] be a generalization risk\footnote{The risk or loss metrics on the training and validation dataset do not have to be the same.}
+\end{description}
+
+the automated machine learning task is to find a configuration $\optconf$ of the inducer $\mathcal{I}$ such that the risk on the validation data is minimized
+
+$$\optconf \in \argmin_{\conf \in \pcs} \riskg(\mathcal{I}(\datasettrain, \conf) \mid \datasetval)$$
+
+\end{frame}
+%-----------------------------------------------------------------------
+
+
+%----------------------------------------------------------------------
+\begin{frame}{Summary} 
+
+Most important insights from this video:
+
+\begin{enumerate}
+    \item The learning of the machine learning model focuses on minimizing the training error, which should eventually lead to better generalization error overall
+    \item An inducer (aka learning algorithm) induces a model from a given dataset
+    \item Automated machine learning finds the optimal configuration of the inducer to minimize the generalization error
+    \begin{itemize}
+        \item \alert{Attention}: This requires special validation and evaluation schemes (discussed in other sessions)
+        \item \alert{Note}: The configuration space is w.r.t. the inducer in our definition; it can cover the entire data science pipeline or even code generation
+    \end{itemize}
+\end{enumerate}
+
+\end{frame}
+
+\end{document}

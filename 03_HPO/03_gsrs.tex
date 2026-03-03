@@ -1,0 +1,64 @@
+%! TeX program = lualatex
+\documentclass[main]{subfiles}
+
+\begin{document}
+
+\title[AutoML: HPO]{Grid Search and Random Search}
+\subtitle{The Bad and the Ugly}
+\author[Lars Kotthoff]{Lars Kotthoff}
+\date{}
+
+%\institute{}
+%\date{}
+	
+	\maketitle
+	
+
+\begin{frame}{Grid Search}
+    \begin{columns}
+        \column{.5\textwidth}
+        \begin{itemize}
+            \item Discretize all hyperparameters along a grid, then try all values
+            \item Easy to implement and easily parallelizable
+            \item Scales badly, searches irrelevant areas
+            \item Discretization can be arbitrary
+        \end{itemize}
+
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/grid}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Random Search}
+    \begin{columns}
+        \column{.5\textwidth}
+        \begin{itemize}
+            \item Uniformly sample from the configuration space
+            \item Also easy to implement and easily parallelizable
+            \item Can control easily how much to sample
+            \item Also searches irrelevant areas, but better coverage of the space than grid search, in particular if some dimensions are unimportant
+            \item Often performs well in practice
+        \end{itemize}
+
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/random}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Summary} 
+\begin{enumerate}
+    \item Grid Search: try all possible values along a grid
+    \item Random Search: sample uniformly from the configuration space
+    \item Random Search often useful baseline or to gauge dificulty of HPO task
+\end{enumerate}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,145 @@
+\documentclass[main]{subfiles}
+
+
+\title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
+\subtitle{Warmstarting}
+\author[Katharina Eggensperger]{Katharina Eggensperger}
+\date{}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Should we always completely evaluate a pipeline?}
+
+$\leadsto$ Full evaluations yield the best and most accurate signal, but may waste resources in practice.
+
+<here is a nice picture of a cookie and a speech bubble with the text "How would you create a new cookie recipe?">
+
+\end{frame}
+
+
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{A motivating example}
+
+% credit Aarons paper
+\includegraphics[width=0.8\textwidth]{05_Advanced_HPO/images/multi-fidelity_example.png}
+
+\end{frame}
+
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{What are intermediate results, early metrics or proxy performance?}
+
+Evaluating ML systems is often iterative and we can get intermediate results such as:
+\begin{itemize}
+    \item subsample dataset
+    \item partial training
+    \item coarse simulation / downscaled images
+    \item smaller model
+\end{itemize}
+
+$\leadsto$ These \textit{early} metrics are not necessarily reliable, but might be useful to identify promising regions and discard bad-performing candidates early.
+$\leadsto$ Optimization methods that make use of these are called multi-fidelity methods.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Formal definition}
+
+We refer to an inexpensive approximation of the true objective $f(\lambda)$ as $f_b(\lambda)$, where $b \in [b_{min}, b_{max}]$ with $c(\lambda,b)$ being its associated cost. Furthermore, we assume that \item $f_{b_{max}}(\lambda) = f(\lambda)$.
+
+\\~\\
+Our optimization objective is then to find:
+
+\begin{equation}
+\lambda^* \in \argmin_{\lambda \in \Lambda} f_{b_{max}}(\lambda)
+\end{equation}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Assumptions}
+
+These methods exploit three structural observations
+\begin{enumerate}
+    \item the \textbf{error shrinks smoothly} as the fidelity budget increases,
+    \item \textbf{ranks are consistent} across fidelities,
+    \item and \textbf{higher fidelities provide a more accurate approximation} of the true objective value.
+\end{enumerate}
+
+$\leadsto$ in practice, these assumptions are not necessarily satisfied. HPO must be robust against that.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Optimization target}
+
+<add multi-fidelity optimization target here>
+
+Note that this is also studies in Bayesian optimization with environmental variables (double check), e.g. engineering and material design. 
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Successive Halving (add citation here)}
+
+<add multi-fidelity optimization target here>
+
+textual explanation of the algorithm
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Successive Halving Details}
+
+add sth about guarantees and what they mean; mention failure cases
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Hyperband (add citation here)}
+
+textual description
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Model-based multi-fidelity optimization}
+
+Can we combine this with Bayesian optimization? - BOHB
+
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Can we do better?}
+
+Talk about learning curve prediction, freeze-thaw, etc.
+
+(note to myself: Should we mention bandits in this presentation? Probably not.)
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{What if the assumptions not apply?}
+
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Summary}
+
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+
+\end{document}

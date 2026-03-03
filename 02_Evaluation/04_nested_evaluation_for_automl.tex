@@ -1,0 +1,107 @@
+\documentclass[main]{subfiles}
+
+
+\title[Evaluation and Benchmarking]{Evaluation and Benchmarking}
+\subtitle{Nested Evaluation for AutoML}
+\author[Marcel Wever]{Marcel Wever}
+\date{}
+
+\titlebackground*{images/AutoML_ML_Evaluation}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{AutoML Algorithms Are Anytime}
+
+\begin{itemize}
+    \item AutoML systems repeatedly evaluate candidate configurations during search
+    \item Each candidate is scored using a validation procedure (e.g., CV)
+    \item The system exploits these scores to guide the search towards better configurations
+    \item At any point in time, the best configuration found so far can be returned
+    \item Key insight: the validation procedure is not just a reporting tool, it is part of the optimization
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Optimistic Bias Problem}
+    \begin{itemize}
+        \item Suppose we evaluate $n$ candidate configurations on the same validation data
+        \item We select the configuration with the best validation score
+        \item The selected score is optimistically biased: we effectively searched for the maximum over $n$ noisy estimates
+        \item The more candidates we evaluate, the more pronounced the bias
+        \item This is a form of overfitting to the validation set, even without directly touching it
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Nested Evaluation: The Solution}
+\begin{itemize}
+    \item Strictly separate the data used for search from the data used for reporting
+    \item Outer loop: Estimates generalization performance of the full AutoML procedure
+    \item Inner loop: Drives the AutoML search, used to compare and select configurations
+\end{itemize}    
+\vspace{.25cm}
+\begin{center}
+\begin{tabular}{lll}
+    \toprule
+     Loop & Data Role & Purpose  \\
+     \midrule
+     Outer & Test fold & Unbiased performance estimate \\
+     Inner & Validation fold & Model selection / HPO \\
+     \bottomrule
+\end{tabular}
+\end{center}
+\vspace{.25cm}
+\begin{itemize}
+    \item The outer test fold is \textbf{never} used to make any search decision
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Nested Cross-Validation}
+\begin{itemize}
+    \item Instantiate both loops with cross-validation: nested CV
+    \item Outer k-fold CV: Provides k independent test folds for unbiased evaluation
+    \item Inner m-fold CV (with each outer training fold): Drives hyperparameter search
+    \item The full AutoML procedure is re-run independently for each outer fold
+    \item Result: An unbiased estimate of the procedure's generalization performance, not just of one fixed model
+\end{itemize}
+\vspace{.25cm}
+$\leadsto$ Nested CV evaluates how good the AutoML pipeline is as a learning algorithm, not the specific model it happens to return.
+    
+\end{frame}
+
+\begin{frame}{Practical Considerations}
+    \begin{itemize}
+        \item Nested CV is computationally expensive
+        \item Number of outer folds impacts the dataset size available for internal validation
+        \item Single holdout as outer loop: Cheaper but higher variance; acceptable for very large datasets
+        \item \textbf{Refit on full data:} After evaluation, the final deployed model is retrained on all available data
+    \end{itemize}
+    \vspace{.25cm}
+    Common pitfalls:
+    \begin{itemize}
+        \item Using the same data for inner and outer loop (defeats the purpose)
+        \item Peeking at the outer test fold to decide the search budget or preprocessing
+        \item Reporting inner validation scores as if they were unbiased test scores
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Summary} 
+
+Most important insights from this video:
+
+\begin{enumerate}
+    \item AutoML systems repeatedly exploit validation scores during search, introducing an optimistic search selection bias that grows with the number of evaluated candidates
+    \item Nested evaluation strictly separates the inner loop (search) from the outer loop (reporting) to obtain unbiased performance estimates
+    \item Nested CV evaluates the AutoML procedure as a whole, not a single fixed model
+    \item The final deployed model is refitted on all data; the nested estimate describes expected procedure performance, not the specific returned model
+\end{enumerate}
+
+\end{frame}
+
+\end{document}

@@ -1,0 +1,129 @@
+\documentclass[main]{subfiles}
+
+
+\title[Evaluation and Benchmarking]{Evaluation and Benchmarking}
+\subtitle{Statistical Tests}
+\author[Marcel Wever]{Marcel Wever}
+\date{}
+
+\titlebackground*{images/AutoML_ML_Evaluation}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Why Statistical Testing?}
+
+\begin{itemize}
+    \item Comparing ML models wrt.\ observed performance differences can be misleading
+    \item A difference in mean accuracy does not imply one model is truly better
+    \item Observed differences for evaluated ML models may arise from
+    \begin{itemize}
+        \item random train/test splits
+        \item stochastic training
+        \item ...?
+    \end{itemize}
+    \item Statistical tests help distinguish real differences from random variation
+    \item \textbf{Is the observed difference statistically significant or likely due to chance?}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[c]{Hypothesis Testing Basics}
+    \begin{itemize}
+        \item Null hypothesis $H_0$: No difference between models (e.g., equal mean performance)
+        \item Alternative hypothesis $H_1$: A true difference exists
+        \item p-value: Probability of observing results at least as extreme as the data,\\ assuming $H_0$ is true
+        \item Reject $H_0$ is $p \leq \alpha$, where $\alpha$ is the significance level (commonly $0.05$)
+    \end{itemize}
+    \vspace{0.4cm}
+    \begin{itemize}
+        \item Note:
+    \begin{itemize}
+        \item Failing to reject $H_0$ does not prove the two methods are equal
+        \item Rejecting $H_0$ does not mean that one is better than the other
+    \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{The $t$-Test}
+    \begin{itemize}
+        \item Parametric test assuming normally distributed differences
+        \item \textbf{Paired $t$-Test:} Compare two algorithms on the same $k$ folds:
+        \[
+        t = \frac{\bar{d}}{s_d / \sqrt{k}}, \quad \bar{d} = \frac{1}{k} \sum_{i=1}^k (r_i^A - r_i^B)
+        \]
+        \item $r_i^{(A,B)}$ are the results for method A or B, $s_d$ the standard deviation of the sample $d$
+        \item Null hypothesis: $\mathbb{E}[\bar{d}] = 0$
+        \item Sensitive to violations of the normality assumption
+        \item Corrected resampled $t$-test: Adjusts for the dependency of CV folds to avoid inflated type-I error
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Non-Parametric Tests}
+    \begin{itemize}
+        \item Do not assume a specific distribution of the test statistics
+        \item \textbf{Wilcoxon Signed-Rank Test:} Paired test comparing two algorithms across datasets
+        \begin{itemize}
+            \item Ranks the absolute differences and accounts for their sign
+            \item Preferred over paired $t$-test when normality cannot be assumed
+        \end{itemize}
+        \item \textbf{Sign test:} Simplest paired test, only considers the direction of differences
+        \begin{itemize}
+            \item Less powerful than Wilcoxon, but very robust
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Comparing Multiple Algorithms}
+    \begin{itemize}
+        \item Pairwise tests do not scale well to many algorithms: multiple testing inflates type-I error
+        \item \textbf{Friedman test}: Non-parametric test for differences across $M$ algorithms on $N$ datasets
+        \begin{itemize}
+            \item Ranks algorithms per dataset
+            \item Tests whether mean ranks differ
+        \end{itemize}
+        \item If Friedman rejects $H_0$, follow up with post-hoc tests:
+        \begin{itemize}
+            \item \textbf{Nemenyi test}: All pairwise comparisons with family-wise error control
+            \item \textbf{Holm correction}: Step-down procedure, more powerful than Bonferroni
+        \end{itemize}
+        \item Results often visualized via critical difference (CD) diagrams
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Practical Recommendations}
+Choosing the right test
+\begin{itemize}
+    \item Two algorithms, paired results: Wilcoxon signed-rank test (or corrected $t$-test)
+    \item Multiple algorithms, multiple datasets: Friedman + post-hoc (Nemenyi / Holm)
+    \item Always report effect sizes alongside p-values
+\end{itemize}
+Common pitfalls:
+\begin{itemize}
+    \item Using an uncorrected $t$-test on CV folds (inflated type-I error)
+    \item $p > \alpha$ interpreted as ``algorithms are equivalent``
+    \item Running many pairwise tests without multiple testing correction
+    \item Choosing the test \emph{after} seeing the data
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary} 
+Most important insights from this video:
+
+\begin{enumerate}
+    \item Performance differences between models must be evaluated with statistical tests to rule out random variation
+    \item The paired Wilcoxon Signed-Rank Test is a robust default for comparing two algorithms
+    \item For multiple algorithm comparisons, use the Friedman test followed by an appropriate post-hoc procedure
+    \item Always correct for multiple testing and report effect sizes alongside p-values
+\end{enumerate}
+
+\end{frame}
+
+\end{document}

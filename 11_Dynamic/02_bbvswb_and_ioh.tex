@@ -1,0 +1,142 @@
+\documentclass[main]{subfiles}
+
+
+\title[Dynamic Approaches]{Dynamic Approaches}
+\subtitle{White Box Optimization}
+\author[André Biedenkapp]{André Biedenkapp}
+\date{}
+
+\titlebackground*{images/AutoML_LearningToLearn2}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Black vs. Gray vs. White Box} 
+
+    \begin{columns}
+    \column{0.33\textwidth}
+    \begin{itemize}
+        \item Black box:
+        \begin{itemize}
+            \item Choose the input
+            \item Observe the final outcome
+        \end{itemize}
+        \hfill\\
+        No control over the box\\
+        \hfill\\
+        \pause
+    \end{itemize}
+    \column{0.66\textwidth}
+    \begin{itemize}
+        \item Gray box (e.g., multi-fidelity):
+        \begin{itemize}
+            \item Choose the input
+            \item Observe intermediate outcome
+            \item \ldots
+            \item Observe final outcome
+        \end{itemize}
+        \hfill\\
+        Some control through, e.g., early termination
+    \end{itemize}
+    \end{columns}
+    \vspace{6ex}
+    \pause
+    AutoML as a white-box problem:
+    \begin{itemize}
+        \item Observe and control \emph{all} details of an algorithm run
+        \item Goal: Replace hyperparameter heuristics or even complete algorithm components with learned policies
+    \end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Iterative Optimization Heuristics}
+\begin{colorblock}[black]{sintefgrey}{IOHs}
+Iterative Optimization Heuristics (IOHs) propose a set of solution candidates in each iteration based on previous evaluations.
+\end{colorblock}
+\pause
+Important Observations:
+\begin{itemize}
+    \item Many ML and AI algorithms are iterative in nature\pause
+    \item A solution candidate refers to a (partially) trained model (e.g., weights of a neural network)\pause
+    \item The goal is to improve the quality of successive solution candidates\pause
+    \item The main component is a proposal mechanism/heuristic for new solution candidates
+\end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Tuning of IOHs}
+\begin{colorblock}[black]{sintefgrey}{Dynamic Adaptation of Hyperparameters}
+The goal is to dynamically adapt hyperparameters based on some feedback from the algorithm.
+\end{colorblock}
+Examples:\\
+\begin{itemize}
+    \item Self-adaptation in Evolutionary Algorithms (see, e.g., Step-Size Adaptation in Section 4 of \liturl{Hansen, 2006}{http://www.cmap.polytechnique.fr/~nikolaus.hansen/hansenedacomparing.pdf})
+    \item Reduction of the learning rate when a the loss stops improving (e.g., \liturl{Pytorchs ReduceLROnPlateau}{https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ReduceLROnPlateau.html\#torch.optim.lr_scheduler.ReduceLROnPlateau})
+    \item Adaptive policy update constraint in PPO \liturl{Schulman et al. 2017}{https://arxiv.org/pdf/1707.06347}
+\end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Tuning of IOHs}
+\begin{colorblock}[black]{sintefgrey}{Dynamic Algorithm Configuration (DAC)}
+The goal of DAC is to learn a policy from data that adapts the hyperparameter settings of an IOH.
+\end{colorblock}
+Examples:\\
+\begin{itemize}
+    \item Learned Learning Rate adaptation for SGD \liturl{Daniel et al. 2016}{https://ojs.aaai.org/index.php/AAAI/article/view/10187}
+    \item Learned mutation operator selection for differential evolution \liturl{Sharma et al. 2019}{https://dl.acm.org/doi/10.1145/3321707.3321813}
+    \item Learned interction frequency for RL \liturl{Biedenkapp et al. 2021}{https://arxiv.org/abs/2106.05262}
+\end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Tuning of IOHs}
+\begin{colorblock}[black]{sintefgrey}{Learning to Learn (L2L)}
+The goal of L2L is to learn a proposal mechanism/heuristic directly from data. (Not covered in this lecture.)
+\end{colorblock}
+Examples:\\
+\begin{itemize}
+    \item Learned gradient-based optimization \liturl{Andrychowicz et al. 2016}{https://arxiv.org/abs/1606.04474}
+    \item Learned Step-Size adaptation Heuristic for CMA-ES \liturl{Shala et al. 2020}{https://andrebiedenkapp.github.io/assets/pdf/paper/20-PPSN-LTO-CMA.pdf}
+    \item Learning to Meta-Reinforcement Learn via Transformers \liturl{Shala et al. 2025}{https://openreview.net/forum?id=UENQuayzr1}
+\end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Main Takeaways} 
+
+%Most important insights from this video:
+
+\begin{itemize}
+    \item \textbf{White-box Optimization} The goal is to replace hyperparameter heuristics or even complete algorithm components
+with learned policies.
+    \item \textbf{IOHs} ropose a set of solution candidates in each
+iteration based on previous evaluations.
+    \item \textbf{Tuning of IOHs} includes 
+\end{itemize}
+
+\end{frame}
+
+
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+% \begin{frame}[c]{Planning Slide}
+% Likely very close to original slide deck
+% \begin{enumerate}
+%     \item BB vs GB vs WB
+%     \item IOH
+% \end{enumerate}
+% \end{frame}
+% %-----------------------------------------------------------------------
+
+\end{document}

@@ -1,0 +1,63 @@
+\documentclass[main]{subfiles}
+
+
+\title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
+\subtitle{The Big Picture}
+\author[Katharina Eggensperger]{Katharina Eggensperger}
+\date{}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Is BayesOpt the ideal method for HPO?}
+
+(Vanilla) Bayesian Optimization is
+
+\begin{itemize}
+    \item theoretically grounded, well-established, and widely studied,
+    \item built for sequential decision-making problems in which evaluations are expensive and the objective function is unknown,
+    \item based on minimal assumption\footnote{theoretical guarantees only require that the true function lies in the RKHS induced by the kernel} which makes it widely applicable.
+\end{itemize}
+
+$\leadsto$ \textbf{Yes,} because it is more sample-efficient than random search, more adaptive than grid search, and more systematic than manual search. \\
+$\leadsto$ \textbf{But}, it might still be too inefficient for practical HPO tasks.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{What do we know about HPO?}
+
+Some observations:
+
+\begin{itemize}
+    \item we often search the same space on different dataset \\ $\leadsto$ similar tasks might have similar objective functions.
+    \item prior information is available from previous experiments or the domain \\ $\leadsto$ we do not need to start from scratch.
+    \item evaluating ML pipelines is iterative \\ $\leadsto$ we can get low-cost approximations of the true, costly function.
+\end{itemize}
+
+$\leadsto$ HPO has a lot of structure; treating it as generic black-box optimization is unnecessarily general and may be inefficient
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Summary} 
+
+Most important insights from this video:
+
+\begin{enumerate}
+    \item Bayesian optimization can be improved by exploiting the structure of the optimization problems.
+    \item HPO offers task similarity, prior information, and intermediate results.
+\end{enumerate}
+
+$\leadsto$ We derive HPO-specific assumptions that increase the efficiency of Bayesian optimization for HPO tasks.
+
+\end{frame}
+
+\end{document}

@@ -1,0 +1,166 @@
+\documentclass[main]{subfiles}
+
+
+\title[Dynamic Approaches]{Dynamic Approaches}
+\subtitle{Dynamic Algorithm Configuration}
+\author[André Biedenkapp]{André Biedenkapp}
+\date{}
+
+\titlebackground*{images/AutoML_LearningToLearn2}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+%-----------------------------------------------------------------------
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Dynamic Algorithm Configuration}
+    \begin{itemize}
+        \item Prior approaches achieve dynamic tuning but do not produce a policy\pause
+        \item DAC Goal: A reusable \textit{policy} that adapts hyperparameters\pause
+    \end{itemize}
+    Let
+    \begin{description}
+        \item[$\conf\in\confs$] be a hyperparameter configuration of an algorithm $\algo$,\pause
+        \item[$p(\dataset)$] a probability distribution over datasets $\dataset\in\datasets$ (or tasks),\pause
+        \item[$\stateRL_t$] a state description of $\algo$ solving $\dataset$ at time point $t$,\pause
+        \item[$\cost\colon\policies\times\datasets\to\mathbb{R}$] a cost metric assessing the cost of a configuration policy $\policy\in\policies$ on $\dataset\in\datasets$.
+    \end{description}\pause
+    The \emph{dynamic algorithm configuration problem} is to obtain a policy $\policy^*\colon\stateRL\times\dataset\mapsto\conf$ by optimizing its cost across a distribution of datasets:
+    $$\policy^*\in\argmin_{\policy\in\policies}\int_{\datasets}p(\dataset)c(\policy,\dataset)\,\mathrm{d}\dataset$$
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{DAC as Contextual Markov Decision Process \liturl{Biedenkapp et al. 2020}{https://andrebiedenkapp.github.io/assets/pdf/paper/20-ecai-dac.pdf}}
+    \begin{description}
+        \item[State $\stateRL_t$] statistics gathered in an algorithm run\pause
+        \item[Action $\actionRL_t$] determines how hyperparameters are set or adapted\pause
+        \item[Transition] iteration of the algorithm for one or a few steps with the given hyperpareter settings\pause
+        \item[Reward $\rewardRL_t$] current cost (or approximation)\pause
+        \item[Context $\dataset$] A given dataset (or task)
+    \end{description}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{DAC by Configuration of Hand-Designed Heuristics}% \liturl{Adriansen et al. 2022}{https://www.jair.org/index.php/jair/article/view/13922/26882}}
+    \begin{itemize}
+        \item Adaptively changing hyperparameters itself is not a new idea
+        \item Recall: Manual heuristics
+        \item Example: cosine annealing learning rates \liturl{Loshchilov and Hutter, 2016}{https://arxiv.org/abs/1608.03983}
+        $$\eta_t=\eta_{min}+\frac{1}{2}(\eta_{max}-\eta_{min}\left(1+\cos\left(\frac{T_{cur}}{T_{max}}\cdot3.141592\right)\right)$$
+    \end{itemize}\pause
+    \begin{description}
+        \item[$\eta_{max}$] initial (maximal) learning rate
+        \item[$\eta_{min}$] minimal learning rate
+        \item[$T_{max}$] maximum number of iterations (before restart of learning rate)
+    \end{description}\pause
+    Schedule can be tuned with standard HPO.\footnote{For more such examples see \liturl{Adriaensen et al. 2022}{https://www.jair.org/index.php/jair/article/view/13922/26882}}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{DAC by Optimization (Direct Schedule)}
+    \begin{itemize}
+        \item Helpful if we do not know a well-performing analytic expression
+        \item E.g., optimize directly for a discrete schedule of learning rates
+        \begin{itemize}
+            \item On a linear schedule:\\
+            \texttt{lr\_after\_0\_epochs}$\;\;\in\left[10^{-5},1\right]$\\
+            \texttt{lr\_after\_10\_epochs}$\in\left[10^{-5},1\right]$\\
+            \texttt{lr\_after\_20\_epochs}$\in\left[10^{-5},1\right]$\\
+            \texttt{lr\_after\_30\_epochs}$\in\left[10^{-5},1\right]$\\
+            \ldots
+            \item On an exponential schedule:\\
+            \texttt{lr\_after\_0\_epochs}$\;\;\in\left[10^{-5},1\right]$\\
+            \texttt{lr\_after\_10\_epochs}$\in\left[10^{-5},1\right]$\\
+            \texttt{lr\_after\_30\_epochs}$\in\left[10^{-5},1\right]$\\
+            \texttt{lr\_after\_90\_epochs}$\in\left[10^{-5},1\right]$\\
+            \ldots
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{DAC by Optimization (Functional Schedule)}
+    \begin{itemize}
+        \item A direct schedule has the disadvantages\pause
+        \begin{itemize}
+            \item Discretizations is important
+            \item Hard to optimize for a reasonable pattern
+        \end{itemize}
+        \item Directly learn a function of a schedule:\\
+        $\policy(\stateRL;\weights)$ where $\weights$ are the implicit parameters of the schedule\\
+        (e.g., the weights of a neural net)\pause
+        \item We can observe the cost induced by a configuration and use any black-box optimizer to optimize $\weights$
+        $$\weights^*\in\argmin_{\weights\in\mathbb{R}^{(n\times m)}}\cost(\policy_\weights)=\argmin_{\weights\in\mathbb{R}^{(n\times m)}}\cost(\stateRL_T,\policy_\weights)$$\pause
+        \item You could use an evolutionary strategy (see, e.g.,\liturl{Chrbaszcz et al. 2018}{https://arxiv.org/abs/1802.08842} or \liturl{Fuks et al. 2019}{hhttps://ml.informatik.uni-freiburg.de/wp-content/uploads/papers/19-IJCAI_PEL.pdf})
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}<2>{Dynamic Algorithm Configuration by RL}
+    \centering
+    \begin{tikzpicture}[node distance=4cm]
+        %PreProcessing
+        
+        \node (Agent) [activity,
+        minimum height=.9cm] {Policy $\policy$};
+        
+        \node (Algo) [activity, right of=Agent, xshift=3cm,
+        minimum height=.9cm] {Algorithm};
+        
+        \begin{pgfonlayer}{background}
+        \path (Agent -| Agent.west)+(-0.12,1.75) node (resUL) {};
+        \path (Algo.east |- Algo.south)+(0.125,-1.75) node (resBR) {};
+        
+        % Context
+        \onslide<2->{
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.5, -0.5)$) rectangle ($(resBR)+(0.5, -0.5)$);
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.375, -0.375)$) rectangle ($(resBR)+(0.375, -0.375)$);
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.25, -0.25)$) rectangle ($(resBR)+(0.25, -0.25)$);
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.125, -0.125)$) rectangle ($(resBR)+(0.125, -0.125)$);
+        }
+        % Top level
+        \path [rounded corners, draw=black!50, fill=white] (resUL) rectangle (resBR);
+        \path (resBR)+(-.9,0.175) node [text=black!75] {dataset $\dataset$};
+        \end{pgfonlayer}
+        
+        %        \draw[myarrow] (feat.south) -- ($(feat.south |- Agent)+(0,1.125)$);
+        
+        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above=-.05,pos=0.5] { action $\policy(s_t) \to a_t$} node [below,pos=0.5] {(set param $\conf$)} -- (Algo.north);
+        \draw[myarrow, dashed] ($(Algo.south)+(-0.25, 0)$) -- ($(Algo.south)+(-0.25, -0.5)$) -- ($(Agent.south)+(0.25, -0.5)$) node [above,pos=0.5] {state $s_{t+1}$} -- ($(Agent.south)+(0.25, 0)$);
+        \draw[myarrow] ($(Algo.south)+(0.25, 0)$) -- ($(Algo.south)+(0.25, -0.95)$) -- ($(Agent.south)+(-0.25, -0.95)$) node [below,pos=0.5] {reward $r_{t+1}$} -- ($(Agent.south)+(-0.25, 0)$);
+        
+        \onslide<2->{
+        \draw[<->, thick, draw=black!32.5] (resBR.east |- resUL.center) -- ($(resBR.east |- resUL.center)+(0.5, -0.5)$);
+        \path (resBR.east |- resUL.center)+(.5, -0.175) node [text=black!32.5] {$\datasets$};
+        % This path is only needed so the figure stays centered (the text is not visible)
+        \path (resUL.west |- resUL.center)+(-.5, -0.175) node [text=black!0] {$\datasets$};}
+        
+    \end{tikzpicture}
+    \begin{itemize}
+        \item The agent is trained by means of RL in a purely data-driven fashion\pause
+        \item Difference to DAC by Optimization:\pause
+        \begin{itemize}
+            \item DAC by RL can make better use of the sequential structure of the problem
+            \item Allows to find generalizing policies that can be conditioned on the dataset at hand
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Main Takeaways} 
+
+%Most important insights from this video:
+
+\begin{itemize}
+    \item \textbf{DAC generates reusable configuration heuristics.} Counter to approaches that simply adapt hyperparameters, the goal of DAC is to produce a policy.
+    \item \textbf{DAC comes in a variety of flavors.} Depending on the choice of solution approach, the (learned) policies can be more or less expressive but might need more or less resources to learn them accordingly.
+\end{itemize}
+
+\end{frame}
+
+
+\end{document}

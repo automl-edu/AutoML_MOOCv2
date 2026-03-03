@@ -1,0 +1,103 @@
+\documentclass[main]{subfiles}
+
+
+\title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
+\subtitle{Warmstarting}
+\author[Katharina Eggensperger]{Katharina Eggensperger}
+\date{}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Should we always start from scratch?}
+
+$\leadsto$ Does provide the most unbiased result, but may not be efficient enough in practice.
+
+<here is a nice picture of a cookie and a speech bubble with the text "How would you create a new cookie recipe?">
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Let's consider two settings}
+
+
+\textbf{Case 1:} We have prior observations on the \textit{same} task (e.g., from a manual exploration)
+
+\textbf{Case 2:} We have prior observations on \textit{related} tasks (e.g., from HPO on a different dataset)
+
+$\leadsto$ We can inject knowledge to the history of observations or to the surrogate modelling step in Bayesian optimization.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Case 1: prior observations from manual exploration}
+
+<copy pseudocode from Bayesian optimization slide deck and highlight that we prepend them to the history>
+
+How does this help? It improves model accuracy. Open question: Do we still need an initial design afterwards?
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Case 2: prior observations on related tasks}
+
+Assumption: Objectice functions of tasks can correlate. If they do, we can transfer knowledge to speed up search. \\
+Aim: Control transfer: Positive transfer from similar tasks, zero transfer from different tasks.
+
+Questions:
+\begin{enumerate}
+    \item How do we compare tasks and measure similarity?
+    \item How do we extract knowledge?
+    \item How do we inject it in the new task?
+\end{enumerate}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Portfolios to warmstart Bayesian Optimization}
+
+Needed: Many heterogeneous tasks.
+
+Add something about greedy portfolio selection. mention that this is great if you have diverse tasks.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Meta-features to explicitly measure dataset distance}
+
+Copy content from last edition 
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Meta-feature-free Transfer learning}
+
+So far, we 
+
+discuss that meta-features are not necessarily good. Discuss other ways, i.e. RGPE or model ensembles
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{What if prior information is misleading?}
+
+add something here about sensitivit of each method to irrelevant tasks
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Summary}
+
+TBD
+
+\end{frame}
+
+
+\end{document}

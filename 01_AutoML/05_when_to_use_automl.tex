@@ -1,0 +1,187 @@
+\documentclass[main]{subfiles}
+
+
+\title[AutoML: Introduction]{AutoML Motivation}
+\subtitle{When to use AutoML?}
+\author[Marius Lindauer]{Marius Lindauer}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{You can measure it -- AutoML can optimize it!}
+
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\textcolor{ForestGreen}{AutoML can optimize for}:
+
+\begin{itemize}
+    \item accuracy and related metrics
+    \item training and inference time
+    \item memory consumption
+    \item energy consumption
+    \item sparsity / interpretability
+    \item fairness metrics
+    \item \ldots
+\end{itemize}
+
+\column{0.5\textwidth}
+
+\pause
+
+\textcolor{Red}{AutoML can't (directly) optimize for}
+
+\begin{itemize}
+    \item trust of users / user experience
+    \item fairness in general
+    \item human-driven feedback (e.g., aesthetics of images)
+    \item business impact (e.g., revenue increase)
+    \item emerging properties (e.g., vulnerability to unknown adversarial attacks)
+    \item ...
+\end{itemize}
+
+\end{columns}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Large Space of Possible Models or Pipeline Compoments}
+
+\textcolor{ForestGreen}{Do Use AutoML}
+\begin{itemize}
+    \item Humans are fairly bad at navigating huge design spaces if there is no intuition
+    \item[$\leadsto$] Use AutoML to quickly prototype a first solution
+\end{itemize}
+
+\pause
+
+\textcolor{Red}{Don't Use AutoML}
+
+\begin{itemize}
+    \item If there are already known constraints on the ML model, you should consider these first and not blindly apply AutoML
+    \item[$\leadsto$] Constraints might directly imply a particular (type of) model
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{No Good Baseline and Missing Expertise}
+
+\textcolor{ForestGreen}{Do Use AutoML}
+\begin{itemize}
+    \item Sometimes, even experienced ML developers lack an intuition of what to try out first if they are confronted with a completely new task
+    \item Non-technical users (e.g., domain experts) are facing this even more often
+    \item[\leadsto] AutoML can help you with identifying promising directions and exclude non-working approaches $\to$ AutoML for Rapid Prototyping
+\end{itemize}
+
+\pause
+
+\textcolor{Red}{Don't Use AutoML}
+
+\begin{itemize}
+    \item If you already know a promising baseline, you should try these out first
+    \item AutoML tools often need substantially more compute compared to a single model training
+    \begin{itemize}
+        \item If you would try something like $10$ different models, it could be worth considering AutoML already!
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Well-performing Hyperparameters Settings are Unknown}
+
+\textcolor{ForestGreen}{Do Use AutoML}
+\begin{itemize}
+    \item Beyond trying out default or well-established settings of hyperparameters, humans are fairly bad at efficiently trying out different hyperparameters
+    \begin{itemize}
+        \item That is even more so if hyperparameters interact with each other
+    \end{itemize}
+    \item Exhaustive (grid) search is often very expensive in terms of computing
+    \item[$\leadsto$] Bayesian Optimization is a well-established and more efficient method for tuning hyperparameters 
+\end{itemize}
+
+\pause
+
+\textcolor{Red}{Don't Use AutoML}
+
+\begin{itemize}
+    \item If you deal with a well-known dataset (e.g., Imagenet), there are often very well-performing hyperparameter configurations for all kinds of thing
+    \item[$\leadsto$] Use these known hyperparameter settings  at least as the very first configuration your AutoML tries out
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Explainability and Documentation!?}
+
+\textcolor{ForestGreen}{Do Use AutoML}
+\begin{itemize}
+    \item Results of AutoML tools (e.g., performances of different models) can be automatically saved and reproduced
+    \item Such empirical results can be used by an explainability method to better understand the design process (e.g., which hyperparameter was the most important one)
+\end{itemize}
+
+\pause
+
+\textcolor{Red}{Don't Use AutoML}
+
+\begin{itemize}
+    \item Some AutoML tools generate fairly complex ensemble/stacking models, which might be harder to interpret them simpler models with less accuracy.
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Fairness and AutoML \liturl{Weerts et al. 2023}{https://arxiv.org/abs/2303.08485} }
+
+\textcolor{ForestGreen}{Do Use AutoML}
+\begin{itemize}
+    \item If you already know that there exists a fairness metric which is relevant for the application, you can use AutoML for setting constraints on fairness (mitigating discrimination)
+\end{itemize}
+
+\pause
+
+\textcolor{Red}{Don't Use AutoML}
+
+\begin{itemize}
+    \item If you do not know which fairness metric to use and discrimination could be a problem for your application, you should not apply AutoML blindly 
+    \begin{itemize}
+        \item Not considering fairness could lead to unwanted results
+        \item Considering a random fairness metric by chance could also lead to arbitrarily bad results in terms of the actual discrimination risk
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Summary} 
+
+Most important insights from this video:
+
+\begin{enumerate}
+    \item AutoML can be very useful to increase the efficiency of developing new ML applications
+    \item AutoML can do a lot of things for you, but there are certain aspects that cannot be automated (e.g.,  what fairness metric to optimize for)
+    \item If you already have insights into your problem, make use of them first! 
+    \begin{itemize}
+        \item If you are not satisfied, you can still give it a try with AutoML
+    \end{itemize}
+\end{enumerate}
+
+
+\end{frame}
+
+\end{document}
+

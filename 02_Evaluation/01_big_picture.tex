@@ -1,0 +1,91 @@
+\documentclass[main]{subfiles}
+
+
+\title[Evaluation and Benchmarking]{Evaluation and Benchmarking}
+\subtitle{The Big Picture}
+\author[Marcel Wever]{Marcel Wever}
+\date{}
+
+\titlebackground*{images/AutoML_ML_Evaluation}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Why Do We Need Evaluation in Machine Learning?}
+
+\begin{itemize}
+    \item Evaluation is the backbone of both machine learning and AutoML
+    \item AutoML introduces additional stochasticity and selection effects that make na\"ive evaluation misleading
+    \item Goal of this chapter: Get to know fundamental evaluation protocols and rigorous AutoML benchmarking practices
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Why is Evaluation Hard?}
+    \begin{itemize}
+        \item Data is finite, but we want to reason about infinite future data
+        \item Models are stochastic and data is noisy
+        \item Small design choices can change conclusions dramatically
+        \item Strong optimization methods can exploit weaknesses in evaluation procedures resulting in (meta-)overfitting
+    \end{itemize}
+    \vspace{.5cm}
+    \textbf{If evaluation is weak, progress becomes an illusion.}
+\end{frame}
+
+
+\begin{frame}{From Evaluation to Benchmarking}
+\begin{itemize}
+    \item Evaluation asks: How good is a model?
+    \item Benchmarking asks: How good is a method compared to alternatives across many problems?
+\end{itemize}
+\vspace{0.5cm}
+\begin{itemize}
+    \item Benchmarks shape research directions
+    \item Poor benchmarks reward shortcuts instead of real progress
+    \item Good benchmarks enable reproducibility, comparability, scientific progress, and reusability
+\end{itemize}
+\end{frame}
+    
+\begin{frame}[c]{Why Is Evaluation Even More Important for AutoML?}
+    \begin{itemize}
+        \item AutoML systems typically explore many pipelines, hyperparameter settings, and thus models automatically
+        \item The more configurations we try, the easier it becomes to overfit the evaluation process itself
+        \item Automation amplifies both good and bad evaluation practices
+    \end{itemize}
+    \vspace{0.5cm}
+    \textbf{AutoML applies evaluation methods systematically but validating them correctly is even more important}
+\end{frame}
+
+\begin{frame}{Guiding Questions for This Chapter}
+\begin{itemize}
+    \item How can we estimate future performance using limited data?
+    \item When is one model truly better than another?
+    \item When is an approach better than another?
+    \item How do we avoid fooling ourselves when searching over thousands of models?
+    \item How can we visualize optimization behavior rather than only final results?
+\end{itemize}
+
+\end{frame}
+
+% \begin{frame}{Summary} 
+
+% Most important insights from this introduction:
+% \begin{enumerate}
+%     \item Evaluation is our proxy for future performance
+%     \item AutoML increases the need for careful evaluation because automation amplifies bias
+%     \item Benchmarking turns evaluation into scientific evidence
+% \end{enumerate}
+
+% \vspace{0.5cm}
+
+% $\leadsto$ The next parts of this chapter develop the tools needed to evaluate ML models and benchmark AutoML systems rigorously
+
+% \end{frame}
+
+\end{document}

@@ -1,0 +1,270 @@
+\documentclass[main]{subfiles}
+
+
+\title[Dynamic Approaches]{Dynamic Approaches}
+\subtitle{Background: Reinforcement Learning}
+\author[André Biedenkapp]{André Biedenkapp}
+\date{}
+
+\titlebackground*{images/AutoML_LearningToLearn2}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+%----------------------------------------------------------------------
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Components of RL Problems}
+    \centering
+    \textbf{Goal:} An agent has to learn how to behave to maximize a reward
+    \begin{tikzpicture}[node distance=4cm]
+        %PreProcessing
+        \node (Agent) [activity,
+        minimum height=.9cm] {Agent};
+        \onslide<2->{
+        \node (Algo) [activity, right of=Agent, xshift=3cm,
+        minimum height=.9cm] {Environment};}
+        
+        \begin{pgfonlayer}{background}
+        \path (Agent -| Agent.west)+(-0.12,1.75) node (resUL) {};
+        \path (Algo.east |- Algo.south)+(0.125,-1.75) node (resBR) {};
+        % Top level
+        \path [rounded corners, draw=black!50, fill=white] (resUL) rectangle (resBR);
+        
+        \end{pgfonlayer}
+        \onslide<3->{
+        \draw[myarrow, dashed] ($(Algo.south)+(-0.25, 0)$) -- ($(Algo.south)+(-0.25, -0.5)$) -- ($(Agent.south)+(0.25, -0.5)$) node [above,pos=0.5] {state $s_{t}$} -- ($(Agent.south)+(0.25, 0)$);}
+        \onslide<4->{
+        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above,pos=0.5] {action $a_{t+1}$} node [below,pos=0.5] {} -- (Algo.north);}
+        \onslide<5->{
+        \draw[myarrow] ($(Algo.south)+(0.25, 0)$) -- ($(Algo.south)+(0.25, -0.95)$) -- ($(Agent.south)+(-0.25, -0.95)$) node [below,pos=0.5] {reward $r_{t}$} -- ($(Agent.south)+(-0.25, 0)$);}
+    \end{tikzpicture}\\
+    \phantom{Policy $\policy$: mapping from observations to actions}\\
+    \phantom{Agent: entire decision making entity that contains the policy}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Agent vs. Policy}
+    \centering
+    \textbf{Goal:} An agent has to learn how to behave to maximize a reward
+    \begin{tikzpicture}[node distance=4cm]
+        %PreProcessing
+        \node (Agent) [activity,
+        minimum height=.9cm] {Policy $\pi$};
+        
+        \node (Algo) [activity, right of=Agent, xshift=3cm,
+        minimum height=.9cm] {Environment};
+        
+        \begin{pgfonlayer}{background}
+        \path (Agent -| Agent.west)+(-0.12,1.75) node (resUL) {};
+        \path (Algo.east |- Algo.south)+(0.125,-1.75) node (resBR) {};
+        
+        % Top level
+        \path [rounded corners, draw=black!50, fill=white] (resUL) rectangle (resBR);
+        \end{pgfonlayer}
+        
+        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above,pos=0.5] {action $\pi(s_t)\to a_{t+1}$} node [below,pos=0.5] {} -- (Algo.north);
+        \draw[myarrow, dashed] ($(Algo.south)+(-0.25, 0)$) -- ($(Algo.south)+(-0.25, -0.5)$) -- ($(Agent.south)+(0.25, -0.5)$) node [above,pos=0.5] {state $s_{t}$} -- ($(Agent.south)+(0.25, 0)$);
+        \draw[myarrow] ($(Algo.south)+(0.25, 0)$) -- ($(Algo.south)+(0.25, -0.95)$) -- ($(Agent.south)+(-0.25, -0.95)$) node [below,pos=0.5] {reward $r_{t}$} -- ($(Agent.south)+(-0.25, 0)$);
+        
+    \end{tikzpicture}\\\pause
+    Policy $\policy$: mapping from observations to actions\\
+    Agent: entire decision making entity that contains the policy
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{What Even is a State?}
+    \begin{itemize}
+        \item We constantly observe our surroundings and our internal feelings
+        \item Senses provide different forms of observations:
+        \begin{itemize}
+            \item images
+            \item sound
+            \item feeling of touch
+            \item feeling of acceleration
+            \item feeling of balance
+            \item \ldots
+        \end{itemize}
+    \end{itemize}
+    It is not always possible to observe the full state.\\
+    For simplicities sake, in the rest of the lecture we assume that we can observe all information that is relevant for an agent to solve a task.\footnote{See chapter 8 of \liturl{Puterman and Chan, 2026}{https://github.com/martyput/MDP_book/blob/master/08\%20Chapter/Book___chapter08.pdf} for a detailed discussion of the partial observation setting.}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Actions}
+    \begin{itemize}
+        \item An action will induce some change the state of the environment\pause
+        \item Types of actions:
+        \begin{description}
+            \item[continuous] The value domain is continuous (and often bounded by some range, e.g., $\left[0,1\right]$)\pause\\
+            Examples ...
+            \begin{itemize}
+                \item ... from robotics: velocities, angles, probabilities
+                \item ... video-game playing: controller inputs
+                \item ... from AutoML: learning rates, mutation rates
+            \end{itemize}
+            \item[discrete] Choose from a set of possible options\pause\\
+            Examples ...\\
+            \begin{itemize}
+                \item ... from robotics: run sub-routine, interrupts
+                \item ... video-game playing: keyboard inputs
+                \item ... from AutoML: mutation operator selection, heuristic selection
+            \end{itemize}
+        \end{description}
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Transitions}
+    \begin{itemize}
+        \item Given a state $s$ and action $a$, in which state do we end up?\pause
+        \item Can be either deterministic or non-deterministic
+        \begin{itemize}
+            \item Board games like Go or Chess are deterministic
+            \item Games with randomized events (e.g., many card games) or robotics (control over the robot is not perfect) are non-deterministic
+        \end{itemize}\pause
+        \item Challenges
+        \begin{itemize}
+            \item Was the action responsible for the stochasticity (epistemic uncertainty) or is it inherent in the environment (aleatoric uncertainty)?
+            \item Stochastic environments are more challenging since you need to account for a different notion of reproducibility!
+        \end{itemize}
+        \item Note: The transition function does not need to be known in order to learn well performing policies!
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Rewards}
+    \begin{itemize}
+        \item Rewards provide crucial feedback on wether the outcome of an action was ``good'' or ``bad''\pause
+        \item Either immediate (or dense) reward: We directly get a reward signal after each transition\pause
+        \item Or delayed (or sparse) reward: We have to wait for some states to observe the outcome of a previous choice or whole sequence of choices
+    \end{itemize}\pause
+    We need to balance reasoning about immediate gratification vs long-term ramifications!\\
+    Particularly difficult: Temporal credit assignment during learning (see, e.g., \liturl{Rajan et al. 2023}{https://www.jair.org/index.php/jair/article/view/14314/26946})
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Recall: Learning is an Iterative Process} 
+
+    \begin{columns}
+    \column{0.5\textwidth}
+    Machine learning is \emph{iterative}
+    %\pause
+    \begin{enumerate}
+        \item Initialize model
+    %\pause
+        \item Fit model to data
+    %\pause
+        \item Observe performance / compute loss
+    %\pause
+        \item Adapt model based on loss
+    %\pause
+        \item Repeat 2 - 4 until learning budget is exhausted
+    \end{enumerate}\pause
+    \column{0.5\textwidth}
+    Reinforcement learning is \emph{iterative}!
+    \pause
+    \begin{enumerate}
+        \item Initialize agent
+    \pause
+        \item \alert{Generate observations}
+    \pause
+        \item Observe performance / compute loss
+    \pause
+        \item Adapt policy based on loss
+    \pause
+        \item Repeat 2 - 4 until learning budget is exhausted
+    \end{enumerate}
+    \end{columns}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Q-Learning}
+    \begin{itemize}
+        \item Most RL algorithms aim to estimate the State(-Action) Value, i.e., how valuable is it to be in a certain state
+        \item Value-based algorithms directly use this estimate to derive a policy
+        \item Q-learning \liturl{Watkins, 1989}{https://www.cs.rhul.ac.uk/~chrisw/new_thesis.pdf} is one of the most popular value-based RL algorithms:
+    \end{itemize}
+    \begin{equation*}
+        \mathcal{Q}(s_t, a_t) \gets \mathcal{Q}(s_t, a_t) +
+        \alpha
+        \underbrace{
+            \Big(
+                \overbrace{
+                    r_{t} + \gamma \max\mathcal{Q}(s_{t+1},\cdot)
+                }^{\text{TD-target}}
+                - \mathcal{Q}(s_t,a_t)
+            \Big),
+        }_{\text{TD-delta}}
+    \end{equation*}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Q-Learning Cont'd}
+    \begin{equation*}
+        \mathcal{Q}(s_t, a_t) \gets \mathcal{Q}(s_t, a_t) +
+        \alpha
+        \underbrace{
+            \Big(
+                \overbrace{
+                    r_{t} + \gamma \max\mathcal{Q}(s_{t+1},\cdot)
+                }^{\text{TD-target}}
+                - \mathcal{Q}(s_t,a_t)
+            \Big),
+        }_{\text{TD-delta}}
+    \end{equation*}
+    \begin{description}
+        \item[TD-target] Discounted expected future rewards given the assumption that we will behave greedy in the future. The discounting factor $\gamma$ determines how strongly to weigh the influence of predicted future rewards.
+        In supervised learning terms: Defines the regression target value\pause
+        \item[TD-delta] Difference between predicted reward $\mathcal{Q}(s_t,a_t)$ and the actual observed $r_t$ with expected future rewards.
+        In supervised learning terms. Defines the prediction error
+    \end{description}\pause
+    The learning rate $\alpha$ determines how strongly to overwrite the current estimate.
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{The Policy of a Q-Learning Agent}
+    \centering
+    \begin{equation*}
+        \mathcal{Q}(s_t, a_t) \gets \mathcal{Q}(s_t, a_t) +
+        \alpha
+        \underbrace{
+            \Big(
+                \overbrace{
+                    r_{t} + \gamma \max\mathcal{Q}(s_{t+1},\cdot)
+                }^{\text{TD-target}}
+                - \mathcal{Q}(s_t,a_t)
+            \Big),
+        }_{\text{TD-delta}}
+    \end{equation*}
+    The policy then simply is $\policy(s)=\argmax_{a}\mathcal{Q}(s,\cdot)$
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+% \begin{frame}{Main Takeaways} 
+
+% %Most important insights from this video:
+
+% \begin{itemize}
+%     \item
+% \end{itemize}
+
+% \end{frame}
+
+
+	
+
+% %----------------------------------------------------------------------
+% %----------------------------------------------------------------------
+% \begin{frame}[c]{Planning Slide}
+% \begin{enumerate}
+%     \item General Intro (MDPs, sequential decision making, policy learning)
+%     \item Maybe Intro to AutoRL??? (only iff time permits)
+% \end{enumerate}
+% \end{frame}
+%-----------------------------------------------------------------------
+
+\end{document}

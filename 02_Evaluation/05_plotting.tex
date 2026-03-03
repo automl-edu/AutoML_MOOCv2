@@ -1,0 +1,110 @@
+\documentclass[main]{subfiles}
+
+
+\title[Evaluation and Benchmarking]{Evaluation and Benchmarking}
+\subtitle{Visualizing AutoML Runs}
+\author[Marcel Wever]{Marcel Wever}
+\date{}
+
+\titlebackground*{images/AutoML_ML_Evaluation}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Plotting AutoML Data}
+\begin{itemize}
+    \item AutoML systems are anytime algorithms: they improve their incumbent solution over time
+    \item Natural visualization: plot the best performance found so far against wall-clock time
+    \item This yields an \textbf{anytime performance curve} (also called incumbent trace)
+    \item A single run is rarely sufficient: we need multiple runs to draw reliable conclusions
+    \item Key challenges:
+    \begin{itemize}
+        \item How do we aggregate multiple runs into a single curve?
+        \item How do we honestly represent the uncertainty across runs?
+    \end{itemize}
+\end{itemize}
+
+
+\end{frame}
+\begin{frame}[c]{Anytime Performance Curves are Step Functions}
+\begin{itemize}
+    \item The incumbent performance only changes when a strictly better configuration is found
+    \item Between two such events, the best known performance stays constant
+    \item Therefore, anytime performance curves are right-continuous step functions, not smooth curves
+    \item Connecting measured points with straight lines implies performances improved gradually between evaluations: this is \textbf{not} what happens
+\end{itemize}
+\vspace{.25cm}
+Always use a step function. Linear interpolation between incumbents is misleading and should be avoided.
+\end{frame}
+
+\begin{frame}[c]{Aggregating Multiple Runs}
+\begin{itemize}
+    \item Run the AutoML system $n$ times with different random seeds
+    \item Each run yields a step function $f_i(t)$ defined on a common time axis
+    \item To aggregate: evaluate all $f_i$ at a common grid of time points $t_1, \ldots, t_T$
+    \begin{itemize}
+        \item At each $t_j$, read off the incumbent value of run $i$ 
+        \item This is well-defined for step functions
+        \item Compute the pointwise mean across runs: $\bar{f}(t_j) = \frac{1}{n} \sum_{i=1}^n f_i(t_j)$
+    \end{itemize}
+    \item Plot $\bar{f}$ as a step function and add uncertainty bands around it
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Uncertainty Bands: Standard Deviation}
+\begin{itemize}
+    \item A natural first choice: shade the region $\bar{f}(t) \pm \sigma(t)$, where $\sigma$ is the standard deviation (SD) at point $t$
+    \item Interpretation: shows the spead of individual runs around the mean
+    \item Useful for understanding run-to-run variability
+    \item However, standard deviation does \textbf{not} characterize how well we have estiamted the mean
+    \item It stays large even for $n\rightarrow \infty$
+    \item For communicating the reliability of the mean curve, standard deviation is the wrong quantity
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Uncertainty Bands: Standard Error}
+    \begin{itemize}
+        \item The standard error of the mean (SEM) corrects for this: $\mathrm{SE}(t_j) = \frac{\sigma(t_j)}{\sqrt{n}}$
+        \item Interpretation: measures how precisely we have estimated $\bar{f}(t_j)$
+        \item Shading $\bar{f}(t) \pm \mathrm{SE}(t)$ gives an approx.~68\% confidence band for the true mean curve
+        \item For an approximate 95\% confidence band, use $\bar{f}(t) \pm 1.96 \cdot \mathrm{SE}(t)$
+        \item SE bands shrink as $n$ grows, reflecting that more runs yield a more reliable estimate
+    \end{itemize}
+    \vspace{.25cm}
+    Use SE (not SD) for shaded bands when the goal is to compare methods. Optionally report SD separately to characterize individual run variability.
+\end{frame}
+
+\begin{frame}{Comparing Multiple Methods}
+    \begin{itemize}
+        \item Plot each method as a separate mean step function with its own SE band
+        \item Non-overlapping SE bands at a given time point suggest a statistically meaningful difference
+        \item Overlapping bands do \textbf{not} prove equivalence: use statistical tests (e.g., Wilcoxon) for formal comparisons at chosen time points
+        \item Further practical recommendations:
+        \begin{itemize}
+            \item Use distinguishable colors and line styles for accessibility
+            \item Always label axes: performance metric, time unit, and scale (linear vs.\ log)
+            \item Log-scale on the time acis is often more informative for anytime plots
+            \item Report $n$ (number of runs) in the caption or legend
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Summary} 
+Most important insights from this video:
+\begin{enumerate}
+    \item Anytime performance curves are step functions, linear interpolation between incumbents is misleading and must be avoided
+    \item Multiple runs are required; aggregate by computing the pointwise mean on a common time grid
+    \item Standard deviation captures run-to-run spread; standard error captures the precision of the estimated mean: use SE bands when comparing methods
+    \item Non-overlapping SE bands suggest meaningful differences, but formal statistical tests remain necessary for rigorous comparisons
+\end{enumerate}
+
+\end{frame}
+
+\end{document}

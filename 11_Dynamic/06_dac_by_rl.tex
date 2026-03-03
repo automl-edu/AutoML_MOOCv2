@@ -1,0 +1,189 @@
+\documentclass[main]{subfiles}
+
+
+\title[Dynamic Approaches]{Dynamic Approaches}
+\subtitle{DAC by RL}
+\author[André Biedenkapp]{André Biedenkapp}
+\date{}
+
+\titlebackground*{images/AutoML_LearningToLearn2}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+%-----------------------------------------------------------------------
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Dynamic Algorithm Configuration by RL}
+    \centering
+    \begin{tikzpicture}[node distance=4cm]
+        %PreProcessing
+        
+        \node (Agent) [activity,
+        minimum height=.9cm] {Policy $\policy$};
+        
+        \node (Algo) [activity, right of=Agent, xshift=3cm,
+        minimum height=.9cm] {Algorithm};
+        
+        \begin{pgfonlayer}{background}
+        \path (Agent -| Agent.west)+(-0.12,1.75) node (resUL) {};
+        \path (Algo.east |- Algo.south)+(0.125,-1.75) node (resBR) {};
+        
+        % Context
+        \onslide<2->{
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.5, -0.5)$) rectangle ($(resBR)+(0.5, -0.5)$);
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.375, -0.375)$) rectangle ($(resBR)+(0.375, -0.375)$);
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.25, -0.25)$) rectangle ($(resBR)+(0.25, -0.25)$);
+        \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.125, -0.125)$) rectangle ($(resBR)+(0.125, -0.125)$);
+        }
+        % Top level
+        \path [rounded corners, draw=black!50, fill=white] (resUL) rectangle (resBR);
+        \path (resBR)+(-.9,0.175) node [text=black!75] {dataset $\dataset$};
+        \end{pgfonlayer}
+        
+        %        \draw[myarrow] (feat.south) -- ($(feat.south |- Agent)+(0,1.125)$);
+        
+        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above=-.05,pos=0.5] { action $\policy(s_t) \to a_t$} node [below,pos=0.5] {(set param $\conf$)} -- (Algo.north);
+        \draw[myarrow, dashed] ($(Algo.south)+(-0.25, 0)$) -- ($(Algo.south)+(-0.25, -0.5)$) -- ($(Agent.south)+(0.25, -0.5)$) node [above,pos=0.5] {state $s_{t+1}$} -- ($(Agent.south)+(0.25, 0)$);
+        \draw[myarrow] ($(Algo.south)+(0.25, 0)$) -- ($(Algo.south)+(0.25, -0.95)$) -- ($(Agent.south)+(-0.25, -0.95)$) node [below,pos=0.5] {reward $r_{t+1}$} -- ($(Agent.south)+(-0.25, 0)$);
+        
+        \onslide<2->{
+        \draw[<->, thick, draw=black!32.5] (resBR.east |- resUL.center) -- ($(resBR.east |- resUL.center)+(0.5, -0.5)$);
+        \path (resBR.east |- resUL.center)+(.5, -0.175) node [text=black!32.5] {$\datasets$};
+        % This path is only needed so the figure stays centered (the text is not visible)
+        \path (resUL.west |- resUL.center)+(-.5, -0.175) node [text=black!0] {$\datasets$};}
+        
+    \end{tikzpicture}
+    \begin{itemize}
+        \item RL is not setup with generalization across problems (i.e. environments) in mind!
+        \item<2-> To be able to leverage the contextual MDP we have to slightly modify the training and policy
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{General Policies}
+    \begin{itemize}
+        \item We want to learn a policy that performs well on different datasets (i.e., the context)\pause
+        \item We can choose two different approaches \liturl{Biedenkapp 2026}{https://andrebiedenkapp.github.io/assets/pdf/paper/26-AAMAS-Blue-Sky.pdf}:\pause
+        \begin{itemize}
+            \item Context oblivious policies $\policy(s)$ purely observe the state of the algorithm that is being tuned
+            \begin{itemize}\pause
+                \item Context oblivious policies generalize by training on a distribution of datasets.
+                \item Context oblivious policies are robust and tolerate variation but might can not perfectly adapt to a specific dataset.
+                \item Simpler to realize
+            \end{itemize}\pause
+            \item Context aware policies $\policy(s,\dataset)$ that additionally observe features of the dataset at hand
+            \begin{itemize}\pause
+                \item Context aware policies can directly adapt to the dataset at hand
+                \item Require additional design decisions on A) what is an appropriate context and B) how to best include it in the learning process.
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Actions}
+Domains of change
+    \begin{itemize}
+        \item Directly setting the hyperparameter $\conf_{i,t} = \action_t$
+        \begin{itemize}\pause
+            \item Full flexibility for adaptation
+            \item Can lead to very bumpy schedules (i.e. bang-bang control)
+        \end{itemize}\pause
+        \item Relative updates
+        \begin{itemize}\pause
+            \item Change the hyperparameter by a factor, e.g., $\conf_{i,t} = \action_t\cdot\conf_{i,t-1}$
+            \item Change the hyperparameter by a summand, e.g., $\conf_{i,t} = \action_t+\conf_{i,t-1}$
+            \item Less flexible but likely less bumpy schedules
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{States}
+    \begin{itemize}
+        \item Start with everything that is used in existing manually designed heuristics\pause
+        \item For example, for learning rates:
+        \begin{itemize}\pause
+            \item Previous learning rate(s)
+            \item Number of updates
+            \item Loss
+            \item Momentum
+            \item Gradient information
+        \end{itemize}\pause
+        \item Why are these good features?
+        \begin{itemize}\pause
+            \item already informative to update manually designed policies
+            \item already available in existing implementations
+            \item cheap to compute
+            \item (indirectly) quantify the progress of the target algorithm
+        \end{itemize}\pause
+        \item If these are very noisy statistics, consider to smooth them over the last updates
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Transitions}
+    \begin{itemize}
+        \item Implicitly given by training the algorithm/model for an iteration/a few steps\pause
+        \item The Granularity here can be very important\footnote{PBT-style training also requires careful consideration of this detail}
+        \begin{itemize}\pause
+            \item Too often: Can lead to extremely difficult learning problems
+            \item Too infrequent: We might potentially miss some important updates and not update the hyperparameter(s) accordingly
+        \end{itemize}\pause
+        \item If you assume that your hyperparameters can stay constant for quite some time (without
+knowing exactly for how many updates), you can try to use an RL approach that is able
+to efficiently repeat actions, e.g. \liturl{Biedenkapp et al. 2021}{https://proceedings.mlr.press/v139/biedenkapp21a.html}.
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Reward}
+    \begin{itemize}
+        \item We minimize cost (e.g., validation loss), but RL agents maximize reward $r(s)=-\cost(s)$
+        \item RL agents optimize (the expected discounted) cumulative reward
+        \begin{itemize}
+            \item We go quickly for better cost values during training
+            \item Often fairly well correlated with final loss
+            \item BUT: Can lead to too aggressive hyperparameter changes early on to minimize cost quickly, but does not convergence as well later on
+            \item You can play with the discount factor to account for this
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Context-Awareness: Characterizing Datasets}
+    \begin{itemize}
+        \item An RL agent could try to implicitly learn what kind of dataset $\dataset$ is at hand right now\pause
+        \begin{itemize}
+            \item Possible, given a sufficiently large history of observations
+            \item Might require a lot of training and large history
+        \end{itemize}\pause
+        \item Directly provide meta-features characterizing the dataset
+        \begin{itemize}
+            \item Counting features, such as, number of observations, number of features, number of classes
+            \item Landmarking features, such as, loss of tree-based models vs. linear model
+        \end{itemize}\pause
+        \item Simplest approach to have a policy context-aware: Concatenation to the state-observations \liturl{Hallak et al. 2015}{https://arxiv.org/abs/1502.02259}
+        \item This simple approach often does always outperform context-oblivious policies! See, e.g, \liturl{Benjamins et al. 2023}{https://openreview.net/forum?id=Y42xVBQusn} or \liturl{Prasanna et al. 2024}{https://openreview.net/forum?id=o8DrRuBsQb}\pause
+        \item The choice of appropriate context might itself be problem specific
+    \end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Main Takeaways} 
+
+%Most important insights from this video:
+
+\begin{itemize}
+    \item \textbf{Context-oblivious policies} can learn robust and generalizable behavior by learning across a distribution of environment contexts.
+    \item \textbf{Context-aware policies} can directly adapt to the dataset at hand, but require careful consideration on what are appropriate context features.
+    \item \textbf{DAC by RL} is one of the most powerful approaches for dynamic tuning but requires potentially much more compute.
+\end{itemize}
+
+\end{frame}
+
+\end{document}

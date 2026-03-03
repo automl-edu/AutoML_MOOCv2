@@ -1,0 +1,139 @@
+\documentclass[main]{subfiles}
+
+
+\title[Evaluation and Benchmarking]{Evaluation and Benchmarking}
+\subtitle{Evaluation of ML Models}
+\author[Marcel Wever]{Marcel Wever}
+\date{}
+
+\titlebackground*{images/AutoML_ML_Evaluation}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Why Evaluation Matters}
+
+\begin{itemize}
+    \item For ML models, we are interested in generalization performance
+    \item Generalization performance = expected performance on unseen data
+    \item Key challenge: estimate generalization performance with finite data sample
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[c]{Hold-Out Validation}
+
+\begin{minipage}{.6\textwidth}
+\begin{itemize}
+    \item Idea: Split data once into training and test set
+    \item Train on training data, evaluate once on test data
+    \item One split = one draw from many possible worlds
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{.3\textwidth}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/automl-course-eval-holdout.pdf}
+\end{minipage}
+
+\vspace{.4cm}
+
+\begin{minipage}[t]{.45\textwidth}
+\alert{Advantages}
+\begin{itemize}
+    \item Simple and fast
+    \item Easy to explain
+    \item Appropriate for very large datasets
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{.45\textwidth}
+\alert{Disadvantages}
+\begin{itemize}
+    \item Split ratio needs to be chosen
+    \item Results depend heavily on the split
+    \item Inefficient use of data
+\end{itemize}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{k-Fold Cross-Validation (CV)} 
+
+\begin{minipage}{.6\textwidth}
+    \begin{itemize}
+        \item Split data into $k$ folds
+        \item Train on $k-1$ folds and evaluate on the remaining fold
+        \item Repeat using every fold as test fold once and average results
+        \item Every data point is used $k-1$ times for training and once for testing
+        \item Reduces variance compared to hold-out
+        \item CV gives unbiased estimates for a hypothesis $f$ that is fixed a priori
+    \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{.3\textwidth}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/automl-course-eval-5cv.pdf}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}{Monte-Carlo Cross-Validation (MCCV)}
+\begin{itemize}
+    \item Also called \emph{repeated random subsampling}
+    \item Randomly sample train/test splits multiple times
+    \item Average results across splits
+\end{itemize}
+\vspace{.5cm}
+\begin{minipage}[t]{.45\textwidth}
+\alert{Advantages}
+\begin{itemize}
+    \item Flexible split
+    \item Variance estimation
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{.45\textwidth}
+\alert{Disadvantages}
+\begin{itemize}
+    \item Split ratio needs to be chosen
+    \item No guarantee that every sample appears in test set
+\end{itemize}
+\end{minipage}
+    
+\end{frame}
+
+\begin{frame}{Practical Recommendations} 
+
+As a rule of thumb, validation schemes can be recommended as follows:
+
+\begin{itemize}
+    \item Very large data: Hold-out
+    \item Medium data: 5-10 fold CV
+    \item Small data: MCCV or repeated k-fold CV
+\end{itemize}
+
+\alert{Common pitfalls:}
+\begin{itemize}
+    \item Tune on test: Using test data for making model decisions, e.g., tuning hyperparameters
+    \item Reporting best fold instead of mean
+    \item Ignoring randomness
+\end{itemize}
+
+\end{frame}
+\begin{frame}{Summary} 
+
+Most important insights from this video:
+
+\begin{enumerate}
+    \item Generalization performance must be estimated from finite data
+    \item The choice of validation scheme introduces a bias-variance tradeoff between reliability and computational cost
+    \item Hold-out validation is fast but highly dependent on the split; cross-validation reduces this variance at the cost of additional model fits
+    \item As a rule of thumb: hold-out for very large datasets, 5-10 fold CV for medium data, MCCV or repeated CV for small data
+    \item Never use test data for any model decision (tuning, selection, or preprocessing), as this leads to optimistically biased performance estimates
+\end{enumerate}
+
+\end{frame}
+
+\end{document}

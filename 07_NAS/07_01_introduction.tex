@@ -1,0 +1,283 @@
+\documentclass[main]{subfiles}
+
+
+\title[AutoML: NAS]{Neural Architecture Search}
+\subtitle{What is Neural Architecture Search?}
+\author[Jovita Lukasik]{Jovita Lukasik}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+    
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Neural Architecture Design}
+\begin{itemize}
+    \item Deep learning with Convolutional Neural Networks~\liturl{Krizhevsky et al. 2009}{https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf} is the main driver for success in computer vision 
+    \item Research for ever-improving neural networks, e.g., on ImageNet~\liturl{Deng et al. 2009}{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5206848}, by architecture engineering
+    \item Define network topology from various configuration options and various layer types
+\end{itemize}
+% \onslide<1-2>
+\begin{minipage}[t]{0.3\textwidth}    
+   \begin{tikzpicture} 
+    \node (img6) {\includegraphics[height=2cm]{images/01/img_net/ILSVRC2012_val_00005770.jpeg}};
+    % \node (img5) at (img6.south west) [yshift=0.7cm, xshift=0.2cm] {\includegraphics[height=2cm]{figures/img_net/ILSVRC2012_val_00037220.jpeg}};
+   \node (img4) at (img6.south west)  [yshift=0.7cm, xshift=0.5cm] {\includegraphics[height=2cm]{images/01/img_net/ILSVRC2012_val_00030073.jpeg}};
+   \node (img3) at (img4.south west) [yshift=0.7cm, xshift=0.5cm] {\includegraphics[height=2cm]{images/01/img_net/ILSVRC2012_val_00007778.jpeg}};
+    \node (img2) at (img3.south west)  [yshift=0.7cm, xshift=0.5cm] {\includegraphics[height=2cm]{images/01/img_net/ILSVRC2012_val_00001288.jpeg}};
+   \node (img1) at (img2.south west)  [yshift=0.7cm, xshift=0.5cm] {\includegraphics[height=2cm]{images/01/img_net/ILSVRC2012_val_00025237.jpeg}};
+   \end{tikzpicture}
+      \end{minipage}
+      % \vspace{-3cm}
+   \hspace{1cm}
+   % \onslide<1-2>
+   \begin{minipage}{0.1\textwidth}  
+   \vspace{-4cm}
+      \includegraphics[height=3cm]{images/01/example_graph.pdf}
+   \end{minipage}
+   \hspace{1.5cm}
+% \onslide<2>
+\begin{minipage}[t]{0.39\textwidth}  
+\begin{flushright}
+\resizebox{0.8\textwidth}{!}
+{ 
+% \tikzset{every picture/.style={line width=0.5pt}} %set default line width to 0.75pt        
+    \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+    %uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+    
+    %Shape: Triangle [id:dp9451139423289833] 
+    \draw  [color={rgb, 255:red, 103; green, 58; blue, 183 }  ,draw opacity=0.52 ][fill={rgb, 255:red, 103; green, 58; blue, 183 }  ,fill opacity=0.44 ] (274.46,101.79) -- (370.85,70.38) -- (368.23,140.34) -- cycle ;
+    %Shape: Polygon Curved [id:ds8938276343120717] 
+    \draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (360.23,74.34) .. controls (380.23,64.34) and (470.23,54.34) .. (450.23,74.34) .. controls (430.23,94.34) and (430.23,104.34) .. (450.23,134.34) .. controls (470.23,164.34) and (380.23,164.34) .. (360.23,134.34) .. controls (340.23,104.34) and (340.23,84.34) .. (360.23,74.34) -- cycle ;
+    %Shape: Polygon Curved [id:ds43939369431837927] 
+    \draw  [color={rgb, 255:red, 0; green, 41; blue, 92 }  ,draw opacity=1 ][fill={rgb, 255:red, 60; green, 134; blue, 132 }  ,fill opacity=0.21 ] (161.42,66.65) .. controls (161.42,26.65) and (255.42,14.65) .. (271,78) .. controls (278.42,104.65) and (277.42,105.65) .. (271,138) .. controls (250.42,244.65) and (185.42,183.65) .. (165.42,147.65) .. controls (143.42,118.65) and (157.42,90.65) .. (161.42,66.65) -- cycle ;
+    
+    % Text Node
+    \draw (174,47) node [anchor=north west][inner sep=0.75pt]  [font=\small] [align=left] {Max Pool};
+    % Text Node
+    \draw (210,68) node [anchor=north west][inner sep=0.75pt]  [font=\small] [align=left] {Avg Pool};
+    % Text Node
+    \draw (240,96) node [anchor=north west][inner sep=0.75pt]  [font=\small] [align=left] {Conv};
+    % Text Node
+    \draw (164,108) node [anchor=north west][inner sep=0.75pt]  [font=\small] [align=left] {Dil. Conv};
+    % Text Node
+    \draw (198,135) node [anchor=north west][inner sep=0.75pt]  [font=\small] [align=left] {identity};
+    % Text Node
+    \draw (368.23,76.34) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize] [align=left] {1 x 1 Conv};
+    % Text Node
+    \draw (358,106) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize] [align=left] { 3 x 3 Conv};
+    % Text Node
+    \draw (391,136) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize] [align=left] { 7 x 7 Conv};
+    % Text Node
+    \draw (223,162) node [anchor=north west][inner sep=0.75pt]   [align=left] {...};
+    \end{tikzpicture}
+    }
+\end{flushright}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Limitations of Classical Architecture Design}
+\begin{minipage}{0.7\textwidth} 
+Overall goal: Find high-scoring and efficient networks \\
+Limitations:
+\begin{enumerate}
+    \item Time-consuming
+    \item Trial and error
+    \item Expert knowledge
+\end{enumerate}
+$\rightsquigarrow$ Complex state-of-the-art architectures are a result of years of trial and error by experts  \\
+\end{minipage}
+\begin{minipage}{0.25\textwidth} 
+\begin{center}
+    \includegraphics[height=5cm, width=2cm]{images/01/inceptionoverall.pdf}
+    \captionof{figure}{GoogLeNet network \liturl{Szegedy et al. 2015}{http://openaccess.thecvf.com/content_cvpr_2015/papers/Szegedy_Going_Deeper_With_2015_CVPR_paper.pdf}}
+\end{center}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Neural Architecture Search}
+\alert{Neural Architecture Search}(NAS): Find a neural network with strong performance in an automatic and efficient way
+% \begin{itemize}
+    % \item Optionally, subject to a resource constraint 
+% \end{itemize}
+
+\begin{minipage}{0.45\textwidth} 
+       \begin{itemize}
+    \item Overcoming the limitation of the manual design of neural networks 
+    \item Decade-old problem, but intensely researched
+    \item Initial methods extremely expensive
+    \begin{itemize}
+        \item Now more efficient
+    \end{itemize}
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.45\textwidth} 
+\begin{center}
+\includegraphics[height=3cm]{images/01/white_2023_nas_paper_count.pdf}
+    \captionof{figure}{Number of NAS papers by year~\liturl{White et al. 2023}{https://arxiv.org/pdf/2301.08727}}
+\end{center}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Neural Architecture Search}
+\begin{minipage}{0.45\textwidth} 
+\begin{itemize}
+    \item NAS models replace human-designed models
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.45\textwidth} 
+TODO: find image similar to \liturl{Source}{https://x.com/quocleix/status/1349443438698143744}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Diverse Datasets}
+\begin{table}[]
+    \centering
+    \begin{tabular}{l l r}
+        CIFAR-100 &  Computer Vision&  \\       
+        Spherical & Omnidirectional Vision & \\
+        NinaPro DB5 &  Prosthetics Control & \\
+        FSD50K &  Audio Classification & \\
+        Darcy Flow &  PDE Solver & \\ 
+        PSICOV &  Protein Folding & \\
+       Cosmic  & Astronomy Imaging & \\
+        ECG  & Medical Diagnostics & \\
+        Satellite &  Earth Monitoring & \\
+    DeepSEA  & Genetic Prediction& \\
+    \end{tabular}
+    \caption{~\liturl{Tu et al. 2022}{https://proceedings.neurips.cc/paper_files/paper/2022/file/506630e4a43bb9d64a49f98b9ba934e9-Paper-Datasets_and_Benchmarks.pdf}}
+    \label{tab:placeholder}
+\end{table}
+    
+\end{frame}
+
+\begin{comment}
+\begin{frame}{Motivation for Future Research}
+\begin{minipage}{0.5\textwidth} 
+\begin{itemize}
+    \item Performance improvements on various tasks due to novel architectures
+    \item Can we automate this design process, potentially discovering new components and/or topologies?
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.4\textwidth} 
+\begin{center}
+\includegraphics[height=5cm]{images/01/schrodi_cifar10.pdf}
+    \captionof{figure}{Best found architecture on the hierarchical search space ~\liturl{Schrodi et al. 2023}{https://openreview.net/pdf?id=Hpt1i5j6wh}}
+\end{center}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Next Steps with Neural Architecture Search
+}
+ \begin{itemize}
+     \item Early stages of NAS techniques are generally evaluated and developed on benchmarks
+     \item How to adapt for other applications?
+     \item How to design the search space?
+     \item Which method to use?
+     \item Do the architecutural design choices scale to larger datasets and architectures?
+     \item What is the metric of interest?
+     \item Only certain hardware or limited compute available
+ \end{itemize}   
+\end{frame}
+\end{comment}
+
+\begin{frame}{Beyond Benchmarks}
+Robustness
+
+\begin{minipage}[c]{0.5\textwidth}
+\centering
+\begin{figure}[ht] 
+\raggedright
+\begin{minipage}[t]{0.2\textwidth}
+        \includegraphics[height=1.5cm]{images/01/panda_577.png} 
+        \subcaption{panda \\
+        $57.7\%$ confidence }
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.2\textwidth}
+        \vspace{-1.4cm}
+      \[+.007\times~\]
+    \end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}
+        % \hspace{1cm}
+        \includegraphics[height=1.5cm]{images/01/nematode_082.png}
+        \subcaption{FGSM noise}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.05\textwidth}
+    \vspace{-1.4cm}
+       \[=\]
+     \end{minipage}
+     \hfill
+    \begin{minipage}[t]{0.2\textwidth}
+        % \hspace{1cm}
+        %\begin{center}
+        \includegraphics[height=1.5cm]{images/01/gibbon_993.png}
+        \subcaption{
+            gibbon \\
+        $99.3\%$ confidence
+       }%\end{center}
+\end{minipage}
+\end{figure}
+\end{minipage}
+\begin{minipage}[c]{0.4\textwidth}
+    \begin{center}
+\includegraphics[height=2cm]{images/01/adv_rush_intro_figure.pdf}
+    \captionof{figure}{Standard accuracy vs. robust accuracy evaluation results on CIFAR-10 ~\liturl{Mok et al. 2021}{https://openaccess.thecvf.com/content/ICCV2021/papers/Mok_AdvRush_Searching_for_Adversarially_Robust_Neural_Architectures_ICCV_2021_paper.pdf}}
+\end{center}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}{Beyond Benchmarks}
+Hardware-Efficiency
+
+\begin{minipage}[c]{0.28\textwidth}
+\begin{itemize}
+    \item Search for efficient and high performing architectures automatically
+    \item Often used as a multi-objective setting
+\end{itemize}
+\end{minipage}
+\begin{minipage}[c]{0.3 \textwidth}
+    \begin{center}
+\includegraphics[height=3cm]{images/01/hardware_types.jpg}
+    \captionof{figure}{Different hardware types ~\liturl{Blog Entry}{Understanding the Deployment of Deep Learning algorithms on Embedded Platforms
+}}
+\end{center}
+\end{minipage}
+\begin{minipage}[c]{0.4 \textwidth}
+    \begin{center}
+\includegraphics[height=4cm]{images/01/hw_chart.pdf}
+    \captionof{figure}{Accuracy of various CNN models on ImageNet for Image Classification task with the number of parameters ~\liturl{Benmeziane et al. 2021}{https://arxiv.org/pdf/2101.09336.pdf}}
+\end{center}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Definition of Neural Architecture Search}
+\begin{center}
+\includegraphics[height=3cm]{images/white_2023_nas_overview.pdf}
+\captionof{figure}{Overview of neural architecture search ~\liturl{White et al. 2023}{https://arxiv.org/pdf/2301.08727.pdf}}
+\end{center}
+\begin{itemize}
+    \item Different NAS components
+        \begin{enumerate}
+            \item Search Space
+            \item Search strategy
+            \item Performance estimation strategy
+        \end{enumerate}
+\end{itemize}
+Question: Which component still needs the most human expert knowledge?
+\end{frame}
+%----------------------------------------------------------------------
+
+
+
+
+\end{document}
