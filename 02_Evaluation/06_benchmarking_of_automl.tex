@@ -21,7 +21,7 @@
 \begin{frame}[c]{Benchmarking of AutoML}
 \begin{itemize}
     \item Benchmarking = systematic comparison of methods across a defined set of tasks
-    \item Goal: draw general conclusions about relative performance that go beyond a single dataset
+    \item Goal: draw more general conclusions about relative performance that go beyond a single dataset
     \item A benchmark consists of:
     \begin{itemize}
         \item A task suite: A collection of datasets or problem instances
@@ -32,21 +32,27 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{The No Free Lunch Perspective}
+\begin{frame}{No Algorithm Dominates All Others Across All Tasks}
     \begin{itemize}
-        \item No Free Lunch (NFL) theorem: no algorithm dominates all others across all possible tasks
         \item Consequence: the result of a comparison depends on the choice of task suite
         \item A benchmark implicitly defines a distribution over tasks, results only generalize to tasks drawn from a similar distribution
-        \item \textbf{Cherry-picking datasets} to favor one's own system is a common and serious threat to validity
-        \item A credible benchmark should cover diverse tasks: varying size, feature types, class imbalance, and difficulty
+        \item \alert{Cherry-picking datasets} to favor one's own system is a serious threat to validity
+        \item A credible benchmark should cover a diverse set of tasks:
+        \begin{itemize}
+            \item varying size
+            \item feature types
+            \item class imbalance
+            \item difficulty
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Desiderata for a Fair Benchmark}
     \begin{itemize}
-        \item Reproducibility: Fixed random seeds, public datasets, containerized environments
+        \item Documentation: Important for adoption, correct use, explicit conventions
+        \item Reproducibility: Fixed instances, public datasets, containerized environments
         \item Controlled resources: Same time budget, memory limit, and hardware for all systems
-        \item Nested evaluation: Outer test folds held out from all systems, inner loop used for search
+        \item Nested evaluation: Outer test folds held out, inner loop used for search
         \item Task diversity: Sufficient variety to avoid conclusions driven by a single dataset
         \item Baselines: Always include simple baselines (e.g., random search, single well-tuned model) to contextualize results
         \item Openness: Code, data splits, and raw results publicly available for scrutiny
@@ -55,11 +61,12 @@
 
 \begin{frame}{Exiting AutoML Benchmarks}
     \begin{itemize}
-        \item OpenML-CC18: 72 curated classification datasets from OpenML, widely used as a default task suite
-        \item AutoML Benchmark: Standardized framework for comparing AutoML systems with controlled resources and reproducible splits
-        \item HPOBench / HPO-B: Focused benchmarks for hyperparameter optimization, providing surrogate evaluations or lookup tables for cheap repeated experiments
-        \item YAHPO Gym: Surrogate-based benchmark suite covering a large space of HPO scenarios efficiently
-        \item PD1: HPO for modern deep learning architectures (ResNets and Transformer)
+        \item OpenML-CC18 \liturl{Bischl et al.\ 2021}{https://datasets-benchmarks-proceedings.neurips.cc/paper_files/paper/2021/file/c7e1249ffc03eb9ded908c236bd1996d-Paper-round2.pdf}: 72 curated classification datasets from OpenML, widely used as a default task suite
+        \item AutoML Benchmark \liturl{Gijsbers et al.\ 2024}{https://www.jmlr.org/papers/volume25/22-0493/22-0493.pdf}: Standardized framework for comparing AutoML systems with controlled resources and reproducible splits
+        \item HPOBench / HPO-B \liturl{Eggensperger et al. 2021}{https://datasets-benchmarks-proceedings.neurips.cc/paper_files/paper/2021/file/93db85ed909c13838ff95ccfa94cebd9-Paper-round2.pdf}: Focused benchmarks for hyperparameter optimization, providing surrogate evaluations or lookup tables for cheap repeated experiments
+        \item YAHPO Gym \liturl{Pfisterer et al.\ 2022}{https://proceedings.mlr.press/v188/pfisterer22a/pfisterer22a.pdf}: Surrogate-based benchmark suite covering a large space of HPO scenarios efficiently
+        \item PD1 \liturl{Wang et al.\ 2024}{https://jmlr.org/papers/volume25/23-0269/23-0269.pdf}: HPO for modern deep learning architectures (ResNets and Transformer)
+        \item CARP-S \liturl{Benjamins et al.\ 2025}{https://arxiv.org/pdf/2506.06143}: Benchmarking framework   HPOBench, YAHPO Gym, PD1, and more
     \end{itemize}
 \end{frame}
 

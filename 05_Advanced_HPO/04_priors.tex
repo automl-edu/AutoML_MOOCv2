@@ -6,6 +6,8 @@
 \author[Katharina Eggensperger]{Katharina Eggensperger}
 \date{}
 
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
+
 %\institute{}
 %\date{}
 
@@ -16,11 +18,14 @@
 
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}[c]{Shouldn't we use external (human) knowledge?}
+\begin{frame}[c]{Shouldn't we use all available knowledge?}
 
-$\leadsto$ BayesOpt does not need additional priors, but may not be efficient in practice.
+\begin{quote}
+    [...] Researchers traded heuristics like Pokémon cards. Pick the largest learning rate that doesn’t NaN out. Decay the learning rate smoothly over time. Drop it by a factor of 10 every so often, and three times total. Warm it up. Make it oscillate. Pick different learning rates for different layers of the neural net. These choices seemed to hold the key to unlocking the riches of deep learning. [...] \\
+    \liturl{Hardt et al.\ 2025}{https://mlbenchmarks.org/00-prologue.html}
+\end{quote}
 
-<here is a nice picture of a cookie and a speech bubble with the text "How would you create a new cookie recipe?">
+$\leadsto$ Bayesian optimization does not need additional priors. But we may want to inject external knowledge to improve efficiency.
 
 \end{frame}
 

@@ -18,19 +18,46 @@
 
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}[c]{Why Statistical Testing?}
+\begin{frame}{Setting the Scene}
+\begin{itemize}
+    \item Recall: $\widehat{\riskg}$ is a random variable
+    \item Suppose we compare two configurations $\conf^A, \conf^B \in \pcs$ on the same dataset $\dataset$
+    \item We observe estimated risks $\widehat{\riskg}^A$ and $\widehat{\riskg}^B$
+    \item We want to know: does $\widehat{\riskg}^A \neq \widehat{\riskg}^B$ reflect a true difference?
+\end{itemize}
+\vspace{.4cm}
+\begin{itemize}
+    \item Let $d_j = \widehat{\riskg}_j^A - \widehat{\riskg}_j^B$ denote the performance difference on evaluation $j$.\\
+    \item \alert{Goal of statistical testing}: Decide based on observed differences $d_1 \ldots, d_k$, whether $\expect[d_j] \neq 0$ or whether the observed differences are only random variation.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Why Statistical Testing? A Motivating Example}
 
 \begin{itemize}
-    \item Comparing ML models wrt.\ observed performance differences can be misleading
-    \item A difference in mean accuracy does not imply one model is truly better
-    \item Observed differences for evaluated ML models may arise from
-    \begin{itemize}
-        \item random train/test splits
-        \item stochastic training
-        \item ...?
-    \end{itemize}
-    \item Statistical tests help distinguish real differences from random variation
-    \item \textbf{Is the observed difference statistically significant or likely due to chance?}
+    \item Suppose we evaluate $\conf^A$ and $\conf^B$ on $k=10$ CV folds
+    \item Observed mean difference: $\bar{d} = \widehat{\riskg}^A - \widehat{\riskg}^B = 0.02$
+    \item Is this a real improvement, or explainable by the randomness of the splits?
+\end{itemize}
+
+\begin{itemize}
+    \item Consider two scenarios with the same $\bar{d}=0.02$:
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{lll}
+     \toprule
+     Scenario & Differences $d_j$ & Conclusion\\
+     \midrule
+     Low variance & all $d_j \approx 0.02$ & Likely a real effect\\
+     High variance & $d_j \in \left[ -0.15, 0.19 \right]$ & Likely noise \\
+     \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+    \item A raw difference in mean performance is not sufficient to draw conclusions
+    \item Must account for the variance of the observed differences
 \end{itemize}
 
 \end{frame}
@@ -39,12 +66,16 @@
     \begin{itemize}
         \item Null hypothesis $H_0$: No difference between models (e.g., equal mean performance)
         \item Alternative hypothesis $H_1$: A true difference exists
-        \item p-value: Probability of observing results at least as extreme as the data,\\ assuming $H_0$ is true
-        \item Reject $H_0$ is $p \leq \alpha$, where $\alpha$ is the significance level (commonly $0.05$)
+        \item Significance level $\alpha$: The maximum acceptable probability of incorrectly rejecting $H_0$
+        \begin{itemize}
+            \item $\alpha$ must be fixed \alert{before} running the test
+            \item Commonly $\alpha=0.05$
+        \end{itemize}
+        \item p-value: Probability of observing results at least as extreme, assuming $H_0$ is true
     \end{itemize}
-    \vspace{0.4cm}
     \begin{itemize}
-        \item Note:
+        \item Reject $H_0$ is $p \leq \alpha$, where $\alpha$ is the significance level (commonly $0.05$)
+        \item \alert{Note}:
     \begin{itemize}
         \item Failing to reject $H_0$ does not prove the two methods are equal
         \item Rejecting $H_0$ does not mean that one is better than the other
@@ -52,23 +83,45 @@
     \end{itemize}
 \end{frame}
 
+\begin{frame}{Type I and Type II Errors}
+    \begin{itemize}
+        \item Every hypothesis test can make two kinds of mistakes:
+    \end{itemize}
+    \begin{center}
+        \begin{tabular}{lll}
+            \toprule
+             & $H_0$ true & $H_0$ false \\
+             \midrule
+             Reject $H_0$ & \alert{Type I error} (false positive) & Correct (true positive) \\
+             Fail to reject & Correct (true negative) & \alert{Type II error} (false negative)\\
+             \bottomrule
+        \end{tabular}
+    \end{center}
+    \begin{itemize}
+        \item There is a tradeoff: lowering $\alpha$ reduces Type I but increases Type II errors
+        \item More data and lower variance in $d_j$ increase power
+    \end{itemize}
+\end{frame}
+
 \begin{frame}{The $t$-Test}
     \begin{itemize}
-        \item Parametric test assuming normally distributed differences
-        \item \textbf{Paired $t$-Test:} Compare two algorithms on the same $k$ folds:
+        \item Parametric test: assumes differences $d_j$ are i.i.d.\ and normally distributed
+        \item \textbf{Paired $t$-Test}: Compare two algorithms on the same $k$ evaluation folds:
         \[
-        t = \frac{\bar{d}}{s_d / \sqrt{k}}, \quad \bar{d} = \frac{1}{k} \sum_{i=1}^k (r_i^A - r_i^B)
+        t = \frac{\bar{d}}{\stddev_d / \sqrt{k}}, \quad \bar{d} = \frac{1}{k} \sum_{j=1}^k d_j, \qquad \stddev_d = \sqrt{\frac{1}{k-1}\sum_{j=1}^k (d_j - \bar{d})^2}
         \]
-        \item $r_i^{(A,B)}$ are the results for method A or B, $s_d$ the standard deviation of the sample $d$
         \item Null hypothesis: $\mathbb{E}[\bar{d}] = 0$
-        \item Sensitive to violations of the normality assumption
-        \item Corrected resampled $t$-test: Adjusts for the dependency of CV folds to avoid inflated type-I error
+        \item Sensitive to violations of the normality and the i.i.d.\ assumption
+        \item CV folds are not independent (sharing training data)
+        \item Corrected resampled $t$-test \liturl{Nadeau \& Bengio 2003}{https://link.springer.com/article/10.1023/A:1024068626366}: Adjusts for the dependency of CV folds to avoid inflated type-I error
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Non-Parametric Tests}
     \begin{itemize}
-        \item Do not assume a specific distribution of the test statistics
+        \item Do not assume a specific distribution of the test statistics 
+        \item Still assume that observations are i.i.d.
+        \item More robust than parametric tests, but generally \alert{less powerful}: require larger or more consistent differences to reject $H_0$
         \item \textbf{Wilcoxon Signed-Rank Test:} Paired test comparing two algorithms across datasets
         \begin{itemize}
             \item Ranks the absolute differences and accounts for their sign
@@ -76,41 +129,61 @@
         \end{itemize}
         \item \textbf{Sign test:} Simplest paired test, only considers the direction of differences
         \begin{itemize}
-            \item Less powerful than Wilcoxon, but very robust
+            \item Less powerful than Wilcoxon, but very robust to outliers
         \end{itemize}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Comparing Multiple Algorithms}
+\begin{frame}{Ombnibus Tests and Multiple Comparisons}
     \begin{itemize}
-        \item Pairwise tests do not scale well to many algorithms: multiple testing inflates type-I error
-        \item \textbf{Friedman test}: Non-parametric test for differences across $M$ algorithms on $N$ datasets
+        \item With $M>2$ configurations, running all $\binom{M}{2}$ pairwise tests inflates the Type I error:
+        $$P(\text{at least one false positive}) = 1 - (1-\alpha)^{\binom{M}{2}}$$
+        \item First, apply an \alert{omnibus test} to check for \alert{any} difference among all $M$ configurations
+        \item \textbf{Friedman test}: Omnibus test across $M$ configurations on $N$ datasets or splits
         \begin{itemize}
-            \item Ranks algorithms per dataset
-            \item Tests whether mean ranks differ
+            \item Ranks configurations per dataset, tests whether mean ranks differ across all $M$
+            \item Rejects $H_0$: ``all configurations perform equally'' without specifying which pair differs
         \end{itemize}
-        \item If Friedman rejects $H_0$, follow up with post-hoc tests:
-        \begin{itemize}
-            \item \textbf{Nemenyi test}: All pairwise comparisons with family-wise error control
-            \item \textbf{Holm correction}: Step-down procedure, more powerful than Bonferroni
-        \end{itemize}
-        \item Results often visualized via critical difference (CD) diagrams
+        \item If Friedman rejects $H_0$, follow up with \alert{post-hoc} pairwise tests
     \end{itemize}
+\end{frame}
+
+\begin{frame}{Post-Hoc Tests and Corrections}
+    \begin{itemize}
+        \item Post-hoc tests perform pairwise comparisons after an omnibus test, with correction for multiple testing
+        \item \textbf{Bonferroni}: Divide $\alpha$ by the number of tests. Simple but increases Type II error
+        \item \textbf{Holm}: Step-down procedure: sort p-values, apply decreasing thresholds
+        \item \textbf{Nemenyi test}: All pairwise comparisons after Friedman; based on rank differences; convenient but less powerful than Holm
+    \end{itemize}
+    
+    \vspace{.2cm}
+    
+    \begin{minipage}{.6\textwidth}
+    \begin{itemize}
+        \item Results of Friedman + post-hoc often visualized via \alert{critical difference} (CD) diagrams
+    \end{itemize}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.3\textwidth}
+    \resizebox{\textwidth}{!}{
+        \input{02_Evaluation/images/critical_diff_plot}}
+    \end{minipage}
 \end{frame}
 
 \begin{frame}{Practical Recommendations}
-Choosing the right test
+\alert{Choosing the right test}:
 \begin{itemize}
-    \item Two algorithms, paired results: Wilcoxon signed-rank test (or corrected $t$-test)
-    \item Multiple algorithms, multiple datasets: Friedman + post-hoc (Nemenyi / Holm)
-    \item Always report effect sizes alongside p-values
+    \item Two configurations, paired results: Wilcoxon signed-rank test (or corrected $t$-test)
+    \item More than two configurations: Friedman omnibus test + post-hoc with correction (Holm or Nemenyi)
+    \item Always report effect sizes alongside p-values where possible
 \end{itemize}
-Common pitfalls:
+\textcolor{red}{Common pitfalls}:
 \begin{itemize}
     \item Using an uncorrected $t$-test on CV folds (inflated type-I error)
-    \item $p > \alpha$ interpreted as ``algorithms are equivalent``
-    \item Running many pairwise tests without multiple testing correction
-    \item Choosing the test \emph{after} seeing the data
+    \item Fixing $\alpha$ after seeing the data
+    \item Interpreting $p > \alpha$ as evidence that configurations are equivalent
+    \item Running many pairwise tests without correction: accumulates false positives
+    \item Choosing the test after seeing the data
 \end{itemize}
 \end{frame}
 
@@ -118,10 +191,11 @@ Common pitfalls:
 Most important insights from this video:
 
 \begin{enumerate}
-    \item Performance differences between models must be evaluated with statistical tests to rule out random variation
-    \item The paired Wilcoxon Signed-Rank Test is a robust default for comparing two algorithms
-    \item For multiple algorithm comparisons, use the Friedman test followed by an appropriate post-hoc procedure
-    \item Always correct for multiple testing and report effect sizes alongside p-values
+    \item Performance differences are random variables; statistical tests determine whether observed differences are consistent with chance
+    \item Type I errors are controlled by $\alpha$; Type II errors are reduced by increasing power through more data or lower variance
+    \item Wilcoxon Signed-Rank Test is a robust default for comparing two configurations
+    \item For more than two configurations, always use an omnibus test (Friedman) first, followed by post-hoc tests with multiple testing correction
+    \item Never run pairwise tests without correction, and never fix $\alpha$ after seeing the results
 \end{enumerate}
 
 \end{frame}

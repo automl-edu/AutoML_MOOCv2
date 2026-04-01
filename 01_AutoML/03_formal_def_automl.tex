@@ -6,7 +6,7 @@
 \author[Marius Lindauer]{Marius Lindauer}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_AutoDL}
 
 %\institute{}
 %\date{}
@@ -24,12 +24,12 @@ Let
 
 \begin{description}
     \item[$\dataset$] be a dataset, typically in the form of $\dataset = (\xI{i},\yI{i})_{i \in 1 \ldots N}$ with $N$ data points,
-    \item[$\Hspace$] be a hypothesis space with all possible predictive models $\fh$ under consideration,
+    \item[$\Hspace$] be a hypothesis space with all possible predictive models $f$ under consideration,
 \end{description}
 
 the machine learning task is to learn a predictive model $\fh \in \Hspace$\\ that minimizes the empirical risk of errors:
 
-$$ \fh \in \argmin_{f \in \Hspace} \riske(f \mid \dataset) $$
+$$ \fh \in \argmin_{f \in \Hspace} \riske(f , \dataset) $$
 
 \end{frame}
 %-----------------------------------------------------------------------
@@ -40,10 +40,10 @@ Let
 
 \begin{description}
     \item[$\dataset$] be a dataset, typically in the form of $\dataset = (\xI{i},\yI{i})_{i \in 1 \ldots N}$ with $N$ data points,
-    \item[$\loss$] be a loss function on two labels,
+    \item[$\loss$] be a loss function on two labels.
 \end{description}
 
-the empirical risk of a model $f$ is defined by:
+The empirical risk of a model $f$ is defined by:
 
 $$\riske(f) := \sum_{i=1}^{N} \loss\left(\yI{i}, f(\xI{i})\right)$$
 
@@ -60,9 +60,8 @@ Let
 
 \begin{description}
     \item[$\dataset$] be a dataset, typically in the form of $\dataset = (\xI{i},\yI{i})_{i \in 1 \ldots N}$ with $N$ data points,
-    \item[$\pcs$] be a configuration space of all considered design decisions (e.g., hyperparameters or architectural decisions)\footnote{On the previous slides, we implicitly assumed a fixed $\conf$. With considering $\conf$ explicitly, we open up the hypothesis space.}, 
-    \item[$\Hspace$] be a hypothesis space with all possible predictive models $\f$ under consideration, and 
-
+    \item[$\pcs$] be a configuration space of all considered design decisions\footnote{On the previous slides, we implicitly assumed a given $\conf$. By considering $\conf$ explicitly, we open up the hypothesis space.}, 
+    \item[$\Hspace$] be a hypothesis space with all possible predictive models $f$ under consideration, 
 \end{description}
 
 such that $\mathcal{I}$, being a learning algorithm (a.k.a. inducer), infers the model from the data and a configuration $\conf \in \pcs$:
@@ -70,8 +69,22 @@ such that $\mathcal{I}$, being a learning algorithm (a.k.a. inducer), infers the
 \vspace*{-1em}
 \begin{eqnarray}
 \mathcal{I}: \datasets \times \pcs \to \Hspace \qquad (\dataset, \conf) \mapsto f\\
-\text{s.t. } \fh \in \argmin_{f \in \Hspace} \riske(f \mid \dataset)
+\text{s.t. } \fh \in \argmin_{f \in \Hspace} \riske(f,  \dataset)
 \end{eqnarray}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{What is $\conf \in \pcs$?}
+
+Possible elements described via $\pcs$ could include:
+ 
+\begin{description}
+    \item[Hyperparameter Configuration] For example, $\conf$ could specify the setting of a learning rate and data augmentation strength.
+    \item[Neural Architecture] For example, $\conf$ could specify the operators and connections of a cell in a neural network.
+    \item[Pipeline] For example, $\conf$ could specify that we first run standardization and then a PCA before feeding it into a linear model.
+    \item[Ensemble] For example, $\conf$ could specify which models to combine in an ensemble.
+\end{description}
 
 \end{frame}
 %-----------------------------------------------------------------------
@@ -82,19 +95,17 @@ Let
 
 \begin{description}
     \item[$\datasettrain$] be a training dataset,
-    \item[$\datasetval$] be a validation dataset\footnote{typically disjoint from $\datasettrain$}, and
+    \item[$\datasetval$] be a validation dataset\footnote{typically disjoint from $\datasettrain$. In principle any resampling strategy could be used.}, and
     \item[$\pcs$] be a configuration space of all considered design decisions (e.g., hyperparameters or architectural decisions),
-    \item[$\riskg$] be a generalization risk\footnote{The risk or loss metrics on the training and validation dataset do not have to be the same.}
+    \item[$\riskg$] be a generalization risk\footnote{The risk or loss metrics on the training and validation dataset do not have to be the same}.
 \end{description}
 
-the automated machine learning task is to find a configuration $\optconf$ of the inducer $\mathcal{I}$ such that the risk on the validation data is minimized
+The automated machine learning task is to find a configuration $\optconf$ of the inducer $\mathcal{I}$ such that the risk on the validation data is minimized
 
-$$\optconf \in \argmin_{\conf \in \pcs} \riskg(\mathcal{I}(\datasettrain, \conf) \mid \datasetval)$$
+$$\optconf \in \argmin_{\conf \in \pcs} \riskg(\mathcal{I}(\datasettrain, \conf), \datasetval)$$
 
 \end{frame}
 %-----------------------------------------------------------------------
-
-
 %----------------------------------------------------------------------
 \begin{frame}{Summary} 
 
@@ -102,7 +113,7 @@ Most important insights from this video:
 
 \begin{enumerate}
     \item The learning of the machine learning model focuses on minimizing the training error, which should eventually lead to better generalization error overall
-    \item An inducer (aka learning algorithm) induces a model from a given dataset
+    \item An inducer (a.k.a. learning algorithm) and the configuration induce a model from a given dataset
     \item Automated machine learning finds the optimal configuration of the inducer to minimize the generalization error
     \begin{itemize}
         \item \alert{Attention}: This requires special validation and evaluation schemes (discussed in other sessions)

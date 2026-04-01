@@ -18,76 +18,108 @@
 
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}[c]{AutoML Algorithms Are Anytime}
+\begin{frame}{Recall: Evaluation of a Fixed Configuration}
+    \begin{itemize}
+        \item In the previous section, we evaluated a single configuration $\conf \in \pcs$ fixed \alert{a priori}
+        \item We estimated $\riskg^{(n)}(\conf)$ using a validation scheme on dataset $\dataset$
+        \item The estimate $\widehat{\riskg}(\conf)$ was unbiased because $\conf$ was chosen independently of the data
+    \end{itemize}
+    \vspace{.3cm}
+    \begin{itemize}
+        \item \alert{Now}: AutoML changes the setup fundamentally
+        \begin{itemize}
+            \item AutoML searches over $\pcs$, repeatedly evaluating many configurations to find:
+            $$\optconf \in \argmin_{\conf \in \pcs} \riskg\!\left(\inducer(\datasettrain, \conf), \datasetval\right)$$
+            \item The selected $\optconf$ is \alert{data-dependent}: it is chosen because it scores well on the data
+        \end{itemize}
+        \item Data-dependence breaks unbiased guarantees $\rightarrow$ need a revised evaluation protocol
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[c]{AutoML Systems Are Anytime Algorithms}
 
 \begin{itemize}
     \item AutoML systems repeatedly evaluate candidate configurations during search
-    \item Each candidate is scored using a validation procedure (e.g., CV)
-    \item The system exploits these scores to guide the search towards better configurations
-    \item At any point in time, the best configuration found so far can be returned
-    \item Key insight: the validation procedure is not just a reporting tool, it is part of the optimization
+    \item Each candidate is scored using a validation procedure on $\datasetval$
+    \item The system exploits these scores to guide the search towards better regions of $\pcs$
+    \item At any point in time, the incumbent can be returned
+    \item \alert{Key insight}: $\datasetval$ is not a neutral reporting tool but an active component of the search
+    \item Any performance estimate computed on $\datasetval$ after search is therefore no longer unbiased
 \end{itemize}
 \end{frame}
 
 \begin{frame}{The Optimistic Bias Problem}
     \begin{itemize}
-        \item Suppose we evaluate $n$ candidate configurations on the same validation data
-        \item We select the configuration with the best validation score
-        \item The selected score is optimistically biased: we effectively searched for the maximum over $n$ noisy estimates
-        \item The more candidates we evaluate, the more pronounced the bias
-        \item This is a form of overfitting to the validation set, even without directly touching it
+        \item Suppose the AutoML system evaluates $T$ configurations on the same $\datasetval$
+        \item It selects $\optconf \in \argmin_t(\widehat{\riskg}(\conf_t))$ and reports $\widehat{\riskg}(\optconf)$
+        \item Each estimate decomposes as
+        $$\widehat{\riskg}(\conf_t) = \riskg^{(n)}(\conf_t) + \varepsilon_t, \qquad \varepsilon_t \text{ random noise}$$
+        \item We select the configuration with the most favorable noise realization:
+        $$\expect\!\left[\widehat{\riskg}(\optconf)\right] \leq \riskg^{(n)}(\optconf)$$
+        \item The reported score is \alert{optimistically biased}: underestimates the true risk of $\optconf$
+        \item Bias grows with $T$: more configurations evaluated $\Rightarrow$ more extreme selected $\varepsilon$
     \end{itemize}
+    \textbf{Meta-overfitting: the search has overfit to $\datasetval$, even without directly inspecting it.}
 \end{frame}
 
 \begin{frame}{Nested Evaluation: The Solution}
 \begin{itemize}
-    \item Strictly separate the data used for search from the data used for reporting
-    \item Outer loop: Estimates generalization performance of the full AutoML procedure
-    \item Inner loop: Drives the AutoML search, used to compare and select configurations
-\end{itemize}    
-\vspace{.25cm}
+    \item \alert{Remedy}: strictly separate data used for \alert{search} from data used for \alert{reporting}
+    \item Reserve a portion of $\dataset$ as an outer test set $\datasettest$ before any search begins
+    \item $\datasettest$ is never used by the AutoML system: not for scoring, not for preprocessing decisions, not for budget tuning
+\end{itemize}
 \begin{center}
 \begin{tabular}{lll}
     \toprule
-     Loop & Data Role & Purpose  \\
+     Loop & Data & Purpose  \\
      \midrule
-     Outer & Test fold & Unbiased performance estimate \\
-     Inner & Validation fold & Model selection / HPO \\
+     Outer & $\datasettest$ & Unbiased estimate of procedure performance \\
+     Inner & $\datasetval \subset \dataset \setminus \datasettest$ & Drives search: scores $\widehat{\riskg}(\conf_t)$ for all $t$ \\
      \bottomrule
 \end{tabular}
 \end{center}
-\vspace{.25cm}
 \begin{itemize}
-    \item The outer test fold is \textbf{never} used to make any search decision
+    \item After search completes $\optconf$ is fixed and evaluated once on $\datasettest$
+    \item Because $\datasettest$ played no role in selecting $\optconf$, this evalaution is unbiased
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Nested Cross-Validation}
 \begin{itemize}
-    \item Instantiate both loops with cross-validation: nested CV
-    \item Outer k-fold CV: Provides k independent test folds for unbiased evaluation
-    \item Inner m-fold CV (with each outer training fold): Drives hyperparameter search
-    \item The full AutoML procedure is re-run independently for each outer fold
-    \item Result: An unbiased estimate of the procedure's generalization performance, not just of one fixed model
+    \item Instantiate both loops with cross-validation to obtain a low-variance estimate
+    \item Outer $k$-fold CV: Partitions $\dataset$ into $k$ test folds $\datasettest^{(1)}, \ldots, \datasettest^{(k)}$
+    \item Inner $m$-fold CV on $\dataset \setminus \datasettest^{(i)}$: drives the search within outer fold $i$
+    \item The full AutoML procedure is re-run independently for each outer fold $i$
 \end{itemize}
 \vspace{.25cm}
-$\leadsto$ Nested CV evaluates how good the AutoML pipeline is as a learning algorithm, not the specific model it happens to return.
+\textbf{Nested CV estimates $\riskg^{(n)}$ of the AutoML procedure itself as a learning algorithm, not the specific $\optconf$ returned on any single run.}
     
 \end{frame}
 
 \begin{frame}{Practical Considerations}
     \begin{itemize}
-        \item Nested CV is computationally expensive
+        \item Nested CV is computationally expensive: the full search runs $k$ times independently
         \item Number of outer folds impacts the dataset size available for internal validation
         \item Single holdout as outer loop: Cheaper but higher variance; acceptable for very large datasets
-        \item \textbf{Refit on full data:} After evaluation, the final deployed model is retrained on all available data
     \end{itemize}
-    \vspace{.25cm}
-    Common pitfalls:
+
     \begin{itemize}
-        \item Using the same data for inner and outer loop (defeats the purpose)
-        \item Peeking at the outer test fold to decide the search budget or preprocessing
-        \item Reporting inner validation scores as if they were unbiased test scores
+    \item \alert{Refit on full data}: The final deployed model is obtained by re-running the AutoML search on the entire $\dataset$
+    \begin{itemize}
+        \item More training data generally leads to better generalization
+        \item The nested CV estimate thus gives a conservative bound on deployed performance
+        \item The specific $\optconf$ returned after the full refit is not any of thee ${\optconf}^{(i)}$ from the outer folds
+        \item The nested estimate characterizes the procedure, not this final model
+    \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Common Pitfalls}
+    \begin{itemize}
+        \item Using the same data for inner and outer loop: eliminates the bias correction entirely
+        \item Peeking at the outer test fold to decide the search budget or preprocessing contaminates the outer estimate
+        \item Reporting inner validation scores as test scores: $\widehat{\riskg}(\optconf)$ on $\datasetval$ is optimistically biased by construction; only the outer test score is unbiased
+        \item Treating the refit model's performance as evaluated: the nested CV estimate applies to the procedure, not to the specific model returned after the full refit on $\dataset$
     \end{itemize}
 \end{frame}
 
@@ -96,10 +128,10 @@ $\leadsto$ Nested CV evaluates how good the AutoML pipeline is as a learning alg
 Most important insights from this video:
 
 \begin{enumerate}
-    \item AutoML systems repeatedly exploit validation scores during search, introducing an optimistic search selection bias that grows with the number of evaluated candidates
-    \item Nested evaluation strictly separates the inner loop (search) from the outer loop (reporting) to obtain unbiased performance estimates
-    \item Nested CV evaluates the AutoML procedure as a whole, not a single fixed model
-    \item The final deployed model is refitted on all data; the nested estimate describes expected procedure performance, not the specific returned model
+    \item When AutoML searches over $\pcs$, the selected $\optconf$ is data-dependent: naive validation scores are optimistically biased, and the bias grows with the number of evaluated configurations $T$
+    \item Nested evaluation restores unbiasedness by strictly reserving an outer test set $\datasettest$ that plays no role in the search
+    \item Nested CV estimates the generalization performance of the AutoML procedure as a whole, not of any single configuration
+    \item The final deployed model is refitted on all of $\dataset$; because more data generally improves generalization, the nested CV estimate is a conservative lower bound on deployed performance
 \end{enumerate}
 
 \end{frame}

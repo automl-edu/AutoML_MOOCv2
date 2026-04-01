@@ -2,11 +2,11 @@
 
 
 \title[AutoML: NAS]{Neural Architecture Search}
-\subtitle{How to evaluate Neural Architecture Search?}
+\subtitle{How to search in Neural Architecture Search?}
 \author[Jovita Lukasik]{Jovita Lukasik}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_NAS}
 
 %\institute{}
 %\date{}
@@ -15,6 +15,20 @@
 	
 	\maketitle
 
+%----------------------------------------------------------------------
+\begin{frame}{Motivation}
+\begin{itemize}
+    \item With a defined search space, we need a strategy to \alert{navigate it efficiently}
+    \item Even a compact search space can contain \textbf{thousands} of valid architectures - making the search strategy important
+    \item The choice of search strategy directly impacts \alert{which architectures are found} and \alert{how much compute is spent}
+\end{itemize}
+\pause
+\vspace{0.5em}
+\begin{colorblock}[black]{sintefgrey}{Key Question}
+Given a fixed evaluation budget, which search strategy finds the best-performing architecture — and why does it outperform simply sampling at random?
+\end{colorblock}
+\end{frame}
+
 
 \begin{frame}{Search Strategies}
 \begin{center}
@@ -22,7 +36,7 @@
 \captionof{figure}{Overview of neural architecture search ~\liturl{White et al. 2023}{https://arxiv.org/pdf/2301.08727.pdf}}
 \end{center}
 The search strategy aims to find the optimal architecture.
-Search strategies can be split in two different categories:
+There are two different categories commonly used in NAS:
 \begin{itemize}
     \item Black-box optimization techniques
     \item One-shot techniques
@@ -40,68 +54,87 @@ Search strategies can be split in two different categories:
     \item Bayesian optimization 
     \item Evolution algorithm
 \end{itemize}
-Black-box optimization techniques are widels used due to strong performance
-Tend to use more computational resources than one-shot techniques
+\begin{itemize}
+    \item Widely used due to strong performance
+    \item Tend to use more computational resources than one-shot techniques
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Basic Algorithms}
 Random search:
 \begin{itemize}
-    \item Select architectures randomly from search space and fully trains them
+    \item Select architectures randomly from search space and fully train them
     \item Architecture with the best score is the output
 \end{itemize}
-    $\rightsquigarrow$ Strong baseline
+\pause
+    $\leadsto$ Strong baseline in constrained search spaces
 
-Pros:
-\begin{itemize}
-    \item Performs well on highly engineered search spaces with a high amount of high scoring architectures
-\end{itemize}
-Cons:
-\begin{itemize}
-    \item Not the best performance on large, diverse search spaces
-\end{itemize}
+% Pros:
+% \begin{itemize}
+%     \item Performs well on highly engineered search spaces with a high amount of high scoring architectures
+% \end{itemize}
+% Cons:
+% \begin{itemize}
+%     \item Not the best performance on large, diverse search spaces
+% \end{itemize}
 \end{frame}
 
 \begin{frame}{Basic Algorithms}
 Local search:
 \begin{itemize}
-    \item Iteratively trains and evaluate all neighbors of the best architecture found so far
+    \item Iteratively trains and evaluates all neighbors of the best architecture found so far
     \item Neighborhood: All architectures that differ by one operation or edge
 \end{itemize}
-$\rightsquigarrow$  Strong baseline of small and large search spaces
+\pause
+$\rightsquigarrow$  Strong baseline based on a step-by-step, neighborhood-based search that can be viewed as an mimic of human architectural development, in which small, locally optimal changes are mostly made
 \end{frame}
 
 \begin{frame}{Evolutionary and Genetic Algorithms}
 Evolutionary algorithm:
 \begin{itemize}
     \item Iteratively updating a population of architectures
-    \item In each step one (or more) parent architecture (mostly high scoring architecture) in population sampled, combined and mutated to create new children architectures
-    \item Children are trained and added to population and replace individuals (with worse scores)
+    \item In each step, one (or more) parent architecture (mostly high-scoring architecture) in the population is sampled, combined, and mutated to create new children architectures
+    \item Children are trained and added to the population and replace individuals (with worse scores)
 \end{itemize}
+\pause
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{07_NAS/images/03/ga_flow_chart.pdf}
+    \caption{\liturl{Sun et al. 2020}{https://arxiv.org/pdf/1808.03818}}
+    \label{fig:placeholder}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Evolutionary and Genetic Algorithms}
 Methods differ in several steps:
+\pause
 \begin{itemize}
     \item Initial population sampling 
     \begin{enumerate}
         \item Using trivial architectures
         \item Random sampling
-        \item Hand-picked high scoring architectures
+        \item Hand-picked high-scoring architectures
     \end{enumerate}
-    \item Parents selection (is core component)
+    \pause
+    \item Parent selection 
     \begin{enumerate}
         \item Tournament selection, i.e., selecting best architecture(s) out of random population
         \item Random sampling weighted by fitness
         \item Choosing current best architecture(s) as parents 
         \item Trade off exploration vs exploitation the best region found so far
     \end{enumerate}
-    \item Children generation 
+    \pause
+    \item Child generation 
+    \begin{enumerate}
+        \item Mutation: combine two networks, by e.g.\ adding or removing a layer, altering the hyperparameters of a layer, adding skip connections
+        \item Crossover: combine two networks $\rightsquigarrow$ \textbf{permutation problem}: different graph encodings can represent equivalent network which can result in dysfunctional networks
+    \end{enumerate}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Regularized Evolution}
-Regularized evolution~\liturl{Real et al. 2019}{https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://ojs.aaai.org/index.php/AAAI/article/view/4405/4283&ved=2ahUKEwjzwIKVnqiFAxVEWEEAHRuOBKgQFnoECBUQAQ&usg=AOvVaw2qydwc3_uYx8OTuo5S7RYV} is the most successful evolutionary algorithm method
+\begin{frame}{Regularized Evolution~\liturl{Real et al. 2019}{https://arxiv.org/pdf/1802.01548}}
+Regularized evolution is the most successful evolutionary algorithm method in NAS due to maintaining population diversity and preventing premature convergence
+\pause
 \begin{itemize}
     \item Search for blocks (cells) with 5 choices (applied on the NASNet search space~\liturl{Zoph et al. 2018}{https://openaccess.thecvf.com/content_cvpr_2018/papers/Zoph_Learning_Transferable_Architectures_CVPR_2018_paper.pdf}):
     \begin{itemize}
@@ -109,10 +142,12 @@ Regularized evolution~\liturl{Real et al. 2019}{https://www.google.com/url?sa=t&
         \item Choose operations for both (convolutions, pooling)
         \item Choose operation to merge (add or concat)
     \end{itemize}
-    \item Evolution simply tackles this as a \textit{hyperparameter optimization}(HPO) problem with $2 \times 5$ variables
+    \pause
+    \item Evolution simply tackles this as a \textit{hyperparameter optimization} (HPO) problem with $2 \times 5$ variables
     \item Worst/oldest solution is dropped from the population
 \end{itemize}
-    \alert{Novelty:} Dropping the architecture in each step, which has been in the population the longest (even if its the best)
+\pause
+    \alert{Novelty:} Dropping the architecture in each step, which has been in the population the longest (even if it's the best).
     Achieved state-of-the-art performance on ImageNet~\liturl{Deng et al. 2009}{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5206848} at release time
 \end{frame}
 
@@ -133,72 +168,87 @@ Bayesian optimization (BO) is a powerful tool for optimizing expensive functions
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Bayesian Optimization for NAS}
-Initial Bayesian optimization approaches for NAS:
-\begin{itemize}
-    \item Custom distance metric (NASBOT)
-    \item Gaussian process surrogate with BO
-    \item Tree-Parsen estimator
-    \item Random forest
-    \item Neural Network
-    \item Latent space-based BO
-    \item Graph-based kernel
-\end{itemize}
-\end{frame}
+% \begin{frame}{Bayesian Optimization for NAS}
+% Initial Bayesian optimization approaches for NAS:
+% \begin{itemize}
+%     \item Custom distance metric (NASBOT)
+%     \item Gaussian process surrogate with BO
+%     \item Tree-Parzen estimator
+%     \item Random forest
+%     \item Neural Network
+%     \item Latent space-based BO
+%     \item Graph-based kernel
+% \end{itemize}
+% \end{frame}
 
 \begin{frame}{Bayesian Optimization for NAS}
 Acquisition functions popular in NAS:
 \begin{itemize}
-    \item Expected improvement
-    \item Upper confidence bound
+    \item Expected improvement \liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147}
+   % is the most used one and is defined as:
+% \begin{equation}\label{rw_eq:EI}
+    % a_{\mathcal{P}(f\vert D_N)}^{\mathrm{EI}}(\textbf{x}) = \mathbb{E}_{\mathcal{P}(f\vert D_{N})}[\max(f(\textbf{x})-y^{+},0)],
+% \end{equation}
+% with $y^{+}=\max (y_0,\ldots, y_N)$ being the best observed function value at time $N$. 
+    \item Upper confidence bound~\liturl{Cox and John, 1992}{https://ieeexplore.ieee.org/document/271617} 
+    % is defined as
+    % \begin{equation}
+    % a_{\mathcal{P}(f\vert D_N)}^{\mathrm{UCB}}(\textbf{x}) = \mu(\textbf{x}) + \theta\sigma(\textbf{x}), 
+% \end{equation}
+% with $\theta \geq 0$ being an exploration-exploitation hyperparameter. 
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Bayesian Optimization for NAS}
 \begin{itemize}
     \item Encode architecture space by categorical hyperparameters 
+    \pause
     \item Strong performance with tree-based methods:
     \begin{itemize}
         \item TPE: Joint optimization of a vision architecture with 238 hyperparameters ~\liturl{Bergstra et al. 2013}{https://proceedings.mlr.press/v28/bergstra13.pdf}
-        \item SMAC~\liturl{Hutter et al. 2011}{https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://ml.informatik.uni-freiburg.de/wp-content/uploads/papers/11-LION5-SMAC.pdf&ved=2ahUKEwjhvq__oaiFAxWfQEEAHQ9LAMUQFnoECBEQAQ&usg=AOvVaw0JDLCAOFREpqWduCjgVrzM} Joint architecture and hyperparameter search\\ $\rightarrow$ Auto-Net~\liturl{Mendoza et al. 2016}{http://proceedings.mlr.press/v64/mendoza_towards_2016.pdf}
+        \item SMAC~\liturl{Hutter et al. 2011}{https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://ml.informatik.uni-freiburg.de/wp-content/uploads/papers/11-LION5-SMAC.pdf&ved=2ahUKEwjhvq__oaiFAxWfQEEAHQ9LAMUQFnoECBEQAQ&usg=AOvVaw0JDLCAOFREpqWduCjgVrzM} joint architecture and hyperparameter search\\ $\rightarrow$ Auto-Net~\liturl{Mendoza et al. 2016}{http://proceedings.mlr.press/v64/mendoza_towards_2016.pdf}
     \end{itemize}
-    \item Kernels for Gaussian processes- based NAS	
+    \pause
+    \item Kernels for Gaussian process-based NAS
     \begin{itemize}
         \item NASBOT~\liturl{Kandasamy et al. 2018}{https://proceedings.neurips.cc/paper_files/paper/2018/file/f33ba15effa5c10e873bf3842afb46a6-Paper.pdf}
     \end{itemize}
-    \item BO approaches using neural networks 
+    \pause
+    \item BO approaches using neural networks instead of GP
      \begin{itemize}
-        \item  BANANAS~\liturl{White et al. 2021}{https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://ojs.aaai.org/index.php/AAAI/article/view/17233/17040&ved=2ahUKEwjb-tPvoqiFAxVEZ0EAHbjrD2AQFnoECBAQAQ&usg=AOvVaw2TJIMtnKMZjY0mC-YmStCO}
+        \item BOHAMIANN~\liturl{Springenberg et al. 2016}{https://proceedings.neurips.cc/paper_files/paper/2016/file/a96d3afec184766bfeca7a9f989fc7e7-Paper.pdf}
+        \item  BANANAS~\liturl{White et al. 2021}{https://arxiv.org/pdf/1910.11858}
     \end{itemize}
-    \item BO very competitive, has been shown to outperform RL \liturl{Ying et al. 2019}{https://proceedings.mlr.press/v97/ying19a/ying19a.pdf}
+    \item BO very competitive on NAS, has been shown to outperform RL \liturl{Ying et al. 2019}{https://proceedings.mlr.press/v97/ying19a/ying19a.pdf}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Black-Box Optimization Technqiues}
-Pros:
-\begin{itemize}
-    \item Widely used due to strong performance
-    \item More robust 
-    \item Simpler optimization
-    \item Joint optimization with other hyperparameters
-    \item Allows for easier adaptation to new problems, datasets, search spaces
-    \item Often conceptually simpler
-\end{itemize}
-Cons:
-\begin{itemize}
-    \item Tend to use more computational resources than one-shot techniques
-\end{itemize}
-\end{frame}
+% \begin{frame}{Black-Box Optimization Technqiues}
+% Pros:
+% \begin{itemize}
+%     \item Widely used due to strong performance
+%     \item More robust 
+%     \item Simpler optimization
+%     \item Joint optimization with other hyperparameters
+%     \item Allows for easier adaptation to new problems, datasets, search spaces
+%     \item Often conceptually simpler
+% \end{itemize}
+% Cons:
+% \begin{itemize}
+%     \item 
+% \end{itemize}
+% \end{frame}
 %----------------------------------------------------------------------
 \begin{frame}{Summary} 
 
 Most important insights from this video:
 
 \begin{enumerate}
-    \item ???
-    \item ???
-    \item ???
+    \item Basic algorithms perform well on highly engineered search spaces but face issues in larger diverse ones
+    \item Black-box optimization methods are widely used due to their strong performance, can be used in joint optimization with other hyperparameters, and allow for easier adaptation to new problems
+    \item Bayesian optimization tends to use more computational resources than one-shot techniques, but is very competitive against other approaches
 \end{enumerate}
+
 
 
 \end{frame}

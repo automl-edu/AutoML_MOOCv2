@@ -8,6 +8,8 @@
 \author[Lars Kotthoff]{Lars Kotthoff}
 \date{}
 
+\titlebackground*{images/AutoML_HPO_2_2}
+
 %\institute{}
 %\date{}
 	
@@ -37,8 +39,8 @@
 
 \begin{frame}{Evolutionary Algorithms Example}
     \begin{itemize}
-        \item Randomly sample the initial population
-        \item From the top-performing half of configurations
+        \item Randomly sample the initial population of hyperparameter configurations
+        \item From the top-performing, in terms of accuracy, half of configurations
             \begin{itemize}
                 \item Crossover configurations by taking the first half of all
                     hyperparameter values from the first, the second from
@@ -69,7 +71,7 @@
             \begin{itemize}
                 \item Conceptually simple
                 \item Can work with many different representations (e.g.\ full
-                    ML pipelines and their components)
+                    ML pipelines and their components ~\liturl{Olson et al. 2016}{https://link.springer.com/chapter/10.1007/978-3-319-31204-0_9})
                 \item Adaptive
                 \item Easily parallelizable
             \end{itemize}
@@ -79,7 +81,6 @@
                     crossover and mutation should be done, the relative
                     frequency of crossover and mutation, what configurations
                     should be used to generate survivors\ldots
-                \item Can be quite slow to find well-performing configurations
             \end{itemize}
     \end{itemize}
 \end{frame}
@@ -88,10 +89,10 @@
 
 \begin{frame}{Summary} 
 \begin{enumerate}
-    \item Evolutionary Algorithms improve configurations by combining known good
+    \item Evolutionary algorithms improve configurations by combining known good
         performers and random changes
     \item Can be applied to all types of configuration spaces
-    \item Often quite resource-intensive
+    \item Not straightforward to apply in practice
 \end{enumerate}
 \end{frame}
 

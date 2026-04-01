@@ -2,9 +2,11 @@
 
 
 \title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
-\subtitle{Warmstarting}
+\subtitle{Multi-Fidelity Optimization}
 \author[Katharina Eggensperger]{Katharina Eggensperger}
 \date{}
+
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
 
 %\institute{}
 %\date{}
@@ -72,7 +74,7 @@ Our optimization objective is then to find:
 These methods exploit three structural observations
 \begin{enumerate}
     \item the \textbf{error shrinks smoothly} as the fidelity budget increases,
-    \item \textbf{ranks are consistent} across fidelities,
+    \item \textbf{ranks are approximately consistent} across fidelities,
     \item and \textbf{higher fidelities provide a more accurate approximation} of the true objective value.
 \end{enumerate}
 
@@ -85,7 +87,7 @@ $\leadsto$ in practice, these assumptions are not necessarily satisfied. HPO mus
 
 <add multi-fidelity optimization target here>
 
-Note that this is also studies in Bayesian optimization with environmental variables (double check), e.g. engineering and material design. 
+Note that this is also studied in Bayesian optimization with environmental variables (double check), e.g. engineering and material design. 
 
 \end{frame}
 %-----------------------------------------------------------------------

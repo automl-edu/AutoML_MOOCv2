@@ -15,7 +15,7 @@
 * American English
 * Concise and to the point bullet point – no long sentences (exceptions: important quotes)
 * Everything relevant has to be on the slides
-* Introduce notation (at least orally)
+* Introduce notation
 * Slide numbers
 * Slides in Latex
   * We use \pause to structure slides;
@@ -26,9 +26,12 @@
   * defined by a macro file that should be used consistently throughout all chunks (see latex_main/macros.tex)
   * we provide a notation cheat sheet for the students (see notation/notation.tex)
 * Don’t mention open research questions on the slides or in the video
-  * the third course: you can have a chunk for discussing open research questions.
 * video should end with a brief statement of what you have learned in this video; a very short summary slide
 * No code on slides (if possible), if you want NBs showcasing tools and (API) examples, create them separately (of course slides can and SHOULD contain the OUTPUT of examples)
+* Slide header are written in "title case"
+https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
+* Do not capitalize arbitrary method names and nouns "machine learning", "random forest".  "Bayesian" is capitalized coz its a name and acronyms are also usually in caps
+* Capitalize at the beginning of a bullet point
 
 ## Platform
 * We use Overleaf and GitHub for

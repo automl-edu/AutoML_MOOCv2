@@ -1,10 +1,11 @@
 \documentclass[main]{subfiles}
 
-
 \title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
 \subtitle{Warmstarting}
 \author[Katharina Eggensperger]{Katharina Eggensperger}
 \date{}
+
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
 
 %\institute{}
 %\date{}
@@ -16,86 +17,234 @@
 
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}[c]{Should we always start from scratch?}
+\begin{frame}[c]{Why Should We Start From Scratch?}
 
-$\leadsto$ Does provide the most unbiased result, but may not be efficient enough in practice.
+In practice, we have more data available from:
+\begin{itemize}
+    \item tune the same model repeatedly
+    \item previous work on similar datasets
+    \item re-run experiments with slight modifications
+\end{itemize}
 
-<here is a nice picture of a cookie and a speech bubble with the text "How would you create a new cookie recipe?">
-
-\end{frame}
-%-----------------------------------------------------------------------
-%----------------------------------------------------------------------
-\begin{frame}[c]{Let's consider two settings}
-
-
-\textbf{Case 1:} We have prior observations on the \textit{same} task (e.g., from a manual exploration)
-
-\textbf{Case 2:} We have prior observations on \textit{related} tasks (e.g., from HPO on a different dataset)
-
-$\leadsto$ We can inject knowledge to the history of observations or to the surrogate modelling step in Bayesian optimization.
+\vspace{1cm}
+\textbf{$\leadsto$ How can we use this information to increase the efficiency of Bayesian optimization?} \\
 
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Case 1: prior observations from manual exploration}
+\begin{frame}[c]{What Is Warmstarting?}
 
-<copy pseudocode from Bayesian optimization slide deck and highlight that we prepend them to the history>
+In Bayesian optimization, we iteratively build a surrogate model: 
 
-How does this help? It improves model accuracy. Open question: Do we still need an initial design afterwards?
+\begin{equation*}
+    \surro_n (\conf | \hist), \hist = D_{init}0 \cup \{(\conf_i, \cost_i)\}_{i=n}^N
+\end{equation*}
+
+\begin{itemize}
+    \item efficiency and quality of early iterations are highly sensitive to the initial design $\dataset_{init}$.
+    \item standard practice: Random or space-filling designs (e.g., Latin Hypercube)
+\end{itemize}
+
+\vspace{1cm}
+\textbf{$\leadsto$ How do we replace uninformed initialization with informed priors over good regions of $\pcs$?}
+
+\end{frame}
+%-----------------------------------------------------------------------%----------------------------------------------------------------------
+\begin{frame}[c]{Let's Consider Two Settings}
+
+Assuming a fixed searchspace and given a target dataset $\dataset_t$, we consider two settings
+
+\textbf{Simple Case:} We have prior observations on the \textit{same} dataset (e.g., from a manual exploration)
+
+\textbf{Advanced Case:} We have prior observations on \textit{related} datasets (e.g., from HPO on a different dataset)
+
+\vspace{0.5cm}
+$\leadsto$ We can inject knowledge into the selection of the next configuration to evaluate in the early stages of Bayesian Optimization.
+
+\setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
+\setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
+\begin{block}{\raggedright Impact}
+  \begin{itemize}
+    \item reduces initial uncertainty volume
+    \item biases surrogate towards existing (good) observations
+    \item accelerates early exploitation
+  \end{itemize}
+\end{block}
 
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Case 2: prior observations on related tasks}
+\begin{frame}{Simple Case: Prior Observations from Manual Exploration}
 
-Assumption: Objectice functions of tasks can correlate. If they do, we can transfer knowledge to speed up search. \\
-Aim: Control transfer: Positive transfer from similar tasks, zero transfer from different tasks.
+\textbf{Assumption:} Prior observations are based on human intuition and serve as good starting points. \\
+\textbf{Solution:} (Partially) replace initial design iterations with observations from manual tuning or prior experiments:
 
-Questions:
+{%
+\setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
+\setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
+\begin{block}{\raggedright Limitation}
+  \begin{itemize}
+    \item does not work across tasks
+    \item performance depends on prior observations
+  \end{itemize}
+\end{block}
+}%
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Advanced Case: Prior Observations on Related Tasks}
+
+\textbf{Assumption:} Objective functions of tasks are correlated. \\
+\textbf{Challenge:} Positive transfer from similar tasks, zero transfer from different tasks. \\
+\textbf{Solution:} Portfolios
+
+\vspace{1cm}
+
+\textbf{$\leadsto$Direction 1:} \textbf{Task-agnostic} portfolios covering well-performing regions of "all" tasks. \\
+\textbf{$\leadsto$Direction 2:} \textbf{Task-specific} portfolios covering well-performing regions on similar tasks.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Task-Agnostic Portfolios}
+
+We assume access to datasets $\datasets_{meta} = \dataset_{1:t-1}$ and a candidate pool $\confs_{cand} = \{\conf_1, ..., \conf_n\}$. The goal is to construct a portfolio $\portfolio \subseteq \confs_{cand}, |\portfolio| = k$, that minimizes the objective:
+
+\begin{equation*}
+\loss(\portfolio, \datasets_{meta}) = \sum_{i=1}^{t-1} \min_{\conf \in \portfolio} \cost(\conf, \dataset_i)
+\end{equation*}
+
+\textbf{Key idea:}
+\begin{itemize}
+    \item Portfolio performance is determined by the single best configuration.
+    \item The portfolio should include at least one well-performing configuration per task.
+    \item The portfolio covers optima across diverse tasks.
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Greedy Forward Selection}
+
+\textbf{Intuition:}
+\begin{itemize}
+    \item Each step adds a configuration that improves \emph{uncovered tasks}
+    \item Encourages diversity via complementary performance
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\textbf{Input:} $\confs_{cand} = \{\conf_1, \dots, \conf_n\}$, $\dataset_{1:t-1}$, $\cost(\cdot)$ \\
+\textbf{Initialize:} $\portfolio \gets \emptyset$ \\
 \begin{enumerate}
-    \item How do we compare tasks and measure similarity?
-    \item How do we extract knowledge?
-    \item How do we inject it in the new task?
+    \item \textbf{while $|\portfolio| < k|$ do} \\
+    \item \quad $\conf^+ \in \argmin_{\lambda \in \confs_{cand}} \loss \left(\portfolio \cup \conf, \datasets_{meta} \right)$ \\
+    \item \quad $\portfolio \gets \portfolio \cup \conf^+, \confs_{cand} \gets \confs_{cand} \setminus \conf^+$ \\
+    \item \textbf{return $\portfolio$}
+\end{enumerate}
+\end{column}
+\begin{column}{0.48\textwidth}
+{%
+\setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
+\setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
+\begin{block}{\raggedright Limitation}
+  \begin{itemize}
+    \item requires a set of candidate configurations
+    \item required performance of all configurations on all tasks
+    \item not all tasks are relevant for the current task
+  \end{itemize}
+\end{block}
+}%
+\end{column}
+\end{columns}
+\vspace{0.5cm}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Task-Specific Portfolios}
+
+Instead of finding a global portfolio, we want a portfolio specifically for our target task $t$.
+
+\vspace{0.5cm}
+\textbf{Key idea} on how to adapt greedy portfolio construction:
+\begin{itemize}
+    \item Reduce the set of meta-datasets to only similar tasks.
+    \item Select the best performing configurations on these tasks as candidate configurations.
+    \item Construct portfolio.
+\end{itemize}
+\vspace{0.5cm}
+
+\textbf{$\leadsto$ How do we define task similarity?} \\
+\pause
+$\leadsto$ Configurations achieve similar performance on similar datasets, i.e., if the datasets are similar, good configurations transfer.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Meta-features as Dataset Descriptors}
+
+We assume access to dataset descriptors (meta-features) $\mathbf{z} = \{\phi_1(\dataset) \dots, \phi_d(\dataset)\}$ representing dataset characteristics, e.g.,
+\begin{itemize}
+    \item basic features (e.g., \#samples, \#features),
+    \item information-theoretic meta-features (e.g., entropy of features and labels),
+    \item landmarking features (e.g., performance of simple, fast ML models),
+    \item and learned meta-features (e.g., task/dataset embeddings).
+\end{itemize}
+Task similarity can then be computed as $\text{sim}(t, t') = -\| \mathbf{z}_t - \mathbf{z}_{t'}\|$
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Meta-feature-based Portfolios}
+
+We can now build task-specific portfolios:
+\begin{enumerate}
+    \item Compute $\{\mathbf{z}_1, \cdots, \mathbf{z}_t\}$
+    \item Use the best performing configurations of the closest $k$ datasets as the portfolio
 \end{enumerate}
 
+\setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
+\setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
+\begin{block}{\raggedright Limitation}
+\begin{itemize}
+    \item Requires hand-designed meta-features
+    \item Similarity may not align with the optimization landscape
+\end{itemize}
+\end{block}
+   
 \end{frame}
-%-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Portfolios to warmstart Bayesian Optimization}
-
-Needed: Many heterogeneous tasks.
-
-Add something about greedy portfolio selection. mention that this is great if you have diverse tasks.
-
-\end{frame}
-%-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Meta-features to explicitly measure dataset distance}
+\begin{frame}{Alternatives}
 
-Copy content from last edition 
-
-\end{frame}
-%-----------------------------------------------------------------------
-%----------------------------------------------------------------------
-\begin{frame}{Meta-feature-free Transfer learning}
-
-So far, we 
-
-discuss that meta-features are not necessarily good. Discuss other ways, i.e. RGPE or model ensembles
+Alternative directions to inject knowledge observed on related tasks:
+\begin{itemize}
+    \item Transfer hyperparameters (e.g., lengthscales) from related tasks.
+    \item Combine/ensemble surrogate models build on related tasks.
+    \item Measure similarity by comparing the ranking of configurations.
+\end{itemize}
 
 \end{frame}
-%-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{What if prior information is misleading?}
-
-add something here about sensitivit of each method to irrelevant tasks
-
-\end{frame}
-%-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Summary}
+\begin{frame}{Conclusion}
 
-TBD
+\textbf{Summary:}
+\begin{itemize}
+    \item Warmstarting Bayesian optimization increases the efficiency of HPO.
+    \item We can (partially) replace the initial design with a portfolio.
+    \item Portfolios can be task-dependend or task-agnostic.
+\end{itemize}
+
+\textbf{Takeaway:}
+\begin{itemize}
+    \item Better warmstarting requires stronger assumptions about task similarity. 
+    \item Stronger assumptions increase inductive bias. If that bias is correct, optimization becomes more efficient; when it is wrong, we get negative transfer.
+    \item Warmstarting turns HPO into a meta-learning problem across datasets.
+\end{itemize}
 
 \end{frame}
 

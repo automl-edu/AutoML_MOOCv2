@@ -21,27 +21,78 @@
 \begin{frame}[c]{Why Do We Need Evaluation in Machine Learning?}
 
 \begin{itemize}
-    \item Evaluation is the backbone of both machine learning and AutoML
-    \item AutoML introduces additional stochasticity and selection effects that make na\"ive evaluation misleading
-    \item Goal of this chapter: Get to know fundamental evaluation protocols and rigorous AutoML benchmarking practices
+    \item Evaluation is the backbone of both machine learning and AutoML:
 \end{itemize}
+\begin{center}
+We want models that generalize well to unseen data
+\end{center}
+\begin{itemize}
+    \item Pitfall: Models just memorizing training data / overfitting
+    \item AutoML introduces selection effects that make na\"ive evaluation misleading
+    \item Get to know in this chapter: 
+\end{itemize}
+\begin{center}
+Fundamental evaluation protocols and rigorous benchmarking practices
+\end{center}
 \end{frame}
 
 \begin{frame}{Why is Evaluation Hard?}
     \begin{itemize}
         \item Data is finite, but we want to reason about infinite future data
-        \item Models are stochastic and data is noisy
+        \item Models are stochastic, and data is noisy
         \item Small design choices can change conclusions dramatically
-        \item Strong optimization methods can exploit weaknesses in evaluation procedures resulting in (meta-)overfitting
+        \item Strong optimization methods can exploit weaknesses in evaluation procedures, resulting in (meta-)overfitting
     \end{itemize}
     \vspace{.5cm}
     \textbf{If evaluation is weak, progress becomes an illusion.}
 \end{frame}
 
+\begin{frame}{Overfitting VS Meta-Overfitting}
+    \begin{description}
+        \item[Overfitting] Model fits the training data too closely, fails to generalize to unseen data
+        \begin{itemize}
+            \item Familiar from standard ML: high training performance, poor test performance
+        \end{itemize}
+        \item[Meta-Overfitting] An AutoML system overfits the evaluation procedure itself
+        \begin{itemize}
+            \item By searching over many configurations, the system finds one that happens to score well on the validation data
+            \item The selected configuration generalizes poorly not because the model is too complex, but because the selection process exploited noise in the validation scores
+        \end{itemize}    
+    \end{description}
+    % \textbf{Overfitting is a property of a single model.}\\
+    % \textbf{Meta-overfitting is a property of the search process.}
+\end{frame}
+
+\begin{frame}{Selection Effects in AutoML: An Example}
+    \begin{minipage}{.58\textwidth}
+        \begin{itemize}
+            \item Suppose $5$ evaluated models $f_i$, each with true performance $\mathcal{R}^\ast = 0.8$
+            \item Due to finite data, each validation estimate $\mathcal{R}_\text{emp}(f_i) = \mathcal{R}^\ast + \varepsilon_i$ is noisy
+            \item AutoML system selects $f^\ast = \arg\min_f \mathcal{R}_\text{emp}(f)$
+            \item This optimistic gap is pure noise,\\ no real progress
+            \item Na\"ive evaluation reports the best noise,\\ not the best model
+        \end{itemize}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{.4\textwidth}
+    \input{02_Evaluation/images/selection_bias_plot}
+    \end{minipage}
+\end{frame}
+
+\begin{frame}[c]{Why Is Evaluation Even More Important for AutoML?}
+    \begin{itemize}
+        \item AutoML systems typically explore many pipelines, hyperparameter settings, and thus models automatically
+        \item The more configurations we try, the easier it becomes to overfit the evaluation process itself
+        \item Automation amplifies bad evaluation practices
+    \end{itemize}
+    \vspace{0.5cm}
+    \textbf{AutoML applies evaluation methods systematically}\\
+    \textbf{$\Rightarrow$ Validating models correctly becomes even more important}
+\end{frame}
 
 \begin{frame}{From Evaluation to Benchmarking}
 \begin{itemize}
-    \item Evaluation asks: How good is a model?
+    \item Evaluation asks: How good is a model regarding a certain performance metric?
     \item Benchmarking asks: How good is a method compared to alternatives across many problems?
 \end{itemize}
 \vspace{0.5cm}
@@ -52,14 +103,31 @@
 \end{itemize}
 \end{frame}
     
-\begin{frame}[c]{Why Is Evaluation Even More Important for AutoML?}
+
+\begin{frame}{Visualizing AutoML Behavior}
+\begin{itemize}
+    \item Comparing AutoML systems by final performance alone loses important information
+    \item AutoML systems are \emph{anytime algorithms}: performance improves over time as better configurations are found
+\end{itemize}
+
+\vspace{.2cm}
+
+\begin{minipage}{.48\textwidth}
+\begin{itemize}
+    \item A single number cannot capture this trajectory
     \begin{itemize}
-        \item AutoML systems typically explore many pipelines, hyperparameter settings, and thus models automatically
-        \item The more configurations we try, the easier it becomes to overfit the evaluation process itself
-        \item Automation amplifies both good and bad evaluation practices
+        \item System A may converge faster
+        \item System B may overtake it given more time
+        \item Just a single final score would conflate these behaviors
     \end{itemize}
-    \vspace{0.5cm}
-    \textbf{AutoML applies evaluation methods systematically but validating them correctly is even more important}
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{.46\textwidth}
+\resizebox{\textwidth}{!}{
+\input{02_Evaluation/images/visualizing_automl_behavior_plot}
+}
+\end{minipage}
 \end{frame}
 
 \begin{frame}{Guiding Questions for This Chapter}

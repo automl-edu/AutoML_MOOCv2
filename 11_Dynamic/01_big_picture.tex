@@ -27,19 +27,19 @@
     \begin{columns}
     \column{0.33\textwidth}
         \centering
-        \onslide<1->{
+        \onslide<2->{
         \includegraphics[width=1\textwidth]{images/interface_data_constraint_model.png}}
     \column{0.33\textwidth}
         \centering
-        \onslide<2->{
+        \onslide<3->{
         \includegraphics[width=\linewidth]{images/interface_data_space_config.png}}
     \column{0.33\textwidth}
         \centering
-        \onslide<3->{
+        \onslide<4->{
         \includegraphics[width=\linewidth]{images/interface_data_docu_code.png}}
     \end{columns}
-    \onslide<4->{
-    I.e.: We do not take into account what happens inside the box!}
+    \onslide<5->{
+    We do not take into account what happens inside the box!}
     
 %\end{itemize}
 
@@ -48,7 +48,7 @@
 %----------------------------------------------------------------------
 \begin{frame}{Why Dynamic?} 
 
-    Learning is \emph{iterative}!
+   Many learning approaches are \emph{iterative}!
     \pause
     \begin{enumerate}
         \item Initialize model
@@ -76,18 +76,22 @@
     \begin{columns}
     \column{0.33\textwidth}
         \centering
+        \only<2->{
         $\alpha$ too small:\\takes long to converge
-        \includegraphics[width=\linewidth]{images/lr_too_small}
+        \includegraphics[width=\linewidth]{images/lr_too_small}}
     \column{0.33\textwidth}
         \centering
+        \only<3->{
         $\alpha$ small enough:\\convergence
-        \includegraphics[width=\linewidth]{images/lr_med}
+        \includegraphics[width=\linewidth]{images/lr_med}}
     \column{0.33\textwidth}
         \centering
+        \only<4->{
         $\alpha$ too large:\\divergence
-        \includegraphics[width=\linewidth]{images/lr_too_large}
+        \includegraphics[width=\linewidth]{images/lr_too_large}}
     \end{columns}
-    \liturl{Interactive GeoGebra Example}{https://www.geogebra.org/calculator/m3mg8qnt}
+    \only<2->{
+    \liturl{Interactive GeoGebra Example}{https://www.geogebra.org/calculator/m3mg8qnt}}
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
@@ -100,11 +104,12 @@
         $\alpha$ static\\
         (0.9285301)
         \includegraphics[width=.75\linewidth]{images/ThreeHumpCamle_static_lr.png}
-        \pause
     \column{0.5\textwidth}
-        \centering
-        $\alpha$ manually changed after 3 steps\\(from 0.9285301 to 0.1428201)
-        \includegraphics[width=.75\linewidth]{images/ThreeHumpCamel_dynamic}
+        \only<2->{
+            \centering
+            $\alpha$ manually changed after 3 steps\\(from 0.9285301 to 0.1428201)
+            \includegraphics[width=.75\linewidth]{images/ThreeHumpCamel_dynamic}
+        }
     \end{columns}
     \liturl{Interactive GeoGebra Example}{https://www.geogebra.org/calculator/q5cjdkff}
 \end{frame}
@@ -155,7 +160,7 @@ Learning Rates example:
 %Most important insights from this video:
 
 \begin{itemize}
-    \item \textbf{Learning is an Iterative Process:} During learning, we traverse a diverse solution landscape. This traversal requires adaptation to the hyperparameters.
+    \item \textbf{Learning is often an Iterative Process:} During learning, we traverse a diverse solution landscape. This traversal requires adaptation to the hyperparameters.
     \pause
     \item \textbf{Dynamic Optimization Handles Non-Stationarity:} Changing hyperparameters on-the-fly enables adaptation to the changing solution landscape.
     \pause

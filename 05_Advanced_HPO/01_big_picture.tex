@@ -9,6 +9,8 @@
 %\institute{}
 %\date{}
 
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
+
 \begin{document}
 	
 	\maketitle
@@ -16,31 +18,40 @@
 
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}[c]{Is BayesOpt the ideal method for HPO?}
+\begin{frame}[c]{Is Bayesian Optimization the Ideal Method for HPO?}
 
-(Vanilla) Bayesian Optimization is
+Standard Bayesian optimization is:
+\pause
 
 \begin{itemize}
     \item theoretically grounded, well-established, and widely studied,
-    \item built for sequential decision-making problems in which evaluations are expensive and the objective function is unknown,
-    \item based on minimal assumption\footnote{theoretical guarantees only require that the true function lies in the RKHS induced by the kernel} which makes it widely applicable.
+    \pause
+    \item built for sequential decision-making under uncertainty in which evaluations are expensive and the objective function is unknown,
+    \pause
+    \item based on standard smoothness assumptions\footnote{For example, some regret guarantees assume the objective lies in the RKHS induced by the chosen kernel.}, which makes it widely applicable.
 \end{itemize}
+\pause
 
-$\leadsto$ \textbf{Yes,} because it is more sample-efficient than random search, more adaptive than grid search, and more systematic than manual search. \\
-$\leadsto$ \textbf{But}, it might still be too inefficient for practical HPO tasks.
+$\leadsto$ \textbf{Often yes,} because it can be more sample-efficient than random search, more adaptive than grid search, and more systematic than manual search. \\
+\pause
+$\leadsto$ \textbf{But}, it might still be too inefficient for practical HPO tasks (e.g. where a single function evaluation requires training and evaluating a large neural network).
 
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}[c]{What do we know about HPO?}
+\begin{frame}[c]{What Do We Know About HPO of ML Models?}
 
 Some observations:
+\pause
 
 \begin{itemize}
-    \item we often search the same space on different dataset \\ $\leadsto$ similar tasks might have similar objective functions.
-    \item prior information is available from previous experiments or the domain \\ $\leadsto$ we do not need to start from scratch.
-    \item evaluating ML pipelines is iterative \\ $\leadsto$ we can get low-cost approximations of the true, costly function.
+    \item We often search the same space on different datasets. \\ $\leadsto$ Similar tasks might have similar objective functions.
+    \pause
+    \item Prior information is available from previous experiments or the domain. \\ $\leadsto$ We do not need to start from scratch.
+    \pause
+    \item Evaluating ML pipelines is iterative. \\ $\leadsto$ We can get low-cost approximations of the true, costly function.
 \end{itemize}
+\pause
 
 $\leadsto$ HPO has a lot of structure; treating it as generic black-box optimization is unnecessarily general and may be inefficient
 
@@ -50,11 +61,14 @@ $\leadsto$ HPO has a lot of structure; treating it as generic black-box optimiza
 \begin{frame}{Summary} 
 
 Most important insights from this video:
+\pause
 
 \begin{enumerate}
     \item Bayesian optimization can be improved by exploiting the structure of the optimization problems.
+    \pause
     \item HPO offers task similarity, prior information, and intermediate results.
 \end{enumerate}
+\pause
 
 $\leadsto$ We derive HPO-specific assumptions that increase the efficiency of Bayesian optimization for HPO tasks.
 

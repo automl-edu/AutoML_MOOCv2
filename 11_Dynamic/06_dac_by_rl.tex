@@ -46,7 +46,7 @@
         
         %        \draw[myarrow] (feat.south) -- ($(feat.south |- Agent)+(0,1.125)$);
         
-        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above=-.05,pos=0.5] { action $\policy(s_t) \to a_t$} node [below,pos=0.5] {(set param $\conf$)} -- (Algo.north);
+        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above=-.05,pos=0.5] { action $\policy(s_t) \mapsto a_t$} node [below,pos=0.5] {(set hyperparameter $\conf$)} -- (Algo.north);
         \draw[myarrow, dashed] ($(Algo.south)+(-0.25, 0)$) -- ($(Algo.south)+(-0.25, -0.5)$) -- ($(Agent.south)+(0.25, -0.5)$) node [above,pos=0.5] {state $s_{t+1}$} -- ($(Agent.south)+(0.25, 0)$);
         \draw[myarrow] ($(Algo.south)+(0.25, 0)$) -- ($(Algo.south)+(0.25, -0.95)$) -- ($(Agent.south)+(-0.25, -0.95)$) node [below,pos=0.5] {reward $r_{t+1}$} -- ($(Agent.south)+(-0.25, 0)$);
         
@@ -59,7 +59,7 @@
     \end{tikzpicture}
     \begin{itemize}
         \item RL is not setup with generalization across problems (i.e. environments) in mind!
-        \item<2-> To be able to leverage the contextual MDP we have to slightly modify the training and policy
+        \item<2-> To be able to leverage the contextual MDP, we have to slightly modify the training and policy \liturl{Biedenkapp et al. 2020}{https://andrebiedenkapp.github.io/assets/pdf/paper/20-ecai-dac.pdf}
     \end{itemize}
 \end{frame}
 %-----------------------------------------------------------------------
@@ -69,16 +69,17 @@
         \item We want to learn a policy that performs well on different datasets (i.e., the context)\pause
         \item We can choose two different approaches \liturl{Biedenkapp 2026}{https://andrebiedenkapp.github.io/assets/pdf/paper/26-AAMAS-Blue-Sky.pdf}:\pause
         \begin{itemize}
-            \item Context oblivious policies $\policy(s)$ purely observe the state of the algorithm that is being tuned
+            \item Context-oblivious policies $\policy(s)$ only observe the state of the algorithm that is being~tuned
+            \item Context-oblivious policies \ldots
             \begin{itemize}\pause
-                \item Context oblivious policies generalize by training on a distribution of datasets.
-                \item Context oblivious policies are robust and tolerate variation but might can not perfectly adapt to a specific dataset.
-                \item Simpler to realize
+                \item generalize by training on a distribution of datasets.
+                \item are robust and tolerate variation but can not perfectly adapt to a specific dataset.
+                \item are simpler to realize than context-aware ones.
             \end{itemize}\pause
-            \item Context aware policies $\policy(s,\dataset)$ that additionally observe features of the dataset at hand
+            \item Context-aware policies $\policy(s,\dataset)$ additionally observe meta-features of a given dataset
             \begin{itemize}\pause
-                \item Context aware policies can directly adapt to the dataset at hand
-                \item Require additional design decisions on A) what is an appropriate context and B) how to best include it in the learning process.
+                \item Context-aware policies can directly adapt to the dataset at hand
+                \item Require additional design decisions on\\A) what is an appropriate context and\\ B) how to best include it in the learning process.
             \end{itemize}
         \end{itemize}
     \end{itemize}
@@ -88,15 +89,15 @@
 \begin{frame}{Actions}
 Domains of change
     \begin{itemize}
-        \item Directly setting the hyperparameter $\conf_{i,t} = \action_t$
+        \item Directly setting the hyperparameter $\conf_{i,t} = \actionRL_t$
         \begin{itemize}\pause
             \item Full flexibility for adaptation
             \item Can lead to very bumpy schedules (i.e. bang-bang control)
         \end{itemize}\pause
         \item Relative updates
         \begin{itemize}\pause
-            \item Change the hyperparameter by a factor, e.g., $\conf_{i,t} = \action_t\cdot\conf_{i,t-1}$
-            \item Change the hyperparameter by a summand, e.g., $\conf_{i,t} = \action_t+\conf_{i,t-1}$
+            \item Change the hyperparameter by a factor, e.g., $\conf_{i,t} = \actionRL_t\cdot\conf_{i,t-1}$
+            \item Change the hyperparameter by a summand, e.g., $\conf_{i,t} = \actionRL_t+\conf_{i,t-1}$
             \item Less flexible but likely less bumpy schedules
         \end{itemize}
     \end{itemize}
@@ -129,7 +130,7 @@ Domains of change
 \begin{frame}{Transitions}
     \begin{itemize}
         \item Implicitly given by training the algorithm/model for an iteration/a few steps\pause
-        \item The Granularity here can be very important\footnote{PBT-style training also requires careful consideration of this detail}
+        \item The granularity here can be very important\footnote{PBT-style training also requires careful consideration of this detail}
         \begin{itemize}\pause
             \item Too often: Can lead to extremely difficult learning problems
             \item Too infrequent: We might potentially miss some important updates and not update the hyperparameter(s) accordingly
@@ -148,7 +149,7 @@ to efficiently repeat actions, e.g. \liturl{Biedenkapp et al. 2021}{https://proc
         \begin{itemize}
             \item We go quickly for better cost values during training
             \item Often fairly well correlated with final loss
-            \item BUT: Can lead to too aggressive hyperparameter changes early on to minimize cost quickly, but does not convergence as well later on
+            \item BUT: Can lead to too aggressive hyperparameter changes early on to minimize cost quickly, but does not converge as well later on
             \item You can play with the discount factor to account for this
         \end{itemize}
     \end{itemize}
@@ -160,7 +161,7 @@ to efficiently repeat actions, e.g. \liturl{Biedenkapp et al. 2021}{https://proc
         \item An RL agent could try to implicitly learn what kind of dataset $\dataset$ is at hand right now\pause
         \begin{itemize}
             \item Possible, given a sufficiently large history of observations
-            \item Might require a lot of training and large history
+            \item Might require a lot of training and a large history
         \end{itemize}\pause
         \item Directly provide meta-features characterizing the dataset
         \begin{itemize}
@@ -168,8 +169,8 @@ to efficiently repeat actions, e.g. \liturl{Biedenkapp et al. 2021}{https://proc
             \item Landmarking features, such as, loss of tree-based models vs. linear model
         \end{itemize}\pause
         \item Simplest approach to have a policy context-aware: Concatenation to the state-observations \liturl{Hallak et al. 2015}{https://arxiv.org/abs/1502.02259}
-        \item This simple approach often does always outperform context-oblivious policies! See, e.g, \liturl{Benjamins et al. 2023}{https://openreview.net/forum?id=Y42xVBQusn} or \liturl{Prasanna et al. 2024}{https://openreview.net/forum?id=o8DrRuBsQb}\pause
-        \item The choice of appropriate context might itself be problem specific
+        \item This simple approach often outperforms context-oblivious policies! See, e.g, \liturl{Benjamins et al. 2023}{https://openreview.net/forum?id=Y42xVBQusn} or \liturl{Prasanna et al. 2024}{https://openreview.net/forum?id=o8DrRuBsQb}\pause
+        \item The choice of appropriate context might itself be problem-specific
     \end{itemize}
 \end{frame}
 %-----------------------------------------------------------------------

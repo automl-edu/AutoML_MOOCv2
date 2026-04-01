@@ -17,10 +17,10 @@
 %-----------------------------------------------------------------------
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Dynamic Algorithm Configuration}
+\begin{frame}{Dynamic Algorithm Configuration (DAC)}
     \begin{itemize}
         \item Prior approaches achieve dynamic tuning but do not produce a policy\pause
-        \item DAC Goal: A reusable \textit{policy} that adapts hyperparameters\pause
+        \item DAC Goal: A \alert{reusable \textit{policy}} that adapts hyperparameters\pause
     \end{itemize}
     Let
     \begin{description}
@@ -34,13 +34,13 @@
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{DAC as Contextual Markov Decision Process \liturl{Biedenkapp et al. 2020}{https://andrebiedenkapp.github.io/assets/pdf/paper/20-ecai-dac.pdf}}
+\begin{frame}{DAC as Contextual Markov Decision Process\\ \liturl{Biedenkapp et al. 2020}{https://andrebiedenkapp.github.io/assets/pdf/paper/20-ecai-dac.pdf}}
     \begin{description}
         \item[State $\stateRL_t$] statistics gathered in an algorithm run\pause
         \item[Action $\actionRL_t$] determines how hyperparameters are set or adapted\pause
-        \item[Transition] iteration of the algorithm for one or a few steps with the given hyperpareter settings\pause
+        \item[Transition] iteration of the algorithm for one or a few steps with the given hyperparameter settings\pause
         \item[Reward $\rewardRL_t$] current cost (or approximation)\pause
-        \item[Context $\dataset$] A given dataset (or task)
+        \item[Context $\dataset$] a given dataset (or task)
     \end{description}
 \end{frame}
 %-----------------------------------------------------------------------
@@ -87,7 +87,7 @@
     \begin{itemize}
         \item A direct schedule has the disadvantages\pause
         \begin{itemize}
-            \item Discretizations is important
+            \item Discretization is important
             \item Hard to optimize for a reasonable pattern
         \end{itemize}
         \item Directly learn a function of a schedule:\\
@@ -95,12 +95,12 @@
         (e.g., the weights of a neural net)\pause
         \item We can observe the cost induced by a configuration and use any black-box optimizer to optimize $\weights$
         $$\weights^*\in\argmin_{\weights\in\mathbb{R}^{(n\times m)}}\cost(\policy_\weights)=\argmin_{\weights\in\mathbb{R}^{(n\times m)}}\cost(\stateRL_T,\policy_\weights)$$\pause
-        \item You could use an evolutionary strategy (see, e.g.,\liturl{Chrbaszcz et al. 2018}{https://arxiv.org/abs/1802.08842} or \liturl{Fuks et al. 2019}{hhttps://ml.informatik.uni-freiburg.de/wp-content/uploads/papers/19-IJCAI_PEL.pdf})
+        \item You could use an evolutionary strategy (see, e.g.,\liturl{Chrbaszcz et al. 2018}{https://arxiv.org/abs/1802.08842} or \liturl{Fuks et al. 2019}{https://ml.informatik.uni-freiburg.de/wp-content/uploads/papers/19-IJCAI_PEL.pdf})
     \end{itemize}
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}<2>{Dynamic Algorithm Configuration by RL}
+\begin{frame}{Dynamic Algorithm Configuration by RL}
     \centering
     \begin{tikzpicture}[node distance=4cm]
         %PreProcessing
@@ -116,7 +116,7 @@
         \path (Algo.east |- Algo.south)+(0.125,-1.75) node (resBR) {};
         
         % Context
-        \onslide<2->{
+        \onslide<1->{
         \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.5, -0.5)$) rectangle ($(resBR)+(0.5, -0.5)$);
         \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.375, -0.375)$) rectangle ($(resBR)+(0.375, -0.375)$);
         \path [rounded corners, draw=black!50, fill=white] ($(resUL)+(0.25, -0.25)$) rectangle ($(resBR)+(0.25, -0.25)$);
@@ -129,11 +129,11 @@
         
         %        \draw[myarrow] (feat.south) -- ($(feat.south |- Agent)+(0,1.125)$);
         
-        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above=-.05,pos=0.5] { action $\policy(s_t) \to a_t$} node [below,pos=0.5] {(set param $\conf$)} -- (Algo.north);
+        \draw[myarrow] (Agent.north) -- ($(Agent.north)+(0.0,+0.5)$) -- ($(Algo.north)+(0.0,+0.5)$) node [above=-.05,pos=0.5] { action $\policy(s_t) \mapsto a_t$} node [below,pos=0.5] {(set hyperparameter $\conf$)} -- (Algo.north);
         \draw[myarrow, dashed] ($(Algo.south)+(-0.25, 0)$) -- ($(Algo.south)+(-0.25, -0.5)$) -- ($(Agent.south)+(0.25, -0.5)$) node [above,pos=0.5] {state $s_{t+1}$} -- ($(Agent.south)+(0.25, 0)$);
         \draw[myarrow] ($(Algo.south)+(0.25, 0)$) -- ($(Algo.south)+(0.25, -0.95)$) -- ($(Agent.south)+(-0.25, -0.95)$) node [below,pos=0.5] {reward $r_{t+1}$} -- ($(Agent.south)+(-0.25, 0)$);
         
-        \onslide<2->{
+        \onslide<1->{
         \draw[<->, thick, draw=black!32.5] (resBR.east |- resUL.center) -- ($(resBR.east |- resUL.center)+(0.5, -0.5)$);
         \path (resBR.east |- resUL.center)+(.5, -0.175) node [text=black!32.5] {$\datasets$};
         % This path is only needed so the figure stays centered (the text is not visible)
@@ -156,8 +156,8 @@
 %Most important insights from this video:
 
 \begin{itemize}
-    \item \textbf{DAC generates reusable configuration heuristics.} Counter to approaches that simply adapt hyperparameters, the goal of DAC is to produce a policy.
-    \item \textbf{DAC comes in a variety of flavors.} Depending on the choice of solution approach, the (learned) policies can be more or less expressive but might need more or less resources to learn them accordingly.
+    \item \textbf{DAC generates reusable configuration policies.} Counter to approaches that simply adapt hyperparameters, the goal of DAC is to produce a policy.
+    \item \textbf{DAC comes in a variety of flavors.} Depending on the choice of solution approach, the (learned) policies can be more or less expressive but accordingly might need more or less resources to learn them.
 \end{itemize}
 
 \end{frame}

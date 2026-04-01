@@ -2,11 +2,11 @@
 
 
 \title[AutoML: Introduction]{AutoML Motivation}
-\subtitle{How to Use AutoML}
+\subtitle{How to Use AutoML?}
 \author[Marius Lindauer]{Marius Lindauer}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_AutoDL}
 
 %\institute{}
 %\date{}
@@ -31,7 +31,10 @@
 \column{0.5\textwidth}
 
 \begin{itemize}
-    \item Holy grail because it is the easiest interface(?)
+    \item Holy grail because it is the easiest interface
+    \begin{itemize}
+        \item However, in practice, we often need more than that (incl. metric to be optimized for)!
+    \end{itemize}
     \item Input: Dataset
     \begin{itemize}
         \item explicitly or implicitly also defines tasks (e.g., labels, supervised vs self-supervised, data modality, etc pp)
@@ -109,7 +112,7 @@
 \column{0.5\textwidth}
 
 \begin{itemize}
-    \item Rather than returning a model, sometimes we are rather interested in the optimized configuration of the model or the entire pipeline
+    \item Rather than returning a model, sometimes we are rather interested in the optimized configuration of the inducer or the entire pipeline
     \item Allows reuse of a configuration if retraining is required or if training on a (very) similar dataset is planned
     \item Can provide more insights than only having the model (e.g., which hyperparameter was important to obtain a performant model)
     \begin{itemize}
@@ -160,7 +163,7 @@ Most important insights from this video:
     \end{itemize}
     \item It depends on the use case and context which interface makes more sense
     \begin{itemize}
-        \item For example, domain experts may prefer a very basic interface with dataset as input and a model as an output
+        \item For example, domain experts may prefer a very basic interface with a dataset as input and a model as an output
         \item However, ML experts require more control by defining a configuration space and are looking to better understand the final configuration being returned
     \end{itemize}
 \end{enumerate}

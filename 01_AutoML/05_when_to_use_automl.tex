@@ -6,7 +6,7 @@
 \author[Marius Lindauer]{Marius Lindauer}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_AutoDL}
 
 %\institute{}
 %\date{}
@@ -91,10 +91,10 @@
 \textcolor{Red}{Don't Use AutoML}
 
 \begin{itemize}
-    \item If you already know a promising baseline, you should try these out first
-    \item AutoML tools often need substantially more compute compared to a single model training
+    \item If you already know a promising baseline (e.g., on similar datasets), you should try these out first
+    \item AutoML tools often need more compute compared to a single model training
     \begin{itemize}
-        \item If you would try something like $10$ different models, it could be worth considering AutoML already!
+        \item However, if you tried $10$ different models, it could be worth considering AutoML instead!
     \end{itemize}
 \end{itemize}
 
@@ -107,10 +107,10 @@
 \begin{itemize}
     \item Beyond trying out default or well-established settings of hyperparameters, humans are fairly bad at efficiently trying out different hyperparameters
     \begin{itemize}
-        \item That is even more so if hyperparameters interact with each other
+        \item That is even more so in high-dimensional spaces and if hyperparameters interact with each other
     \end{itemize}
-    \item Exhaustive (grid) search is often very expensive in terms of computing
-    \item[$\leadsto$] Bayesian Optimization is a well-established and more efficient method for tuning hyperparameters 
+    %\item Exhaustive (grid) search is often very expensive in terms of computing
+    %\item[$\leadsto$] Bayesian Optimization is a well-established and more efficient method for tuning hyperparameters 
 \end{itemize}
 
 \pause
@@ -118,7 +118,7 @@
 \textcolor{Red}{Don't Use AutoML}
 
 \begin{itemize}
-    \item If you deal with a well-known dataset (e.g., Imagenet), there are often very well-performing hyperparameter configurations for all kinds of thing
+    \item If you deal with a well-known dataset (e.g., Imagenet), there are often very well-performing hyperparameter configurations for all kinds of things
     \item[$\leadsto$] Use these known hyperparameter settings  at least as the very first configuration your AutoML tries out
 \end{itemize}
 
@@ -138,7 +138,7 @@
 \textcolor{Red}{Don't Use AutoML}
 
 \begin{itemize}
-    \item Some AutoML tools generate fairly complex ensemble/stacking models, which might be harder to interpret them simpler models with less accuracy.
+    \item Some AutoML tools generate fairly complex ensemble/stacking models, which might be harder to interpret than simpler models with less accuracy.
 \end{itemize}
 
 \end{frame}

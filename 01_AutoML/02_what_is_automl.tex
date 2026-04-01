@@ -7,7 +7,7 @@
 \author[Marius Lindauer]{Marius Lindauer}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_AutoDL}
 
 %\institute{}
 %\date{}
@@ -19,10 +19,10 @@
 
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}[c]{\alert{Automated} Machine Learning}
+\begin{frame}[c]{A Definition of \alert{Automated} Machine Learning}
 
 \begin{center}
-Automated Machine Learning (AutoML) supports the development process of new machine learning applications by striving to make modeling and implementation decisions automatically.
+AutoML contributes to the efficient, reproducible, and systematic design of effective intelligent systems by creating a general automated development process, targeting the full machine learning workflow. 
 \end{center}
 
 \end{frame}
@@ -32,10 +32,10 @@ Automated Machine Learning (AutoML) supports the development process of new mach
 \begin{frame}[c]{Advantages of AutoML}
 
 
-With respect to the development of new ML applications, AutoML improves...
+In the development of new ML applications, AutoML improves...
 
 \begin{itemize}
-    \item[\emoji{rocket}] \textbf{Efficiency \& Effectiveness} -- AutoML has been shown to outperform humans in ML and DS competitions!
+    \item[\emoji{rocket}] \textbf{Efficiency \& Effectiveness} -- AutoML has been shown to outperform humans in machine learning and data science competitions!
     \item[\emoji{abacus}] \textbf{Consistent Systematics} -- Less (human) bias or unsystematic evaluation
     \item[\emoji{open-book}] \textbf{Reproducibility} -- Software can run again under the same settings, humans cannot  
 \end{itemize}
@@ -55,6 +55,8 @@ $\leadsto$ This has led to a broader use of ML methods:
 %----------------------------------------------------------------------
 \begin{frame}[c]{\emoji{rocket}Efficiency -- Success of AutoML Systems}
 
+\begin{columns}
+\column{0.6\textwidth}
 
 \begin{itemize}
     \item In 2024, AutoGluon \liturl{Erickson et al}{https://auto.gluon.ai/stable/index.html} won a Top 3 position in 17 out of 21 tabular \liturl{Kaggle}{https://www.kaggle.com/} competitions 
@@ -63,6 +65,12 @@ $\leadsto$ This has led to a broader use of ML methods:
     \end{itemize}
     \item AutoGluon, as one of the most successful AutoML packages in 2024, was used by major companies such as NVIDIA, Intel, Capcom, Mitsubishi, Oracle, Pinterest and others
 \end{itemize}
+
+\column{0.4\textwidth}
+
+\includegraphics[width=1.0\textwidth]{images/autogluon_results.png}
+
+\end{columns}
 
 \end{frame}
 %-----------------------------------------------------------------------
@@ -84,11 +92,10 @@ $\leadsto$ This has led to a broader use of ML methods:
     \begin{itemize}
         \item Grid search: structured pre-defined grid for uniform exploration
         \item Random search: unstructured, uniform exploration
-       %\item Local Search: local greedy improvement  (in the direction of the largest improvement)
         \item Bayesian Optimization: Trade-off between exploration and exploitation
         \item ...
     \end{itemize}
-    \item This is in contrast to human bias, which could lead to suboptimal decisions (e.g., ``I have learned about Transformers, so I'm trying only Transformers'')
+    \item This is in contrast to unreproducible human bias, which could lead to suboptimal decisions (e.g.,\\ ``I have learned about Transformers, so I'm trying only Transformers'')
 \end{itemize}
     
 \end{columns}
@@ -133,7 +140,7 @@ $\leadsto$ This has led to a broader use of ML methods:
 \column{0.4\textwidth}
 
 \begin{itemize}
-    \item For example, Hyperparameter optimization, as a subfield of AutoML, is commonly used in many disciplines using ML by now
+    \item For example, hyperparameter optimization, as a subfield of AutoML, is commonly used in many disciplines using ML by now
     \begin{itemize}
         \item See for example citations of the HPO survey \liturl{Bischl et al. 2023}{https://wires.onlinelibrary.wiley.com/doi/full/10.1002/widm.1484}
     \end{itemize}

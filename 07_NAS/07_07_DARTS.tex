@@ -1,0 +1,216 @@
+\documentclass[main]{subfiles}
+
+
+\title[AutoML: NAS]{Neural Architecture Search}
+\subtitle{DARTS: Differentiable Architecture Search}
+\author[Jovita Lukasik]{Jovita Lukasik}
+\date{}
+
+\titlebackground*{images/AutoML_NAS}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+
+	\maketitle
+
+\begin{frame}{Motivation}
+\begin{itemize}
+    \item One-shot models remove the need to retrain individual architectures, but the \alert{search over subgraphs is still discrete}
+    \item Discrete search prevents us from using \textbf{gradient descent} — a powerful optimisation tool in deep learning
+    \item Idea: relax discrete operation choices to \alert{continuous weights} so that architectures become differentiable w.r.t. a loss
+\end{itemize}
+\pause
+\vspace{0.5em}
+\begin{colorblock}[black]{sintefgrey}{Key Question}
+Can we formulate NAS as a \textbf{gradient-based optimisation} problem, optimizing over architecture parameters and network weights jointly?
+\end{colorblock}
+\end{frame}
+    
+\begin{frame}{DARTS: Differentiable Architecture Search ~\liturl{Liu et al. 2019}{https://openreview.net/pdf?id=S1eYHoC5FX}}
+\only<1>{
+\begin{minipage}[c]{\textwidth}
+     \centering
+        \includegraphics[scale=.425]{07_NAS/images/06/WS-GB-flowchart.pdf}\vspace{-.75em}
+        \captionof{figure}{\liturl{White et al. 2023}{https://arxiv.org/pdf/2301.08727}}\vspace{-.75em}
+\end{minipage}
+}
+\only<2->{
+\begin{minipage}[c]{\textwidth}
+     \centering
+        \includegraphics[scale=0.25]{07_NAS/images/06/WS-GB-flowchart.pdf}\vspace{-.75em}
+        \captionof{figure}{\liturl{White et al. 2023}{https://arxiv.org/pdf/2301.08727}}\vspace{-.75em}
+\end{minipage}
+}
+\pause
+\begin{itemize}
+    \item Use one-shot model with continuous architecture weight $\alpha$ for each operator
+    \begin{itemize}
+        \item[] $x^{(j)} = \sum_{i<j}\tilde{o}^{(i,j)}(x^{(i)}) = \sum_{i<j}\sum_{o\in\mathcal{O}}
+%			\text{softmax}(\alpha)
+			\frac{exp(\alpha_{o}^{(i,j)})}{\sum_{o^{\prime}\in\mathcal{O}}exp(\alpha_{o^{\prime}}^{(i,j)})}o(x^{(i)})$
+    \end{itemize}
+\end{itemize}
+\pause
+    \begin{itemize}
+         \item By optimizing architecture weights $\alpha$, DARTS assigns importance to each operation
+        \begin{itemize}
+			\item Since the $\alpha$ are continuous, we can optimize them with gradient descent
+        \end{itemize}
+        \pause
+	\item In the end, DARTS discretizes to obtain a single architecture 
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}{DARTS: Architecture Optimization}
+    \begin{itemize}
+		\item The optimization problem is a bi-level optimization problem:
+        \begin{center}
+		\footnotesize{
+					\begin{tcolorbox}[width = 8cm,halign=center,valign=center]
+		%		\begin{eqnarray}
+					%\nonumber			
+					$\text{min}_{\alpha} \mathcal{L}_{\text{\alert{val}}}(w^*(\alpha), \alert{\alpha})$\\
+					%\nonumber			
+					$s.t.\ w^*(\alpha) \in \text{argmin}_{w} \mathcal{L}_{\text{\alert{train}}}(\alert{w},\alpha)$
+		%		\end{eqnarray}
+			\end{tcolorbox}
+		}
+		\end{center}	
+		\item This is solved using alternating SGD steps on architectural parameters $\alpha$\\and weights $w$ 
+		
+    \end{itemize}
+        
+ %    	\begin{algorithm}[H]
+	%  %\footnotesize%
+	%  %create mixed ops $\tilde{o}$ parametrized by $\alpha_{o}^{(i,j)}$ for each edge $(i,j)$\\
+	%  \TitleOfAlgo{DARTS 1st order\vspace*{-0.3cm}\\\rule{\textwidth}{0.5pt}}
+
+	%  \While{\textit{not converged}}{
+	%   Update one-shot weights $\vec{w}$ by $\nabla_{\vec{w}}\mathcal{L}_{train}(\vec{w}, \vec{\alpha})$\\
+	%   Update architectural parameters $\alpha$ by $\nabla_{\alpha}\mathcal{L}_{valid}(\vec{w}, \vec{\alpha})$\;
+	%  }
+	%  return $\argmax_{o\in\mathcal{O}}\alpha_{o}^{(i,j)}$ for each edge $(i,j)$\;
+	% \end{algorithm}
+    
+		 Note: There is no theory showing that this process converges.
+    
+\end{frame}
+
+\begin{frame}{Strong Performance on Some Benchmarks}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+    \begin{itemize}
+    \item E.g., original CNN search space
+    
+\begin{itemize}
+        \item 8 operations on each MixedOp
+    	\item 28 MixedOps in total
+    	\item $> 10^{23}$ possible architectures
+\end{itemize}
+    \item Performance
+    \begin{itemize}
+    	\item $<3\%$ error on CIFAR-10 in less than 1 GPU day of search
+	\end{itemize}
+\end{itemize}    
+\end{column}
+\begin{column}{0.5\textwidth}
+\centering
+\includegraphics[scale=0.35]{07_NAS/images/06/darts_normal_cell.png}
+\hspace{1cm}
+\includegraphics[scale=0.35]{07_NAS/images/06/darts_reduction_cell.png}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Issues -- Non-Robust Behavior}
+\begin{itemize}
+    \item DARTS is very sensitive w.r.t. its own hyperparameters (e.g., one-shot learning rate, $L_2$ regularization, etc.)
+    \begin{itemize}
+        \item Tuning these hyperparameters for every new task/search space is computationally expensive
+        \item DARTS may return degenerate architectures, e.g., cells composed with only skip connections
+    \end{itemize}
+\end{itemize}
+\begin{center}
+		\includegraphics[scale=0.3]{07_NAS/images/06/normal_DARTS_S3.pdf}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Issues -- Non-Robust Behavior}
+\begin{itemize}
+    \item DARTS is very sensitive w.r.t. its own hyperparameters (e.g., one-shot learning rate, $L_2$ regularization, etc.)
+\end{itemize}
+\begin{minipage}{.45\textwidth}
+\small
+\begin{itemize}
+    \item \alert{RobustDARTS} \liturl{Zela et al, 2020}{https://openreview.net/pdf?id=H1gDNyrKDS} -- tracks the curvature of the validation loss and stops the search early based on that
+\end{itemize}
+\end{minipage}
+\begin{minipage}{.45\textwidth}
+\pause
+\begin{itemize}
+    \item \alert{SmoothDARTS} \liturl{Chen and Hsieh, 2020}{https://arxiv.org/pdf/2002.05283.pdf} -- applies random perturbation and adversarial training to avoid bad regions
+\end{itemize}
+\end{minipage}
+\centering
+\pause
+\includegraphics[scale=0.25]{07_NAS/images/06//valid_eigenvalues_traj.pdf}
+\end{frame}
+
+
+\begin{frame}{Issues -- Memory Constraints}
+\begin{itemize}
+    \item DARTS keeps the \alert{entire one-shot model in memory}, together with its computed tensors 
+    \begin{itemize}
+        \item  This constrains the search space size and the fidelity used to train the one-shot model
+        \item \alert{Impossible} to run on large datasets such as ImageNet
+    \end{itemize}
+\end{itemize}
+    \begin{minipage}{.55\textwidth}
+\pause
+A lot of research aims to fix this issue:
+\begin{itemize}
+\pause
+    \item \alert{GDAS} \liturl{Dong et al, 2019}{https://arxiv.org/pdf/1910.04465.pdf} -- samples from a Softmax distribution to keep only a single architecture in memory
+\end{itemize}
+\end{minipage}
+\pause
+\begin{minipage}{.2\textwidth}
+\includegraphics[scale=0.3]{07_NAS/images/06/gdas.png}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Issues -- Memory Constraints}
+\begin{itemize}
+    \item DARTS keeps the \alert{entire one-shot model in memory}, together with its computed tensors 
+    \begin{itemize}
+        \item  This constrains the search space size and the fidelity used to train the one-shot model
+        \item \alert{Impossible} to run on large datasets as ImageNet
+    \end{itemize}
+\end{itemize}
+
+A lot of research aims to fix this issue:
+\begin{itemize}
+    \item \alert{GDAS} \liturl{Dong et al, 2019}{https://arxiv.org/pdf/1910.04465.pdf} -- samples from a Gumbel Softmax distribution to keep only a single architecture in memory
+    \item \alert{ProxylessNAS} \liturl{Cai et al, 2019}{https://openreview.net/pdf?id=HylVB3AqYm} -- computes approximate gradients on $\alpha$ keeping only 2 edges between two nodes in memory at a time 
+    \item \alert{PC-DARTS} \liturl{Xu et al, 2020}{https://arxiv.org/pdf/1907.05737.pdf} -- performs the search on a subset of the channels in the one-shot mode
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Summary}
+    
+Most important insights from this video:
+
+\begin{enumerate}
+\item DARTS uses continuous architecture weights $\alpha$ to make the search differentiable
+\item The bi-level optimization alternates between updating weights $w$ and architecture parameters $\alpha$
+\item DARTS is efficient but sensitive to hyperparameters and may produce degenerate architectures
+\end{enumerate}
+\end{frame}
+
+
+\end{document}

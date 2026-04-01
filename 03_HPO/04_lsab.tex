@@ -8,6 +8,8 @@
 \author[Lars Kotthoff]{Lars Kotthoff}
 \date{}
 
+\titlebackground*{images/AutoML_HPO_2_2}
+
 %\institute{}
 %\date{}
 	
@@ -48,7 +50,7 @@
             \end{itemize}
         \item Disadvantages
             \begin{itemize}
-                \item Must define local neighborhoods, often needs discretization
+                \item Must define local neighborhoods (what is a small change to a hyperparameter), often needs discretization
                 \item Large number of evaluations needed if the starting point is
                     far away from optimum
             \end{itemize}
@@ -57,17 +59,17 @@
 
 %----------------------------------------------------------------------
 
-\begin{frame}{Ablation Analysis}
+\begin{frame}{Ablation Analysis \liturl{Fawcett and Hoos 2016}{https://www.cs.ubc.ca/labs/algorithms/Projects/Ablation/papers/FawcettHoos-joh2016-ablationAnalysis.pdf}}
     \begin{itemize}
         \item Use ``local search'' to determine important hyperparameters
         \item Start from initial configuration (e.g.\ default)
-        \item Change configuration, one hyperparameter at a time, until target
+        \item Change configuration greedily, one hyperparameter at a time, until target
             configuration (e.g.\ best found by HPO) is obtained
         \item Choose hyperparameter that has the largest impact on performance
             in each step
         \item Allows to quantify impact of each changed hyperparameter
         \item Does not consider hyperparameter interactions and only evaluates
-            local important (specific to the particular pair of configurations)
+            local importance (specific to the particular pair of configurations)
     \end{itemize}
 \end{frame}
 
@@ -88,11 +90,11 @@ reg_lambda 1.0 -> 1000.0: 76.16%
 
 \begin{frame}{Summary} 
 \begin{enumerate}
-    \item Local Search improves configurations by iteratively looking for
+    \item Local search improves configurations by iteratively looking for
         improvements close to the current best
-    \item Ablation Analysis can quantify hyperparameter importance with respect
+    \item Ablation analysis can quantify hyperparameter importance with respect
         to a particular pair of configurations, e.g.\ a default and the best HPO
-        has found, but does not consider interactions
+        has found, but does not directly consider interactions
 \end{enumerate}
 \end{frame}
 

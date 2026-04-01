@@ -6,7 +6,7 @@
 \author[Marius Lindauer]{Marius Lindauer}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_AutoDL}
 
 %\institute{}
 %\date{}
@@ -38,16 +38,20 @@
 
 \bigskip
 
+\pause
+
 \textcolor{red}{No?}
 For different given datasets and tasks, we achieve the best performance by adapting
 \begin{itemize}
-    \item[$\to$] hyperparameters for training (incl. pre-training and fine-tuning) such as learning rate, batch sizes or regularization
-    \item[$\to$] the model, such as
+    \item[$\to$] Hyperparameters for training (incl. pre-training and fine-tuning) such as learning rate, batch sizes or regularization
+    \pause
+    \item[$\to$] The model, such as
     \begin{itemize}
-        \item choosing the correct model class (e.g., XGBoost vs DNNs)
-        \item architecture of a deep neural network (e.g., size, operators, connections)
-        \item usage-specific changes (e.g., tokenization, prompt engineering, temperature)
+        \item Choosing the correct model class (e.g., XGBoost vs DNNs)
+        \item Architecture of a deep neural network (e.g., size, operators, connections)
+        \item Usage-specific changes (e.g., tokenization, prompt engineering, temperature)
     \end{itemize}
+    \pause
     \item[$\to$] preprocessing of your data, such as data filtering, data normalization or data augmentation
 \end{itemize}
 
@@ -66,7 +70,7 @@ For different given datasets and tasks, we achieve the best performance by adapt
 \column{0.5\textwidth}
 
 \begin{itemize}
-    \item Even a simple Stochastic Gradient Descent -- the most basic training optimizer for DNNs, has 5 hyperparameters in PyTorch's implementation
+    \item Even a simple stochastic gradient descent -- the most basic training optimizer for DNNs, has 5 hyperparameters in PyTorch's implementation
     \item If you consider all other magic numbers -- sometimes hidden in packages you are using -- you can easily go up to 30 and more hyperparameters
     \item If you choose the wrong hyperparameter settings, your training success can suffer or completely fail
 \end{itemize}
@@ -156,7 +160,7 @@ For different given datasets and tasks, we achieve the best performance by adapt
     \item Eventually, we would like to  get rid of manually written code entirely
     \item Code generation with LLMs~\liturl{Survey by Jiang et al.}{https://arxiv.org/abs/2406.00515} or Agentic systems \liturl{Survey by Plaat et al}{https://arxiv.org/abs/2503.23037} are a step in this direction
     \begin{itemize}
-        \item \alert{Note}: As of 2025, it seems that LLMs are not strong enough to do it on their own but need to employ existing (AutoML) tools to do a good job
+        \item \alert{Note}: As of the beginning of 2026, LLMs are not strong enough to do it on their own but need to employ existing (AutoML) tools to do a good job
     \end{itemize}
 \end{itemize}
     

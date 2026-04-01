@@ -76,7 +76,7 @@
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{What Even is a State?}
+\begin{frame}{What Even Is a State?}
     \begin{itemize}
         \item We constantly observe our surroundings and our internal feelings
         \item Senses provide different forms of observations:
@@ -90,13 +90,13 @@
         \end{itemize}
     \end{itemize}
     It is not always possible to observe the full state.\\
-    For simplicities sake, in the rest of the lecture we assume that we can observe all information that is relevant for an agent to solve a task.\footnote{See chapter 8 of \liturl{Puterman and Chan, 2026}{https://github.com/martyput/MDP_book/blob/master/08\%20Chapter/Book___chapter08.pdf} for a detailed discussion of the partial observation setting.}
+    For simplicity's sake, in the rest of the lecture, we assume that we can observe all information that is relevant for an agent to solve a task.\footnote{See chapter 8 of \liturl{Puterman and Chan, 2026}{https://github.com/martyput/MDP_book/blob/master/08\%20Chapter/Book___chapter08.pdf} for a detailed discussion of the partial observation setting.}
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
 \begin{frame}{Actions}
     \begin{itemize}
-        \item An action will induce some change the state of the environment\pause
+        \item An action will induce some change in (the state of) the environment\pause
         \item Types of actions:
         \begin{description}
             \item[continuous] The value domain is continuous (and often bounded by some range, e.g., $\left[0,1\right]$)\pause\\
@@ -138,7 +138,7 @@
 %----------------------------------------------------------------------
 \begin{frame}{Rewards}
     \begin{itemize}
-        \item Rewards provide crucial feedback on wether the outcome of an action was ``good'' or ``bad''\pause
+        \item Rewards provide crucial feedback on whether the outcome of an action was ``good'' or ``bad''\pause
         \item Either immediate (or dense) reward: We directly get a reward signal after each transition\pause
         \item Or delayed (or sparse) reward: We have to wait for some states to observe the outcome of a previous choice or whole sequence of choices
     \end{itemize}\pause
@@ -184,9 +184,9 @@
 %----------------------------------------------------------------------
 \begin{frame}{Q-Learning}
     \begin{itemize}
-        \item Most RL algorithms aim to estimate the State(-Action) Value, i.e., how valuable is it to be in a certain state
-        \item Value-based algorithms directly use this estimate to derive a policy
-        \item Q-learning \liturl{Watkins, 1989}{https://www.cs.rhul.ac.uk/~chrisw/new_thesis.pdf} is one of the most popular value-based RL algorithms:
+        \item Most RL algorithms aim to estimate the State(-Action) Value, i.e., how valuable is it to be in a certain state\pause
+        \item Value-based algorithms directly use this estimate to derive a policy\pause
+        \item Q-learning \liturl{Watkins, 1989}{https://www.cs.rhul.ac.uk/~chrisw/new_thesis.pdf} is one of the most popular value-based RL algorithms:\pause
     \end{itemize}
     \begin{equation*}
         \mathcal{Q}(s_t, a_t) \gets \mathcal{Q}(s_t, a_t) +
@@ -194,7 +194,7 @@
         \underbrace{
             \Big(
                 \overbrace{
-                    r_{t} + \gamma \max\mathcal{Q}(s_{t+1},\cdot)
+                    r_{t} + \gamma \max_a\mathcal{Q}(s_{t+1},a)
                 }^{\text{TD-target}}
                 - \mathcal{Q}(s_t,a_t)
             \Big),
@@ -210,17 +210,17 @@
         \underbrace{
             \Big(
                 \overbrace{
-                    r_{t} + \gamma \max\mathcal{Q}(s_{t+1},\cdot)
+                    r_{t} + \gamma \max_a\mathcal{Q}(s_{t+1}, a)
                 }^{\text{TD-target}}
                 - \mathcal{Q}(s_t,a_t)
             \Big),
         }_{\text{TD-delta}}
     \end{equation*}
     \begin{description}
-        \item[TD-target] Discounted expected future rewards given the assumption that we will behave greedy in the future. The discounting factor $\gamma$ determines how strongly to weigh the influence of predicted future rewards.
+        \item[TD-target] Discounted expected future rewards given the assumption that we will behave greedy wrt to $\mathcal{Q}$ in the future. The discounting factor $\gamma$ determines how strongly to weigh the influence of predicted future rewards.
         In supervised learning terms: Defines the regression target value\pause
         \item[TD-delta] Difference between predicted reward $\mathcal{Q}(s_t,a_t)$ and the actual observed $r_t$ with expected future rewards.
-        In supervised learning terms. Defines the prediction error
+        In supervised learning terms: Defines the prediction error
     \end{description}\pause
     The learning rate $\alpha$ determines how strongly to overwrite the current estimate.
 \end{frame}
@@ -234,25 +234,25 @@
         \underbrace{
             \Big(
                 \overbrace{
-                    r_{t} + \gamma \max\mathcal{Q}(s_{t+1},\cdot)
+                    r_{t} + \gamma \max_a\mathcal{Q}(s_{t+1},a)
                 }^{\text{TD-target}}
                 - \mathcal{Q}(s_t,a_t)
             \Big),
         }_{\text{TD-delta}}
     \end{equation*}
-    The policy then simply is $\policy(s)=\argmax_{a}\mathcal{Q}(s,\cdot)$
+    The policy then simply is $\policy(s) \in \argmax_{a}\mathcal{Q}(s,a)$
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-% \begin{frame}{Main Takeaways} 
+\begin{frame}{Main Takeaways} 
 
-% %Most important insights from this video:
+\begin{itemize}
+    \item \textbf{Reinforcement learning agents generate the data they learn from.} This induces a stronger non-stationarity than supervised learning.
+    \item \textbf{Q-learning estimates how good it is to traverse through a state.}
+    \item \textbf{Policies maximize the future expected reward.}
+\end{itemize}
 
-% \begin{itemize}
-%     \item
-% \end{itemize}
-
-% \end{frame}
+\end{frame}
 
 
 	

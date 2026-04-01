@@ -65,50 +65,50 @@ Iterative Optimization Heuristics (IOHs) propose a set of solution candidates in
 Important Observations:
 \begin{itemize}
     \item Many ML and AI algorithms are iterative in nature\pause
-    \item A solution candidate refers to a (partially) trained model (e.g., weights of a neural network)\pause
+    \item A solution candidate refers to a (partially) trained model\\ (e.g., weights of a neural network)\pause
     \item The goal is to improve the quality of successive solution candidates\pause
     \item The main component is a proposal mechanism/heuristic for new solution candidates
 \end{itemize}
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Tuning of IOHs}
+\begin{frame}{Adaptation of IOHs}
 \begin{colorblock}[black]{sintefgrey}{Dynamic Adaptation of Hyperparameters}
 The goal is to dynamically adapt hyperparameters based on some feedback from the algorithm.
 \end{colorblock}
 Examples:\\
 \begin{itemize}
     \item Self-adaptation in Evolutionary Algorithms (see, e.g., Step-Size Adaptation in Section 4 of \liturl{Hansen, 2006}{http://www.cmap.polytechnique.fr/~nikolaus.hansen/hansenedacomparing.pdf})
-    \item Reduction of the learning rate when a the loss stops improving (e.g., \liturl{Pytorchs ReduceLROnPlateau}{https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ReduceLROnPlateau.html\#torch.optim.lr_scheduler.ReduceLROnPlateau})
+    \item Reduction of the learning rate when the loss stops improving (e.g., \liturl{Pytorchs ReduceLROnPlateau}{https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ReduceLROnPlateau.html\#torch.optim.lr_scheduler.ReduceLROnPlateau})
     \item Adaptive policy update constraint in PPO \liturl{Schulman et al. 2017}{https://arxiv.org/pdf/1707.06347}
 \end{itemize}
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Tuning of IOHs}
+\begin{frame}{Configuration of IOHs}
 \begin{colorblock}[black]{sintefgrey}{Dynamic Algorithm Configuration (DAC)}
-The goal of DAC is to learn a policy from data that adapts the hyperparameter settings of an IOH.
+The goal of DAC is to learn a \alert{policy} from data that adapts the hyperparameter settings of an IOH.
 \end{colorblock}
 Examples:\\
 \begin{itemize}
     \item Learned Learning Rate adaptation for SGD \liturl{Daniel et al. 2016}{https://ojs.aaai.org/index.php/AAAI/article/view/10187}
     \item Learned mutation operator selection for differential evolution \liturl{Sharma et al. 2019}{https://dl.acm.org/doi/10.1145/3321707.3321813}
-    \item Learned interction frequency for RL \liturl{Biedenkapp et al. 2021}{https://arxiv.org/abs/2106.05262}
+    \item Learned interaction frequency for RL \liturl{Biedenkapp et al. 2021}{https://arxiv.org/abs/2106.05262}
 \end{itemize}
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Tuning of IOHs}
-\begin{colorblock}[black]{sintefgrey}{Learning to Learn (L2L)}
-The goal of L2L is to learn a proposal mechanism/heuristic directly from data. (Not covered in this lecture.)
-\end{colorblock}
-Examples:\\
-\begin{itemize}
-    \item Learned gradient-based optimization \liturl{Andrychowicz et al. 2016}{https://arxiv.org/abs/1606.04474}
-    \item Learned Step-Size adaptation Heuristic for CMA-ES \liturl{Shala et al. 2020}{https://andrebiedenkapp.github.io/assets/pdf/paper/20-PPSN-LTO-CMA.pdf}
-    \item Learning to Meta-Reinforcement Learn via Transformers \liturl{Shala et al. 2025}{https://openreview.net/forum?id=UENQuayzr1}
-\end{itemize}
-\end{frame}
+% \begin{frame}{Tuning of IOHs}
+% \begin{colorblock}[black]{sintefgrey}{Learning to Learn (L2L)}
+% The goal of L2L is to learn a proposal mechanism/heuristic directly from data. (Not covered in this lecture.)
+% \end{colorblock}
+% Examples:\\
+% \begin{itemize}
+%     \item Learned gradient-based optimization \liturl{Andrychowicz et al. 2016}{https://arxiv.org/abs/1606.04474}
+%     \item Learned Step-Size adaptation Heuristic for CMA-ES \liturl{Shala et al. 2020}{https://andrebiedenkapp.github.io/assets/pdf/paper/20-PPSN-LTO-CMA.pdf}
+%     \item Learning to Meta-Reinforcement Learn via Transformers \liturl{Shala et al. 2025}{https://openreview.net/forum?id=UENQuayzr1}
+% \end{itemize}
+% \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
 \begin{frame}{Main Takeaways} 
@@ -118,12 +118,12 @@ Examples:\\
 \begin{itemize}
     \item \textbf{White-box Optimization} The goal is to replace hyperparameter heuristics or even complete algorithm components
 with learned policies.
-    \item \textbf{IOHs} ropose a set of solution candidates in each
+    \item \textbf{IOHs} propose a set of solution candidates in each
 iteration based on previous evaluations.
-    \item \textbf{Tuning of IOHs} includes 
+    \item \textbf{Tuning of IOHs} includes adaptation and configuration.
 \end{itemize}
 
-\end{frame}
+ \end{frame}
 
 
 	

@@ -11,6 +11,7 @@
 %\institute{}
 %\date{}
 
+
 \begin{document}
 	
 	\maketitle
@@ -20,30 +21,72 @@
 \begin{frame}[c]{Why Evaluation Matters}
 
 \begin{itemize}
-    \item For ML models, we are interested in generalization performance
-    \item Generalization performance = expected performance on unseen data
-    \item Key challenge: estimate generalization performance with finite data sample
+    \item Recall: the inducer $\mathcal{I}$ maps a dataset and configuration to a model:
+    $$\inducer: \datasets \times \pcs \to \Hspace \qquad (\dataset, \conf)\mapsto f$$
+    \item For a fixed $\conf$, we are interested in the generalization risk of the induced model:
+    $$\riskg(f) = \expect_{(\x, y) \sim P} \left[ \loss \left(y, f(\x) \right) \right]$$
+    \item Key challenge: $\riskg$ requires knowledge of the true data-generating distribution $P$ which we do not have
+    \item We must estimate it from a finite sample $\dataset$ of $N$ data points
 \end{itemize}
 
+\end{frame}
+
+\begin{frame}{The Estimand: What Are We Actually Estimating?}
+    \begin{itemize}
+        \item Saying ``estimate generalization error'' is not precise enough
+        \item We need to define what quantity we are trying to estimate
+    \end{itemize}
+    \begin{description}
+        \item[Estimand] Fix a configuration $\conf \in \pcs$ and a training sample size $n$. The estimand is:
+        $$\riskg^{(n)}(\conf) := \expect_{\datasettrain \sim P^n}\left[\riskg\!\left(\inducer(\datasettrain, \conf)\right)\right]$$
+        the expected generalization risk of the model induced by $\inducer(\cdot, \conf)$ when trained on an i.i.d.\ sample of size $n$ from $P$.
+    \end{description}
+    \begin{itemize}
+        \item The training sample size $n$ is part of the definition, performance depends on how much data $\inducer$ sees
+        \item We estimate $\riskg^{(n)}(\conf)$ using held-out data from the same distribution $P$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Bias and Variance of Generalization Estimates}
+    \begin{itemize}
+        \item Any estimator $\widehat{\riskg}$ of $\riskg^{(n)}(\conf)$ computed from finite data has two sources of error:
+    \end{itemize}
+    \begin{description}
+        \item[Bias] $\expect[\widehat{\riskg}] - \riskg^{(n)}(\conf)$: systematic deviation of the estimator from the true quantity
+        \begin{itemize}
+            \item Example: training on fewer data points than $n$ means the estimator reflects a weaker model than intended
+        \end{itemize}
+        \item[Variance] $\mathrm{Var}[\widehat{\riskg}]$: how much the estimate fluctuates across different data splits
+        \begin{itemize}
+            \item Example: a single small test set yields a highly variable estimate
+        \end{itemize}
+    \end{description}
+    \begin{itemize}
+        \item There is an inherent bias-variance tradeoff in choosing a validation scheme:
+        \begin{itemize}
+            \item Larger training set $\Rightarrow$ lower bias, but smaller test set $\Rightarrow$ higher variance
+            \item More repetitions $\Rightarrow$ lower variance, but higher computational cost
+        \end{itemize}
+    \end{itemize}
 \end{frame}
 
 \begin{frame}[c]{Hold-Out Validation}
 
 \begin{minipage}{.6\textwidth}
 \begin{itemize}
-    \item Idea: Split data once into training and test set
-    \item Train on training data, evaluate once on test data
+    \item Split $\dataset$ once into $\datasettrain$ of size $n$ and $\datasettest$
+    \item Induce $f = \inducer(\datasettrain, \conf)$, evaluate $\riske(f, \datasettest)$
     \item One split = one draw from many possible worlds
 \end{itemize}
 \end{minipage}
 \hfill
 \begin{minipage}{.3\textwidth}
-    \includegraphics[width=\textwidth]{02_Evaluation/images/automl-course-eval-holdout.pdf}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/resampling-automl-mooc-holdout.pdf}
 \end{minipage}
 
 \vspace{.4cm}
 
-\begin{minipage}[t]{.45\textwidth}
+\begin{minipage}{.48\textwidth}
 \alert{Advantages}
 \begin{itemize}
     \item Simple and fast
@@ -51,11 +94,11 @@
     \item Appropriate for very large datasets
 \end{itemize}
 \end{minipage}
-\begin{minipage}[t]{.45\textwidth}
-\alert{Disadvantages}
+\hfill
+\begin{minipage}{.48\textwidth}
+\textcolor{Red}{Disadvantages}
 \begin{itemize}
-    \item Split ratio needs to be chosen
-    \item Results depend heavily on the split
+    \item High variance: estimate depends heavily on the random split
     \item Inefficient use of data
 \end{itemize}
 \end{minipage}
@@ -65,40 +108,68 @@
 
 \begin{minipage}{.6\textwidth}
     \begin{itemize}
-        \item Split data into $k$ folds
-        \item Train on $k-1$ folds and evaluate on the remaining fold
-        \item Repeat using every fold as test fold once and average results
+        \item Partition $\dataset$ into $k$ disjoint folds of equal size
+        \item Induce $f^{(j)} = \inducer(\dataset \setminus \dataset_j, \conf)$ for each fold $j$
+        \item Evaluate $\riske(f^{(j)}, \dataset_j)$ and average across folds
         \item Every data point is used $k-1$ times for training and once for testing
-        \item Reduces variance compared to hold-out
-        \item CV gives unbiased estimates for a hypothesis $f$ that is fixed a priori
+        \item Special case: Leave-One-Out ($k = N$)
     \end{itemize}
 \end{minipage}
 \hfill
 \begin{minipage}{.3\textwidth}
-    \includegraphics[width=\textwidth]{02_Evaluation/images/automl-course-eval-5cv.pdf}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/resampling-automl-mooc-3cv.pdf}
+\end{minipage}
+
+\vspace{.2cm}
+
+\begin{minipage}{.48\textwidth}
+\alert{Advantages}
+\begin{itemize}
+    \item Unbiased estimate of $\riskg^{(n)}(\conf)$ for a fixed $\conf$ chosen  a priori
+    \item Lower variance than hold-out
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{.48\textwidth}
+\textcolor{Red}{Disadvantages}
+\begin{itemize}
+    \item $k$ times more expensive than hold-out
+    \item Choice of $k$ implicitly determines training size $n = \frac{k-1}{k} N$
+\end{itemize}
 \end{minipage}
 
 \end{frame}
 
+
 \begin{frame}{Monte-Carlo Cross-Validation (MCCV)}
+
+\begin{minipage}{.6\textwidth}
 \begin{itemize}
     \item Also called \emph{repeated random subsampling}
-    \item Randomly sample train/test splits multiple times
-    \item Average results across splits
-\end{itemize}
-\vspace{.5cm}
-\begin{minipage}[t]{.45\textwidth}
-\alert{Advantages}
-\begin{itemize}
-    \item Flexible split
-    \item Variance estimation
+    \item Draw $R$ random splits $\datasettrain^{(r)}, \datasettest^{(r)}$ of size $n, N-n$
+    \item Induce $f^{(r)} = \inducer(\datasettrain^{(r)}, \conf)$, evaluate on $\datasettest^{(r)}$, average across $R$ repetitions
 \end{itemize}
 \end{minipage}
-\begin{minipage}[t]{.45\textwidth}
-\alert{Disadvantages}
+\hfill
+\begin{minipage}{.3\textwidth}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/resampling-automl-mooc-mccv.pdf}
+\end{minipage}
+
+\vspace{.5cm}
+
+\begin{minipage}{.48\textwidth}
+\alert{Advantages}
 \begin{itemize}
-    \item Split ratio needs to be chosen
-    \item No guarantee that every sample appears in test set
+    \item Training size $n$ chosen directly and independently of repetitions
+    \item Variance estimation across repetitions
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{.48\textwidth}
+\textcolor{Red}{Disadvantages}
+\begin{itemize}
+    \item No guarantee every sample appears in $\datasettest$
+    \item Splits may overlap, introducing correlation
 \end{itemize}
 \end{minipage}
     
@@ -106,19 +177,19 @@
 
 \begin{frame}{Practical Recommendations} 
 
-As a rule of thumb, validation schemes can be recommended as follows:
+As a \alert{rule of thumb}, validation schemes can be recommended as follows:
 
 \begin{itemize}
-    \item Very large data: Hold-out
-    \item Medium data: 5-10 fold CV
-    \item Small data: MCCV or repeated k-fold CV
+    \item Very large $N$: Hold-out
+    \item Medium $N$: 5--10 fold CV
+    \item Small $N$: MCCV or repeated $k$-fold CV
 \end{itemize}
-
-\alert{Common pitfalls:}
+\vspace{.4cm}
+\textcolor{red}{Common pitfalls}:
 \begin{itemize}
-    \item Tune on test: Using test data for making model decisions, e.g., tuning hyperparameters
-    \item Reporting best fold instead of mean
-    \item Ignoring randomness
+    \item Using test data for making model decisions, e.g., tuning hyperparameters
+    \item Report the mean over folds, not the minimum
+    \item The estimated $\widehat{\riskg}$ is a random variable: it depends on the random draw of the split
 \end{itemize}
 
 \end{frame}
@@ -127,11 +198,15 @@ As a rule of thumb, validation schemes can be recommended as follows:
 Most important insights from this video:
 
 \begin{enumerate}
-    \item Generalization performance must be estimated from finite data
-    \item The choice of validation scheme introduces a bias-variance tradeoff between reliability and computational cost
-    \item Hold-out validation is fast but highly dependent on the split; cross-validation reduces this variance at the cost of additional model fits
-    \item As a rule of thumb: hold-out for very large datasets, 5-10 fold CV for medium data, MCCV or repeated CV for small data
+    \item The estimand is the expected $\riskg$ of the inducer $\inducer(\cdot, \conf)$ at a fixed training size $n$
+    \item Any finite-data estimator of this quantity has bias and variance
+    \begin{itemize}
+        \item Hold-out is fast but high-variance; 
+        \item $k$-fold CV reduces variance at the cost of $k$ model fits
+        \item MCCV decouples training size from the number of repetitions
+    \end{itemize}
     \item Never use test data for any model decision (tuning, selection, or preprocessing), as this leads to optimistically biased performance estimates
+    \item Generalization estimates are random variables: a single run without uncertainty quantification is insufficient for drawing reliable conclusions
 \end{enumerate}
 
 \end{frame}

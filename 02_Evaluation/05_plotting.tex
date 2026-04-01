@@ -20,89 +20,131 @@
 %----------------------------------------------------------------------
 \begin{frame}[c]{Plotting AutoML Data}
 \begin{itemize}
-    \item AutoML systems are anytime algorithms: they improve their incumbent solution over time
-    \item Natural visualization: plot the best performance found so far against wall-clock time
-    \item This yields an \textbf{anytime performance curve} (also called incumbent trace)
-    \item A single run is rarely sufficient: we need multiple runs to draw reliable conclusions
-    \item Key challenges:
+    \item \alert{Recall}: AutoML systems are anytime algorithms; performance improves over time as better $\conf \in \pcs$ are found
+    \item A single final performance value after budget $T$ discards most of the information :
     \begin{itemize}
-        \item How do we aggregate multiple runs into a single curve?
-        \item How do we honestly represent the uncertainty across runs?
+        \item It does not tell us how quickly a system finds good solutions
+        \item It conflates systems with very different search dynamics under the same number
+        \item It is sensitive to the choice of $T$: rankings between systems can change with budget
     \end{itemize}
 \end{itemize}
-
-
-\end{frame}
-\begin{frame}[c]{Anytime Performance Curves are Step Functions}
+\begin{center}
+\textbf{Given two AutoML systems $A$ and $B$, how can we tell which is better?}
+\end{center}
 \begin{itemize}
-    \item The incumbent performance only changes when a strictly better configuration is found
-    \item Between two such events, the best known performance stays constant
+    \item Answering this requires understanding the full trajectory of $\optconf_t$ over time
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Anytime Performance Curves}
+\begin{itemize}
+    \item \textbf{Anytime performance curve}: plot the incumbent risk $\widehat{\riskg}(\optconf_t)$ as a function of time $t$ or number of function evaluations
+    \item The curve answers: what is the best solution the system could return if stopped at time $t$?
+    \item From such curves we can draw the following kinds of conclusions:
+    \begin{itemize}
+        \item Anytime superiority: System $A$ dominates $B$ if its curve is uniformly better across all $t$, a strong, budget-independent conclusion
+        \item Crossover behavior: $A$ converges faster earyl; $B$ overtakes $A$ given more time
+        \item Budget sensitivity: Rankings at a fixed $T$; useful for a specific deployment scenario but not a general statement about the systems
+    \end{itemize}
+    \item Single final value suffices when budget is fixed and anytime behavior is irrelevant
+\end{itemize}
+\end{frame}
+
+\begin{frame}[c]{Anytime Performance Curves are Step Functions}
+\begin{minipage}{.5\textwidth}
+\begin{itemize}
+    \item The incumbent $\optconf_t$ only changes when a strictly better configuration is found
+    \item Between two improvement events, the incumbent stays constant
     \item Therefore, anytime performance curves are right-continuous step functions, not smooth curves
     \item Connecting measured points with straight lines implies performances improved gradually between evaluations: this is \textbf{not} what happens
 \end{itemize}
-\vspace{.25cm}
-Always use a step function. Linear interpolation between incumbents is misleading and should be avoided.
+\end{minipage}
+\hfill
+\begin{minipage}{.45\textwidth}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/anytime_runs_plain.png}
+\end{minipage}
 \end{frame}
 
 \begin{frame}[c]{Aggregating Multiple Runs}
 \begin{itemize}
-    \item Run the AutoML system $n$ times with different random seeds
-    \item Each run yields a step function $f_i(t)$ defined on a common time axis
-    \item To aggregate: evaluate all $f_i$ at a common grid of time points $t_1, \ldots, t_T$
+    \item A single run is a single draw from a stochastic process: insufficient for reliable conclusions
+    \item Run the AutoML system $n$ times with different random seeds, yielding step functions $f_1(t), \ldots, f_n(t)$
+    \item To aggregate onto a common curve
     \begin{itemize}
-        \item At each $t_j$, read off the incumbent value of run $i$ 
-        \item This is well-defined for step functions
-        \item Compute the pointwise mean across runs: $\bar{f}(t_j) = \frac{1}{n} \sum_{i=1}^n f_i(t_j)$
+        \item Define a common time grid $t_1, \ldots, t_T$
+        \item At each $t_j$, read off the incumbent value $f_i(t_j)$ for each run $i$
+        \item Compute the pointwise mean: $\bar{f}(t_j) = \frac{1}{n} \sum_{i=1}^n f_i(t_j)$
     \end{itemize}
     \item Plot $\bar{f}$ as a step function and add uncertainty bands around it
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Uncertainty Bands: Standard Deviation}
+\begin{minipage}{.55\textwidth}
 \begin{itemize}
     \item A natural first choice: shade the region $\bar{f}(t) \pm \sigma(t)$, where $\sigma$ is the standard deviation (SD) at point $t$
     \item Interpretation: shows the spead of individual runs around the mean
-    \item Useful for understanding run-to-run variability
-    \item However, standard deviation does \textbf{not} characterize how well we have estiamted the mean
+    \item Understanding run-to-run variability
+    \item SD does \textbf{not} characterize how well we have estimated the mean
     \item It stays large even for $n\rightarrow \infty$
-    \item For communicating the reliability of the mean curve, standard deviation is the wrong quantity
+    \item For communicating the reliability of the mean curve, SD is the wrong quantity
 \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{.4\textwidth}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/anytime_mean_stdev.png}
+\end{minipage}
 \end{frame}
 
 \begin{frame}{Uncertainty Bands: Standard Error}
+\begin{minipage}{.55\textwidth}
     \begin{itemize}
-        \item The standard error of the mean (SEM) corrects for this: $\mathrm{SE}(t_j) = \frac{\sigma(t_j)}{\sqrt{n}}$
-        \item Interpretation: measures how precisely we have estimated $\bar{f}(t_j)$
+        \item The standard error corrects for this: $\mathrm{SE}(t_j) = \frac{\sigma(t_j)}{\sqrt{n}}$
+        \item Measures how precisely we estimated $\bar{f}(t_j)$
         \item Shading $\bar{f}(t) \pm \mathrm{SE}(t)$ gives an approx.~68\% confidence band for the true mean curve
         \item For an approximate 95\% confidence band, use $\bar{f}(t) \pm 1.96 \cdot \mathrm{SE}(t)$
         \item SE bands shrink as $n$ grows, reflecting that more runs yield a more reliable estimate
     \end{itemize}
     \vspace{.25cm}
-    Use SE (not SD) for shaded bands when the goal is to compare methods. Optionally report SD separately to characterize individual run variability.
+    Use SE (not SD) for shaded bands when the goal is to compare methods.
+    % Optionally report SD separately to characterize individual run variability.
+\end{minipage}
+\hfill
+\begin{minipage}{.4\textwidth}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/anytime_mean_stderr.png}
+\end{minipage}
 \end{frame}
 
 \begin{frame}{Comparing Multiple Methods}
+\begin{itemize}
+    \item Plot each method as a separate mean step function with its own SE band
+    \item Non-overlapping SE bands: indicative for a statistically meaningful difference 
+    \item Overlapping SE bands: does \textbf{not} imply equivalence
+\end{itemize}
+\begin{minipage}{.55\textwidth}
     \begin{itemize}
-        \item Plot each method as a separate mean step function with its own SE band
-        \item Non-overlapping SE bands at a given time point suggest a statistically meaningful difference
-        \item Overlapping bands do \textbf{not} prove equivalence: use statistical tests (e.g., Wilcoxon) for formal comparisons at chosen time points
         \item Further practical recommendations:
         \begin{itemize}
             \item Use distinguishable colors and line styles for accessibility
-            \item Always label axes: performance metric, time unit, and scale (linear vs.\ log)
+            \item Label axes with performance metric, time unit, and scale (linear vs.\ log)
             \item Log-scale on the time acis is often more informative for anytime plots
-            \item Report $n$ (number of runs) in the caption or legend
+            \item Always report $n$ (number of runs) in the caption or legend
         \end{itemize}
     \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{.4\textwidth}
+    \includegraphics[width=\textwidth]{02_Evaluation/images/anytime_multialgo_mean_stderr.png}
+\end{minipage}
 \end{frame}
 
 \begin{frame}{Summary} 
 Most important insights from this video:
 \begin{enumerate}
-    \item Anytime performance curves are step functions, linear interpolation between incumbents is misleading and must be avoided
+    \item A single final performance value discards most of the information about the performance of an AutoML system
+    \item Anytime performance curves are right-continuous step functions, linear interpolation between incumbents is misleading and must be avoided
     \item Multiple runs are required; aggregate by computing the pointwise mean on a common time grid
-    \item Standard deviation captures run-to-run spread; standard error captures the precision of the estimated mean: use SE bands when comparing methods
-    \item Non-overlapping SE bands suggest meaningful differences, but formal statistical tests remain necessary for rigorous comparisons
+    \item Use SE bands (not SD) when comparing methods; non-overlapping bands are indicative but not conclusive; apply statistical tests at chosen time points for formal comparisons
 \end{enumerate}
 
 \end{frame}

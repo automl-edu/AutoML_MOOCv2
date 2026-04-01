@@ -6,7 +6,7 @@
 \author[Jovita Lukasik]{Jovita Lukasik}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_NAS}
 
 
 %\institute{}
@@ -19,12 +19,14 @@
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
 \begin{frame}{Neural Architecture Design}
+\onslide<1-2>
+Common Deep Learning procedure for ever-improving neural networks, e.g., on ImageNet~\liturl{Deng et al. 2009}{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5206848}:
+\onslide<2>
 \begin{itemize}
-    \item Deep learning with Convolutional Neural Networks~\liturl{Krizhevsky et al. 2009}{https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf} is the main driver for success in computer vision 
-    \item Research for ever-improving neural networks, e.g., on ImageNet~\liturl{Deng et al. 2009}{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5206848}, by architecture engineering
-    \item Define network topology from various configuration options and various layer types
+    % \item Deep learning with Convolutional Neural Networks~\liturl{Krizhevsky et al. 2009}{https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf} is the main driver for success in computer vision 
+    \item Define network topology from \alert{various configuration options} and \alert{various layer types}
 \end{itemize}
-% \onslide<1-2>
+\onslide<1-2>
 \begin{minipage}[t]{0.3\textwidth}    
    \begin{tikzpicture} 
     \node (img6) {\includegraphics[height=2cm]{images/01/img_net/ILSVRC2012_val_00005770.jpeg}};
@@ -37,13 +39,13 @@
       \end{minipage}
       % \vspace{-3cm}
    \hspace{1cm}
-   % \onslide<1-2>
+   \onslide<2>
    \begin{minipage}{0.1\textwidth}  
    \vspace{-4cm}
       \includegraphics[height=3cm]{images/01/example_graph.pdf}
    \end{minipage}
    \hspace{1.5cm}
-% \onslide<2>
+\onslide<2>
 \begin{minipage}[t]{0.39\textwidth}  
 \begin{flushright}
 \resizebox{0.8\textwidth}{!}
@@ -92,6 +94,7 @@ Limitations:
     \item Trial and error
     \item Expert knowledge
 \end{enumerate}
+\pause
 $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years of trial and error by experts  \\
 \end{minipage}
 \begin{minipage}{0.25\textwidth} 
@@ -103,7 +106,7 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
 \end{frame}
 
 \begin{frame}{Neural Architecture Search}
-\alert{Neural Architecture Search}(NAS): Find a neural network with strong performance in an automatic and efficient way
+\alert{Neural Architecture Search} (NAS): Find a neural network with strong performance in an automatic and efficient way
 % \begin{itemize}
     % \item Optionally, subject to a resource constraint 
 % \end{itemize}
@@ -111,7 +114,7 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
 \begin{minipage}{0.45\textwidth} 
        \begin{itemize}
     \item Overcoming the limitation of the manual design of neural networks 
-    \item Decade-old problem, but intensely researched
+    \item Intensely researched
     \item Initial methods extremely expensive
     \begin{itemize}
         \item Now more efficient
@@ -120,39 +123,84 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
 \end{minipage}
 \begin{minipage}{0.45\textwidth} 
 \begin{center}
-\includegraphics[height=3cm]{images/01/white_2023_nas_paper_count.pdf}
-    \captionof{figure}{Number of NAS papers by year~\liturl{White et al. 2023}{https://arxiv.org/pdf/2301.08727}}
+\includegraphics[height=4cm]{07_NAS/images/01/no_papers_NAS.png}
+    \captionof{figure}{Number of NAS papers by year~\liturl{AutoML.org}{https://www.automl.org/automl/literature-on-neural-architecture-search/?tsr=&yr=0000&type=&auth=&tps_button=Search}}
 \end{center}
 \end{minipage}
 \end{frame}
 
-\begin{frame}{Neural Architecture Search}
-\begin{minipage}{0.45\textwidth} 
-\begin{itemize}
-    \item NAS models replace human-designed models
-\end{itemize}
-\end{minipage}
-\begin{minipage}{0.45\textwidth} 
-TODO: find image similar to \liturl{Source}{https://x.com/quocleix/status/1349443438698143744}
-\end{minipage}
-\end{frame}
+% \begin{frame}{Neural Architecture Search}
+% \begin{minipage}{0.3\textwidth} 
+% \begin{itemize}
+%     \item NAS models replace human-designed models
+% \end{itemize}
+% \end{minipage}
+% \begin{minipage}{0.65\textwidth} 
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.8\linewidth]{07_NAS/images/01/ErovYVNU0AAyACb.jpeg}
+%     \captionof{figure}{NAS designed networks can outperform human designed ones. \liturl{Source}{https://x.com/quocleix/status/1349443438698143744}}
+%     \label{fig:placeholder}
+% \end{figure}
+% \end{minipage}
+% \end{frame}
 
 \begin{frame}{Diverse Datasets}
+\centering
 \begin{table}[]
-    \centering
     \begin{tabular}{l l r}
-        CIFAR-100 &  Computer Vision&  \\       
-        Spherical & Omnidirectional Vision & \\
-        NinaPro DB5 &  Prosthetics Control & \\
-        FSD50K &  Audio Classification & \\
-        Darcy Flow &  PDE Solver & \\ 
-        PSICOV &  Protein Folding & \\
-       Cosmic  & Astronomy Imaging & \\
-        ECG  & Medical Diagnostics & \\
-        Satellite &  Earth Monitoring & \\
-    DeepSEA  & Genetic Prediction& \\
+        CIFAR-100 &  Computer Vision&      
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/cifar100.jpeg}
+        \end{minipage}
+ \\       
+        Spherical & Omnidirectional Vision &       
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/spherical.jpeg}
+        \end{minipage} 
+        \\
+        NinaPro DB5 &  Prosthetics Control &
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/ninapro.jpeg}
+        \end{minipage}
+        \\
+        FSD50K &  Audio Classification &
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/fsd50k.jpeg}
+        \end{minipage}
+        \\
+        Darcy Flow &  PDE Solver &
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/darcy.png}
+        \end{minipage}
+        \\ 
+        PSICOV &  Protein Folding &
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/psicov.jpeg}
+        \end{minipage}
+        \\
+       Cosmic  & Astronomy Imaging & 
+       \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/cosmic.jpeg}
+        \end{minipage}
+        \\
+        ECG  & Medical Diagnostics & 
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/ecg.png}
+        \end{minipage}
+        \\
+        Satellite &  Earth Monitoring &
+        \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/satellite.png}
+        \end{minipage}
+        \\
+    DeepSEA  & Genetic Prediction& 
+    \begin{minipage}{.2\textwidth}
+        \includegraphics[width=0.15\linewidth]{07_NAS/images/01/deepsea.png}
+        \end{minipage}
+        \\
     \end{tabular}
-    \caption{~\liturl{Tu et al. 2022}{https://proceedings.neurips.cc/paper_files/paper/2022/file/506630e4a43bb9d64a49f98b9ba934e9-Paper-Datasets_and_Benchmarks.pdf}}
+    \caption{NAS-Bench-360~\liturl{Tu et al. 2022}{https://proceedings.neurips.cc/paper_files/paper/2022/file/506630e4a43bb9d64a49f98b9ba934e9-Paper-Datasets_and_Benchmarks.pdf}}
     \label{tab:placeholder}
 \end{table}
     
@@ -188,76 +236,113 @@ TODO: find image similar to \liturl{Source}{https://x.com/quocleix/status/134944
 \end{frame}
 \end{comment}
 
-\begin{frame}{Beyond Benchmarks}
-Robustness
+\begin{frame}{Robustness-Aware NAS}
 
-\begin{minipage}[c]{0.5\textwidth}
-\centering
-\begin{figure}[ht] 
-\raggedright
-\begin{minipage}[t]{0.2\textwidth}
-        \includegraphics[height=1.5cm]{images/01/panda_577.png} 
-        \subcaption{panda \\
-        $57.7\%$ confidence }
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.2\textwidth}
-        \vspace{-1.4cm}
+\begin{columns}
+    \begin{column}{0.15\textwidth}
+    \centering
+     \includegraphics[height=1.5cm]{images/01/panda_577.png} \\
+        {panda, \\
+        $57.7\%$ confidence}
+    \end{column}
+    \begin{column}{0.1\textwidth}
+    \centering
+     \vspace{-1.4cm}
       \[+.007\times~\]
-    \end{minipage}
-    \begin{minipage}[t]{0.2\textwidth}
-        % \hspace{1cm}
-        \includegraphics[height=1.5cm]{images/01/nematode_082.png}
-        \subcaption{FGSM noise}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[t]{0.05\textwidth}
-    \vspace{-1.4cm}
+    \end{column}
+       \begin{column}{0.15\textwidth}
+    \centering
+    \vspace{0.9cm}
+        \includegraphics[height=1.5cm]{images/01/nematode_082.png}\\
+      FGSM noise
+    \end{column}
+           \begin{column}{0.05\textwidth}
+    \centering
+       \vspace{-1.4cm}
        \[=\]
-     \end{minipage}
-     \hfill
-    \begin{minipage}[t]{0.2\textwidth}
-        % \hspace{1cm}
-        %\begin{center}
-        \includegraphics[height=1.5cm]{images/01/gibbon_993.png}
-        \subcaption{
-            gibbon \\
-        $99.3\%$ confidence
-       }%\end{center}
-\end{minipage}
-\end{figure}
-\end{minipage}
-\begin{minipage}[c]{0.4\textwidth}
-    \begin{center}
-\includegraphics[height=2cm]{images/01/adv_rush_intro_figure.pdf}
-    \captionof{figure}{Standard accuracy vs. robust accuracy evaluation results on CIFAR-10 ~\liturl{Mok et al. 2021}{https://openaccess.thecvf.com/content/ICCV2021/papers/Mok_AdvRush_Searching_for_Adversarially_Robust_Neural_Architectures_ICCV_2021_paper.pdf}}
-\end{center}
-\end{minipage}
-
+    \end{column}
+    \begin{column}{0.15\textwidth}
+    \centering
+      \includegraphics[height=1.5cm]{images/01/gibbon_993.png} \\
+        gibbon \\
+        $99.3\%$ confidence  
+    \end{column}          
+\end{columns}
+\pause
+\vspace{1cm}
+    \begin{itemize}
+        \item Perturbations on input data can easily cause misclassification~\liturl{Goodfellow et al. 2015}{https://arxiv.org/pdf/1412.6572}
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{Beyond Benchmarks}
-Hardware-Efficiency
+\begin{frame}{Robustness-Aware NAS}
+\begin{columns}
+    \begin{column}{0.4\textwidth}
+    \begin{itemize}
+        \item \textbf{Goal}: find architectures with a good \alert{clean accuracy / robust accuracy} trade-off
+    \item \textbf{Challenge}: evaluating robust accuracy requires \alert{adversarial training} (or at minimum adversarial evaluation) — very expensive
+    \end{itemize}
+    \end{column}          
+   
+\begin{column}{0.5\textwidth}
+    \begin{center}
+\includegraphics[height=4cm]{images/01/adv_rush_intro_figure.pdf}
+    % \captionof{figure}{Standard accuracy vs. robust accuracy evaluation results on CIFAR-10 ~\liturl{Mok et al. 2021}{https://openaccess.thecvf.com/content/ICCV2021/papers/Mok_AdvRush_Searching_for_Adversarially_Robust_Neural_Architectures_ICCV_2021_paper.pdf}}
+    \captionof{figure}{\liturl{Mok et al. 2021}{https://openaccess.thecvf.com/content/ICCV2021/papers/Mok_AdvRush_Searching_for_Adversarially_Robust_Neural_Architectures_ICCV_2021_paper.pdf}}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
 
-\begin{minipage}[c]{0.28\textwidth}
+\begin{frame}{Hardware-Aware NAS}
+\begin{minipage}[c]{0.55\textwidth}
 \begin{itemize}
-    \item Search for efficient and high performing architectures automatically
+    \item Architectures must run efficiently on \alert{specific hardware targets}: mobile CPUs, embedded FPGAs, data-centre GPUs
+    \item The same architecture can have very different latency depending on the hardware
+    \item Search for efficient and high-performing architectures automatically
+    \pause
+    \item[] $\rightsquigarrow$ A single global efficiency metric (e.g.,\ FLOPs) is \textbf{insufficient}; hardware-specific profiling is needed
     \item Often used as a multi-objective setting
 \end{itemize}
 \end{minipage}
-\begin{minipage}[c]{0.3 \textwidth}
-    \begin{center}
-\includegraphics[height=3cm]{images/01/hardware_types.jpg}
-    \captionof{figure}{Different hardware types ~\liturl{Blog Entry}{Understanding the Deployment of Deep Learning algorithms on Embedded Platforms
-}}
-\end{center}
-\end{minipage}
 \begin{minipage}[c]{0.4 \textwidth}
     \begin{center}
-\includegraphics[height=4cm]{images/01/hw_chart.pdf}
-    \captionof{figure}{Accuracy of various CNN models on ImageNet for Image Classification task with the number of parameters ~\liturl{Benmeziane et al. 2021}{https://arxiv.org/pdf/2101.09336.pdf}}
+\includegraphics[height=5cm]{images/01/hardware_types.jpg}
+    \captionof{figure}{Different hardware types ~\liturl{Benmeziane et al. 2021}{https://arxiv.org/pdf/2101.09336.pdf}}
 \end{center}
 \end{minipage}
+\end{frame}
+
+\begin{frame}{Incorporating Hardware Cost into NAS}
+Two main approaches:
+
+\begin{enumerate}
+    \item \alert{Constrained search}: add a latency / memory \textbf{constraint} and search for the best accuracy satisfying it
+    \begin{itemize}
+        \item Direct approach; hard constraints are easy to communicate
+        \item Requires re-running the search for each constraint value $\tau$
+    \end{itemize}
+    \pause
+    \item \alert{Multi-objective search (Scalarization)}: combine objectives into a single weighted sum
+    \[
+        \mathcal{L}(a) = -\cost_{\text{acc}}(a) + \lambda \cdot \cost_{\text{hw}}(a)
+    \]
+    \begin{itemize}
+        \item $\lambda$ controls the trade-off
+        \item Changing $\lambda$ moves along the Pareto front — cheap to sweep
+        % \item Assumes a linear trade-off which may not hold globally
+    \end{itemize}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Beyond Benchmarks: Hardware Efficiency}
+%
+    \begin{center}
+\includegraphics[height=6cm]{images/01/hw_chart.pdf}%
+    % \captionof{figure}{Accuracy of various CNN models on ImageNet for image classification with the number of parameters ~\liturl{Benmeziane et al. 2021}{https://arxiv.org/pdf/2101.09336.pdf}}
+    \vspace{-1.25em}
+    \captionof{figure}{\liturl{Benmeziane et al. 2021}{https://arxiv.org/pdf/2101.09336.pdf}}
+\end{center}
 \end{frame}
 
 \begin{frame}{Definition of Neural Architecture Search}
@@ -273,11 +358,20 @@ Hardware-Efficiency
             \item Performance estimation strategy
         \end{enumerate}
 \end{itemize}
-Question: Which component still needs the most human expert knowledge?
+% Question: Which component still needs the most human expert knowledge?
 \end{frame}
 %----------------------------------------------------------------------
 
+\begin{frame}{Summary}
+    
+Most important insights from this video:
 
+\begin{enumerate}
+\item NAS aims to automate the time-consuming process of designing a neural network
+\item NAS has shown the ability to perform high on a diverse set of datasets and improve over human designed neural networks
+\item  NAS is particularly important for achieving multiple objectives simultaneously, such as dealing with hardware constraints in both constrained and multi-objective search scenarios. 
+\end{enumerate}
+\end{frame}
 
 
 \end{document}

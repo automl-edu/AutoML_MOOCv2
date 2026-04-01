@@ -2,11 +2,11 @@
 
 
 \title[AutoML: NAS]{Neural Architecture Search}
-\subtitle{How to define Neural Architecture Search?}
+\subtitle{How to evaluate in Neural Architecture Search?}
 \author[Jovita Lukasik]{Jovita Lukasik}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_NAS}
 
 %\institute{}
 %\date{}
@@ -15,6 +15,19 @@
 	
 	\maketitle
 
+%----------------------------------------------------------------------
+\begin{frame}{Motivation}
+\begin{itemize}
+    \item Evaluating a single architecture requires \alert{full training from scratch} — up to 800 GPU hours for 20k architectures ~\liturl{Zoph and Le 2017}{https://openreview.net/pdf?id=r1Ue8Hcxg}
+    \item The \textbf{performance estimation strategy} is the biggest practical bottleneck in NAS
+    \item Cheaper estimates allow the search strategy to explore \alert{far more architectures} within the same budget
+\end{itemize}
+\pause
+\vspace{0.5em}
+\begin{colorblock}[black]{sintefgrey}{Key Question}
+Can we \textbf{reliably predict} which architecture will perform best — without actually training it to convergence?
+\end{colorblock}
+\end{frame}
 
 \begin{frame}{Definition of Neural Architecture Search}
 \begin{center}
@@ -26,54 +39,59 @@
 \begin{frame}{Performance Estimation Strategies}
 \begin{itemize}
     \item Evaluation for ground truth accuracy
-    \item Performance prediction methods (also one-shot techniques)
-    \begin{itemize}
-        \item Zero-cost proxies
+    \item \alert{Performance prediction methods} (surrogate-based)
+  \begin{itemize}
+        \item Architecture encoding
+        \item Prediction model (Graph Neural Network, Random Forest, MLP, \ldots)
     \end{itemize}
-    \item Low-fidelity estimates
-    \end{itemize}
+\end{itemize}
 \end{frame}
+
+
+
 \begin{frame}{Ground Truth}
 In the early stages of NAS the architectures were evaluated for their ground truth performance ~\liturl{Zoph and Le 2017}{https://openreview.net/pdf?id=r1Ue8Hcxg}
 \begin{itemize}
     \item Up to 20k architectures on CIFAR-10~\liturl{Krizhevsky et al. 2009}{https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf} $\rightarrow$ 800 GPU hours
-    \item SInce then, goal is to speed up the evaluation
+    \item Since then, the goal is to speed up the evaluation
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Performance Prediction}
-\begin{amsdefi}[\textbf{Performance Prediction}]
-Given a search space $\mathcal{A}$, an architecture $a \in \mathcal{A}$ and the final validation accuracy $f(a)$.
-A \textit{performance predictor} $f'(a)$ is the function, which predicts the score of the architecture $a$, without the full training pipeline $P$. $f'(a)$ needs less time for evaluations than $f(a)$. Also $\{f'(a) \vert a \in A\}$ is ideally highly correlated with  $\{f(a) \vert a \in A\}$.
-\end{amsdefi}
+\begin{itemize}
+    \item Given a search space $\mathcal{A}$, an architecture $a \in \mathcal{A}$ and the final validation accuracy $\cost(a)$ after full training pipeline $P$
+    \item A \textit{performance predictor} $\cost'(a)$ is a function, which predicts the score of the architecture $a$, without $P$. 
+    \item Motivation is based on $\cost'(a)$ needing less time for evaluations than $\cost(a)$
+    \item Also $\{\cost'(a) \vert a \in A\}$ is ideally highly correlated with  $\{\cost(a) \vert a \in A\}$
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Performance Predictor - Methods}
 
-\begin{minipage}{0.5\textwidth}
+% \begin{minipage}{0.5\textwidth}
 \begin{itemize}
-\onslide<1-4>
-\item One-shot methods~\liturl{Liu et al. 2019}{https://openreview.net/pdf?id=S1eYHoC5FX}
-\onslide<3-4>
-\begin{enumerate}
-    \item Avoid training each architecture from scratch by one-shot training all architectures in supernetwork
-    \item  Allows for evaluation of each architecture by inheriting weights from supernetwork
-\end{enumerate}
-\onslide<2,4>
+% \onslide<1-4>
+% \item One-shot methods~\liturl{Liu et al. 2019}{https://openreview.net/pdf?id=S1eYHoC5FX}
+% \onslide<3-4>
+% \begin{enumerate}
+    % \item Avoid training each architecture from scratch by one-shot training all architectures in supernetwork
+    % \item  Allows for evaluation of each architecture by inheriting weights from supernetwork
+% \end{enumerate}
+% \onslide<2,4>
 \item Surrogate-based methods~\liturl{White et al. 2021}{https://papers.neurips.cc/paper_files/paper/2021/file/ef575e8837d065a1683c022d2077d342-Paper.pdf}
-\onslide<4>
+% \onslide<4>
 \begin{enumerate}
 \item Predict performance of architectures before training them fully
-\item Can be wrapped in different disguises
+\item Can be combined with different search approaches
 \end{enumerate}
 \end{itemize}
 % $\rightsquigarrow$ We focus here on predictor-based search methods
-\end{minipage}
-\begin{minipage}{0.49\textwidth}
-\onslide<3-4>
-\vspace{-1.5cm}
-\includegraphics[width=\textwidth]{07_NAS/images/04/supernet_illustration.pdf}
-\end{minipage}
+% \end{minipage}
+% \begin{minipage}{0.49\textwidth}
+% \onslide<3-4>
+% \vspace{-1.5cm}
+% \includegraphics[width=\textwidth]{07_NAS/images/04/supernet_illustration.pdf}
+% \end{minipage}
 
 \end{frame}
 
@@ -105,11 +123,11 @@ Prediction \\Method
 % Text Node
 \draw (156.62,162.73) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize,color={rgb, 255:red, 226; green, 0; blue, 122 }  ,opacity=1 ] [align=left] {Architecture\\ Encoding};
 % Text Node
-\draw (484.38,167.6) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize,color={rgb, 255:red, 226; green, 0; blue, 122 }  ,opacity=1 ] [align=left] {$\displaystyle f( a)$};
+\draw (484.38,167.6) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize,color={rgb, 255:red, 226; green, 0; blue, 122 }  ,opacity=1 ] [align=left] {$\displaystyle \cost( a)$};
 % Text Node
 \draw (85.48,177.98) node  [font=\footnotesize] [align=left] {\begin{minipage}[lt]{84.22pt}\setlength\topsep{0pt}
 \begin{center}
-Data:\\ $\displaystyle ( a\ \in \ \mathcal{A} ,\ f( a))_{i=1,...,N}$
+Data:\\ $\displaystyle ( a\ \in \ \mathcal{A} ,\ \cost( a))_{i=1,...,N}$
 \end{center}
 
 \end{minipage}};
@@ -123,7 +141,7 @@ Performance prediction methods are based on \textbf{three} components:
     \begin{itemize}
         \item Can be also used with learning curve extrapolation
     \end{itemize}
-    \item Prediction method for the target $f(a)$
+    \item Prediction method for the target $\cost(a)$
     \item Architecture encoding which is the input to the prediction method
 \end{itemize}
 
@@ -167,11 +185,11 @@ Prediction \\Method
 % Text Node
 \draw (168.62,64.73) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize,color={rgb, 255:red, 226; green, 0; blue, 122 }  ,opacity=1 ] [align=left] {Architecture\\ Encoding};
 % Text Node
-\draw (496.38,69.6) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize,color={rgb, 255:red, 226; green, 0; blue, 122 }  ,opacity=1 ] [align=left] {$\displaystyle f( a)$};
+\draw (496.38,69.6) node [anchor=north west][inner sep=0.75pt]  [font=\footnotesize,color={rgb, 255:red, 226; green, 0; blue, 122 }  ,opacity=1 ] [align=left] {$\displaystyle \cost( a)$};
 % Text Node
 \draw (97.48,79.98) node  [font=\footnotesize] [align=left] {\begin{minipage}[lt]{84.22pt}\setlength\topsep{0pt}
 \begin{center}
-Data:\\ $\displaystyle ( a\ \in \ \mathcal{A} ,\ f( a))_{i=1,...,N}$
+Data:\\ $\displaystyle ( a\ \in \ \mathcal{A} ,\ \cost( a))_{i=1,...,N}$
 \end{center}
 
 \end{minipage}};
@@ -190,34 +208,35 @@ Most popular in NAS are:
 \end{frame}
 
 \begin{frame}{Architecture Encodings}
-\begin{figure}
-\begin{minipage}{0.1\textwidth}
+\begin{columns}
+\begin{column}{0.3\textwidth}
     \begin{center}
-		\includegraphics[width=\textwidth, height=2.5cm]{07_NAS/images/04/example_graph_encoding.pdf}
-        \subcaption{DAG of a neural network cell}
+		\includegraphics[width=0.3\textwidth, height=2.3
+        cm]{07_NAS/images/04/example_graph_encoding.pdf} \\
+        {DAG of a neural network cell}
     \end{center}
-\end{minipage}
-\hspace{1cm}
-\begin{minipage}{0.2\textwidth}
-	\begin{center}
-        \includegraphics[width=\textwidth, height=2.5cm]{07_NAS/images/04/example_adj_encoding.pdf}
-        \subcaption{Adjacency matrix~\liturl{Yang et al. 2019}{https://arxiv.org/pdf/1902.09635}}
-    \end{center}
-\end{minipage}
-\hspace{1cm}
-\begin{minipage}{0.1\textwidth}
+\end{column}
+\begin{column}{0.3\textwidth}
     \begin{center}
-	   \includegraphics[width=\textwidth, height=2.5cm]{07_NAS/images/04/example_path_encodig.pdf}
-      \subcaption{Path-based encoding~\liturl{White et al. 2021}{https://cdn.aaai.org/ojs/17233/17233-13-20727-1-2-20210518.pdf}}
+        \includegraphics[width=0.7\textwidth, height=2.3cm]{07_NAS/images/04/example_adj_encoding.pdf} \\
+        {Adjacency matrix~\liturl{Yang et al. 2019}{https://arxiv.org/pdf/1902.09635}}
     \end{center}
-\end{minipage}
-\end{figure}
+\end{column}
+\begin{column}{0.3\textwidth}
+    \begin{center}
+	   \includegraphics[width=0.3\textwidth, height=2.3cm]{07_NAS/images/04/example_path_encodig.pdf} \\
+        {Path-based encoding~\liturl{White et al. 2021}{https://cdn.aaai.org/ojs/17233/17233-13-20727-1-2-20210518.pdf}}
+    \end{center}
+\end{column}
+\end{columns}
+
+
 \begin{itemize}
     \item Circumvent discrete graph representation using different encodings
     \item Facilitate search approaches with performance prediction methods
 \end{itemize}
 \end{frame}
-
+\iffalse
 \begin{frame}{Learning Curve Extrapolation}
 \begin{itemize}
     \item Predicts the performance after partial training, by extrapolating from learning curve 
@@ -227,15 +246,15 @@ Most popular in NAS are:
     \item Can be used with multi-fidelity algorithms
 \end{itemize}
 \end{frame}
-\begin{frame}{Zero-Cost Proxies}
+
+\begin{frame}{Zero-Cost Proxies (ZCP)}
     \begin{itemize}
-        \item Very recent developed as part of performance prediction 
+        \item Developed as part of performance prediction \liturl{Mellor et al. 2021}{https://proceedings.mlr.press/v139/mellor21a/mellor21a.pdf}
         \item Run (very) fast computations (one single forward and backward pass on single minibatch of data) over set of architectures to assign a score to each architecture
         \item Hope: score correlated with resulting performance of architecture AFTER full training
         \item Note: ZCP calculated on untrained network! 
         \item Zero-cost since score calculations negligible small
-        \item Some ZCP also data-independent, e.g. # params. 
-
+        \item Some ZCP also data-independent, e.g. \# params. 
     \end{itemize}
 \end{frame}
 
@@ -243,29 +262,26 @@ Most popular in NAS are:
 \begin{frame}{Performance Prediction Methods in Search}
  Goal in NAS: efficiently find the architecture with the highest validation accuracy for downstream task
 \begin{itemize}
-    \item Use performance prediction methods to improve on the search efficiency
-    \onslide<2-3>
+    \item Use performance prediction methods to improve search efficiency
+    \pause
     \item Predictor-guided evolution: Predictor chooses the next candidates which are evaluated
-    \onslide<3>
+    \pause
     \item Bayesian optimization + predictor: Ensemble of prediction methods to calculate mean and uncertainty for candidate architectures
 \end{itemize}
     % \redtodo{Just one slide about how it's in BO, evo, whatever}
 
-    \let\thefootnote\relax\footnotetext{\vspace{-0.5cm}  \hspace{-0.45cm}
-\scriptsize{
-{\color{UMblue!70!white}{White et al. \textit{How Powerful are Performance Predictors in Neural Architecture Search?} NeurIPS, 2021.}}}}
-
 \end{frame}
-
+\fi
 %----------------------------------------------------------------------
 \begin{frame}{Summary} 
 
 Most important insights from this video:
 
 \begin{enumerate}
-    \item ???
-    \item ???
-    \item ???
+    \item Evaluating all architectures from scratch is prohibitively expensive
+    \item Performance predictors provide a fast technique for estimating architecture quality
+    \item A predictor consists of three components: a dataset of evaluated architectures, an architecture encoding, and a prediction model 
+    \item Architecture encoding is a key design choice: adjacency matrices, path encodings, and graph encodings each have different trade-offs
 \end{enumerate}
 
 
