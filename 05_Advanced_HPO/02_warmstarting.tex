@@ -56,10 +56,10 @@ Assuming a fixed searchspace and given a target dataset $\dataset_t$, we conside
 
 \textbf{Simple Case:} We have prior observations on the \textit{same} dataset (e.g., from a manual exploration)
 
-\textbf{Advanced Case:} We have prior observations on \textit{related} datasets (e.g., from HPO on a different dataset)
+\textbf{Advanced Case:} We have prior observations on \textit{related} datasets $\{\dataset_1, \dots, \dataset_{t-1}\}$ (e.g., the same HPO task, but on a different dataset)
 
 \vspace{0.5cm}
-$\leadsto$ We can inject knowledge into the selection of the next configuration to evaluate in the early stages of Bayesian Optimization.
+$\leadsto$ inject knowledge into the selection of the next configuration to evaluate in the early stages of Bayesian Optimization.
 
 \setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
 \setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
@@ -74,7 +74,7 @@ $\leadsto$ We can inject knowledge into the selection of the next configuration 
 \end{frame}
 %-----------------------------------------------------------------------
 %----------------------------------------------------------------------
-\begin{frame}{Simple Case: Prior Observations from Manual Exploration}
+\begin{frame}{Simple Case: Prior Observations on the Same Task}
 
 \textbf{Assumption:} Prior observations are based on human intuition and serve as good starting points. \\
 \textbf{Solution:} (Partially) replace initial design iterations with observations from manual tuning or prior experiments:
@@ -178,9 +178,9 @@ Instead of finding a global portfolio, we want a portfolio specifically for our 
 \end{itemize}
 \vspace{0.5cm}
 
-\textbf{$\leadsto$ How do we define task similarity?} \\
+\textbf{How do we define task similarity?} \\
 \pause
-$\leadsto$ Configurations achieve similar performance on similar datasets, i.e., if the datasets are similar, good configurations transfer.
+$\leadsto$ Intuition: If tasks are similar the similar configurations achieve similar performance, i.e., if the datasets are similar, good configurations transfer.
 
 \end{frame}
 %-----------------------------------------------------------------------

@@ -20,9 +20,20 @@
 %----------------------------------------------------------------------
 \begin{frame}[c]{Should we always completely evaluate a pipeline?}
 
-$\leadsto$ Full evaluations yield the best and most accurate signal, but may waste resources in practice.
+$\leadsto$ Full evaluations yield the most accurate signal, but may waste resources in practice.
 
-<here is a nice picture of a cookie and a speech bubble with the text "How would you create a new cookie recipe?">
+\vspace{0.5cm}
+
+In practice, we often have access to cheap approximations or intermediate results of our actual target function:
+\begin{itemize}
+    \item subsampling training data
+    \item partial training
+    \item downscaled images
+    \item smaller models
+\end{itemize}
+
+\vspace{1cm}
+\textbf{$\leadsto$ How can we use this information to increase the efficiency of Bayesian optimization?} \\
 
 \end{frame}
 
@@ -31,8 +42,10 @@ $\leadsto$ Full evaluations yield the best and most accurate signal, but may was
 %----------------------------------------------------------------------
 \begin{frame}[c]{A motivating example}
 
-% credit Aarons paper
+\begin{center}
 \includegraphics[width=0.8\textwidth]{05_Advanced_HPO/images/multi-fidelity_example.png}
+\end{center}
+\liturl{Franceschi et al. "Hyperparameter Optimization in Machine Learning"}{https://arxiv.org/abs/2410.22854}
 
 \end{frame}
 

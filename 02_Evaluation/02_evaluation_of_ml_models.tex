@@ -111,7 +111,6 @@
         \item Partition $\dataset$ into $k$ disjoint folds of equal size
         \item Induce $f^{(j)} = \inducer(\dataset \setminus \dataset_j, \conf)$ for each fold $j$
         \item Evaluate $\riske(f^{(j)}, \dataset_j)$ and average across folds
-        \item Every data point is used $k-1$ times for training and once for testing
         \item Special case: Leave-One-Out ($k = N$)
     \end{itemize}
 \end{minipage}
@@ -135,6 +134,7 @@
 \begin{itemize}
     \item $k$ times more expensive than hold-out
     \item Choice of $k$ implicitly determines training size $n = \frac{k-1}{k} N$
+    \item Training data overlaps, introducing correlation (exception: 2-CV)
 \end{itemize}
 \end{minipage}
 
