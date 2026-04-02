@@ -1,44 +1,165 @@
-% 1. why combine models
-% 2. where do models come from, discrimination against bagging and boosting
-% 3. hard voting vs soft voting
-
 \documentclass[main]{subfiles}
 
 \title[AutoML: Ensembling]{Ensembling}
-\subtitle{Why do we need Ensemling in AutoML?}
+\subtitle{The Big Picture}
 \author[Matthias Feurer]{Matthias Feurer}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
-
-%\institute{}
-%\date{}
+\titlebackground*{06_Ensembling/images/AutoML_HPO_2_2}
 
 \begin{document}
-	
+
 \maketitle
-	
 
-%----------------------------------------------------------------------
-%----------------------------------------------------------------------
-
-
-%----------------------------------------------------------------------
-\begin{frame}{Summary} 
-
-Most important insights from this video:
-
-\begin{enumerate}
-    \item When to optimize ML pipelines
-    \item How to formalize AutoML as an optimization problem
-    \item The power of ensembling
-    \item Get to know open-source AutoML systems
-    \item How to complete partially specified ML pipelines
-\end{enumerate}
-
-
+\begin{frame}{Why Ensembling in AutoML?}
+\begin{itemize}
+    \item AutoML systems evaluate many strong but different models
+    \item Selecting a single winner often discards useful information
+    \item Ensembling combines predictions to improve robustness and performance
+    \item Ensembling can reduce sensitivity to noisy validation estimates
+\end{itemize}
 \end{frame}
 
+\begin{frame}{What Is Ensembling?}
+\begin{columns}
+    \begin{column}{0.48\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{06_Ensembling/images/Ensembling.pdf}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+        \begin{itemize}
+            \item Combine predictions of multiple models
+            \item Make weak learners strong
+            \item Make strong learners stronger
+            \item Alternative to picking a single model
+            \item In practice: often outperforms picking one model
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
 
+\begin{frame}{Recap: Bagging}
+\begin{columns}
+    \begin{column}{0.6\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.95\textwidth]{06_Ensembling/images/bagging_better.png}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+        \textbf{Bootstrap aggregating}
+        \begin{enumerate}
+            \item Sample training data with replacement
+            \item Train base models in parallel
+            \item Aggregate predictions
+        \end{enumerate}
+        \vspace{0.4cm}
+        \begin{itemize}
+            \item Homogeneous ensemble
+            \item Typical example: random forest
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Recap: Bagging and Bias-Variance}
+Bias vs. variance: Error = Variance + Bias + Noise
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.95\textwidth]{06_Ensembling/images/bagging_variance_bias_tree.png}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+    \end{column}
+\end{columns}
+\vspace{0.3cm}
+\begin{itemize}
+    \item Averaging reduces variance
+    \item Works best for unstable base learners
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recap: Bagging and Bias-Variance}
+Bias vs. variance: Error = Variance + Bias + Noise
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.95\textwidth]{06_Ensembling/images/bagging_variance_bias_tree.png}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.95\textwidth]{06_Ensembling/images/bagging_variance_bias_100_trees.png}
+        \end{figure}
+    \end{column}
+\end{columns}
+\vspace{0.3cm}
+\begin{itemize}
+    \item Averaging reduces variance
+    \item Works best for unstable base learners
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recap: Gradient Boosting}
+\begin{itemize}
+    \item Train an additive ensemble sequentially:
+    \[
+        \hat{f}^{(t)}(x) = \hat{f}^{(t-1)}(x) + \eta \cdot h_t(x)
+    \]
+    \item Each new model $h_t$ is fit to the negative gradient of the loss
+    \item For squared error, this is equivalent to fitting residuals
+    \item Key controls: learning rate, number of boosting iterations, tree depth
+    \item Popular implementations: XGBoost, LightGBM, CatBoost
+\end{itemize}
+\end{frame}
+
+\begin{frame}{General Notation for Ensembling}
+\vfill
+\begin{itemize}
+    \item $\{\bl[1], \ldots, \bl[M]\} \subseteq \mathcal{H}_{1} \times \ldots \times \mathcal{H}_{M}$ set of $M$ models trained on training data $\dataset$
+    \item $\blp[m]: \Xspace \rightarrow [0, 1]^{g}$ probability predictions under the $m$-th model when doing classification (w.l.o.g. we assume $g = 1$ in the following and $\blp[m]$ returning the probabilities of the positive class)
+    \item $\bll[m]: \Xspace \rightarrow \Yspace$ hard label predictions under the $m$-th model when doing classification or regression
+    \item $\fM = G(\blx[1], \ldots, \blx[M])$ prediction of an ensemble model obtained via aggregating function $G$
+\end{itemize}
+\vfill
+\end{frame}
+
+\begin{frame}{Hard Voting vs Soft Voting}
+\begin{columns}
+    \begin{column}{0.52\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.9\textwidth]{06_Ensembling/images/voting_better.png}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+        Classification: majority voting (hard voting) / model averaging (soft voting)
+        \begin{itemize}
+            \item $\fM = \text{mode}(\{\bll[1](\x), \ldots, \bll[M](\x)\})$ assuming hard label predictions
+            \item $\fM = \frac{1}{M} \sum_{m = 1}^{M} \blp[m](\x)$ assuming probability predictions
+        \end{itemize}
+        \vfill
+        Regression: model averaging
+        \begin{itemize}
+            \item $\fM = \frac{1}{M} \sum_{m = 1}^{M} \blx[m]$
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Summary}
+Most important insights from this video:
+\begin{enumerate}
+    \item Ensembling combines multiple models to improve robustness and performance
+    \item Bagging mainly reduces variance, while boosting learns sequentially from errors
+    \item Hard voting, soft voting, and averaging are the core aggregation strategies
+\end{enumerate}
+\end{frame}
 
 \end{document}

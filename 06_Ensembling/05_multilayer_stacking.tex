@@ -1,2 +1,83 @@
-% 1. Auto-Gluon
-% 2. Paper about problems from 2011
+\documentclass[main]{subfiles}
+
+\title[AutoML: Ensembling]{Ensembling}
+\subtitle{Multilayer Stacking}
+\author[Matthias Feurer]{Matthias Feurer}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{From Single-Layer to Multilayer Stacking}
+\begin{itemize}
+    \item Single-layer stacking trains one meta-model on base predictions
+    \item Multilayer stacking repeats this idea across several levels
+\end{itemize}
+\vspace{0.2cm}
+\begin{enumerate}
+    \item Train level-0 base models
+    \item Train one or more level-1 models on level-0 predictions
+    \item Train a final model on level-1 predictions
+\end{enumerate}
+\vspace{0.2cm}
+In principle, this can be extended to deeper stacks.
+\end{frame}
+
+\begin{frame}{Design Choices in Higher Layers}
+\begin{itemize}
+    \item Typical higher-level models:
+    \begin{itemize}
+        \item Linear or logistic regression
+        \item Greedy ensemble selection on previous-layer predictions
+    \end{itemize}
+    \item Use probabilities instead of hard labels for richer meta-features
+    \item Decide whether to include original input features
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example: AutoGluon}
+\begin{columns}
+    \begin{column}{0.35\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{06_Ensembling/images/AG.png}
+            \caption*{\url{https://auto.gluon.ai/}}
+        \end{figure}
+        \vspace{0.2cm}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{06_Ensembling/images/ALMB.png}
+            \caption*{AMLB 1h binary classification}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.65\textwidth}
+        \begin{itemize}
+            \item Popular and strong AutoML system
+            \item Uses many default model configurations instead of heavy HPO
+            \item Applies multilayer stacking
+            \item Combines final-layer models via greedy ensemble selection
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Placeholder: Known Challenges from 2011 Work}
+\begin{itemize}
+    \item This slot is intentionally left for your new material
+    \item Planned topic: limitations and failure modes of stacking
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary}
+Most important insights from this video:
+\begin{enumerate}
+    \item Multilayer stacking repeatedly learns combinations across levels
+    \item Design choices for higher-level models strongly affect performance
+    \item AutoGluon is a practical example of stacking plus greedy selection
+\end{enumerate}
+\end{frame}
+
+\end{document}

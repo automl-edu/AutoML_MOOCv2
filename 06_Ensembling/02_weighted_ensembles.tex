@@ -1,3 +1,102 @@
-% 1. equal weigthing
-% 2. learning the weighting
-% 3. dynamic weighting
+\documentclass[main]{subfiles}
+
+\title[AutoML: Ensembling]{Ensembling}
+\subtitle{Weighted Ensembles}
+\author[Matthias Feurer]{Matthias Feurer}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{From Equal to Weighted Averaging}
+\begin{itemize}
+    \item Equal averaging uses the same weight for all models
+    \item Weighted averaging gives stronger models more influence
+\end{itemize}
+\vspace{0.2cm}
+For classification (probabilities):
+\[
+\hat{f}_{\mathbf{w}}(x) = \sum_{m=1}^{M} w_m \cdot p_m(x), \quad w_m \ge 0, \quad \sum_{m=1}^{M} w_m = 1
+\]
+\vspace{0.1cm}
+For regression:
+\[
+\hat{f}_{\mathbf{w}}(x) = \sum_{m=1}^{M} w_m \cdot f_m(x)
+\]
+\end{frame}
+
+\begin{frame}{Weighted Model Averaging}
+\begin{columns}
+    \begin{column}{0.58\textwidth}
+        \begin{itemize}
+            \item Assume $M$ trained base models
+            \item Learn a weight vector $\mathbf{w}=(w_1,\dots,w_M)$
+            \item Final prediction is a convex combination
+            \item Better weights can improve over equal weighting
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.95\textwidth]{06_Ensembling/images/Weighted_Model_Averaging.pdf}
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Example: Weighted Averaging}
+Balanced accuracy (BACC) on a holdout split:
+\begin{table}[h]
+\centering
+\begin{tabular}{lc}
+\hline
+\textbf{Learner} & \textbf{BACC (Test)} \\
+\hline
+RF & 0.834 \\
+k-NN (k=7) & 0.792 \\
+Logistic Regression & 0.695 \\
+Model Averaging (Equal Weights) & 0.796 \\
+Model Averaging ($\mathbf{w}=(0.75,0.05,0.20)^\intercal$) & 0.810 \\
+\hline
+\end{tabular}
+\end{table}
+\vspace{0.2cm}
+\begin{itemize}
+    \item Equal weights are not automatically better
+    \item Model diversity and weight quality are critical
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Learning the Weights}
+We seek weights that optimize estimated generalization performance:
+\[
+\mathbf{w}^{\star} = \operatorname*{arg\,min}_{\mathbf{w}}\; \widehat{\mathrm{GE}}\left(\hat{f}_{\mathbf{w}}\right)
+\]
+\begin{itemize}
+    \item If loss is MSE with simplex constraints: quadratic program
+    \item With non-smooth metrics (for example 0-1 loss): generally hard
+    \item In AutoML this is often treated as a black-box optimization problem
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Practical Weight Optimization Methods}
+\begin{itemize}
+    \item Black-box optimization over $\mathbf{w}$
+    \item Greedy ensemble selection (integer and sparse weights)
+    \item Stacking with a linear meta-model
+\end{itemize}
+\vspace{0.3cm}
+\textbf{Takeaway:} optimize weights on validation data, but monitor overfitting.
+\end{frame}
+
+\begin{frame}{Placeholder: Dynamic Weighting}
+\begin{itemize}
+    \item This slot is intentionally left for new material
+    \item Planned topic: input-dependent or time-dependent weighting
+\end{itemize}
+\end{frame}
+
+\end{document}

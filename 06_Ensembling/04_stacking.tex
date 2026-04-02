@@ -1,0 +1,96 @@
+\documentclass[main]{subfiles}
+
+\title[AutoML: Ensembling]{Ensembling}
+\subtitle{Stacking}
+\author[Matthias Feurer]{Matthias Feurer}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{What Is Stacking?}
+\begin{columns}
+    \begin{column}{0.52\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.95\textwidth]{06_Ensembling/images/stacking_better.png}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+        \begin{itemize}
+            \item Level-0: train multiple base models
+            \item Build meta-features from their predictions
+            \item Level-1: train a meta-model on these features
+            \item Also called stacked generalization
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Single-Layer Stacking Procedure}
+\begin{enumerate}
+    \item Train base models $f_1,\dots,f_M$ on training data
+    \item For each training instance, collect base-model predictions
+    \item Construct meta-dataset with these predictions
+    \item Train a meta-model on the meta-dataset
+\end{enumerate}
+\vspace{0.2cm}
+\begin{itemize}
+    \item Optional: include original features in the meta-dataset
+    \item Difference to averaging: combination is learned, not fixed
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Cross-Validated Stacking}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.85\textwidth]{06_Ensembling/images/stacking_cv_better.png}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{itemize}
+            \item Use out-of-fold predictions to train meta-model
+            \item Reduces overfitting and leakage
+            \item Usually generalizes better than naive in-sample stacking
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Blending vs Cross-Validated Stacking}
+\begin{itemize}
+    \item \textbf{Blending}: use one holdout split for meta-features
+    \item \textbf{CV stacking}: use out-of-fold predictions from $K$ folds
+\end{itemize}
+\vspace{0.2cm}
+\begin{itemize}
+    \item Blending is cheaper but uses less training data
+    \item CV stacking is more expensive but usually more robust
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Prediction with a Trained Stacker}
+\begin{enumerate}
+    \item Predict with each base model on test data
+    \item Build the test meta-feature matrix from these predictions
+    \item Apply the trained meta-model to obtain final predictions
+\end{enumerate}
+\vspace{0.3cm}
+\textbf{Key point:} the same feature construction used in training must be used at prediction time.
+\end{frame}
+
+\begin{frame}{Summary}
+Most important insights from this video:
+\begin{enumerate}
+    \item Stacking learns how to combine base-model predictions
+    \item Out-of-fold meta-features are important to avoid leakage
+    \item Blending trades robustness for lower computational cost
+\end{enumerate}
+\end{frame}
+
+\end{document}

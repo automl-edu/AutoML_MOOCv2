@@ -1,0 +1,96 @@
+\documentclass[main]{subfiles}
+
+\title[AutoML: Ensembling]{Ensembling}
+\subtitle{Greedy Ensemble Selection}
+\author[Matthias Feurer]{Matthias Feurer}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}{Greedy Ensemble Selection}
+Assume a set of trained models and a validation set.
+\begin{itemize}
+    \item Goal: optimize weighted averaging without continuous optimization
+    \item Standard method in AutoML: greedy ensemble selection (GES)
+\end{itemize}
+\vspace{0.2cm}
+\textbf{Algorithm (Caruana et al. 2004):}
+\begin{enumerate}
+    \item Start with an empty ensemble
+    \item Add the model that gives the largest validation improvement
+    \item Repeat until the iteration budget is reached
+    \item Return the best intermediate ensemble
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Why GES Works Well in Practice}
+\begin{itemize}
+    \item Greedy steps are simple and fast
+    \item Naturally yields sparse ensembles
+    \item Can handle arbitrary performance metrics
+    \item Often competitive with more complex optimizers
+\end{itemize}
+\vspace{0.3cm}
+The final weight of a model is proportional to how often it was selected.
+\end{frame}
+
+\begin{frame}{Example Run of GES}
+\begin{table}[h]
+\footnotesize
+\centering
+\begin{tabular}{lcc}
+\hline
+\textbf{Iteration} & \textbf{Selected Counts (RF, k-NN, LogReg)} & \textbf{Best Valid BACC} \\
+\hline
+1 & (1, 0, 0) & 0.837 \\
+5 & (4, 0, 1) & 0.855 \\
+7 & (4, 1, 1) & 0.917 \\
+10 & (7, 1, 2) & 0.917 \\
+\hline
+\end{tabular}
+\end{table}
+\vspace{0.2cm}
+Best ensemble in this run: $(4,1,1)$, corresponding to
+\[
+\mathbf{w}^{\star} = \left(\frac{4}{6}, \frac{1}{6}, \frac{1}{6}\right)^\intercal
+\]
+\end{frame}
+
+\begin{frame}{Validation vs Test Performance}
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{lcc}
+\hline
+\textbf{Learner} & \textbf{BACC (Valid)} & \textbf{BACC (Test)} \\
+\hline
+RF & 0.837 & 0.834 \\
+k-NN (k=7) & 0.809 & 0.792 \\
+Logistic Regression & 0.766 & 0.695 \\
+Equal Averaging & 0.832 & 0.796 \\
+Manual Weights & 0.875 & 0.810 \\
+GES Weights & 0.917 & 0.864 \\
+\hline
+\end{tabular}
+\end{table}
+\vspace{0.2cm}
+\begin{itemize}
+    \item Validation gains can be large
+    \item Always verify on untouched test data
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary}
+Most important insights from this video:
+\begin{enumerate}
+    \item GES greedily builds an ensemble by repeated model additions
+    \item It is metric-agnostic, sparse, and practical for AutoML
+    \item Weight optimization can overfit validation data, so strict evaluation is required
+\end{enumerate}
+\end{frame}
+
+\end{document}
