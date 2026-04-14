@@ -73,7 +73,7 @@ Model Averaging ($\ensweights=(0.75,0.05,0.20)^\top$) & 0.810 \\
 \begin{frame}{Learning the Weights}
 We seek weights that optimize estimated generalization performance:
 \[
-\ensweights^{\star} = \argmin_{\ensweights}\; \riske_{\datasetval}(\fM)
+\ensweights^{\star} = \argmin_{\ensweights}\; \riske(\fM;\datasetval)
 \]
 \begin{itemize}
     \item If loss is MSE with simplex constraints: quadratic program

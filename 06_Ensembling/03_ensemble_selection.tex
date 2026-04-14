@@ -1,4 +1,5 @@
 \documentclass[main]{subfiles}
+\usepackage{algpseudocode}
 
 \title[AutoML: Ensembling]{Ensembling}
 \subtitle{Greedy Ensemble Selection}
@@ -15,16 +16,41 @@
 Assume a set of trained models and a validation set.
 \begin{itemize}
     \item Goal: optimize weighted averaging without continuous optimization
-    \item Standard method in AutoML: greedy ensemble selection (GES)
+    \item Standard method in AutoML systems~\liturl{Purucker et al. (2023b)}{https://proceedings.mlr.press/v224/purucker23b.html}
 \end{itemize}
 \vspace{0.2cm}
-\textbf{Algorithm (Caruana et al. 2004):}
+\textbf{Algorithm~\liturl{Caruana et al. (2004)}{https://dl.acm.org/doi/10.1145/1015330.1015432}:}
 \begin{enumerate}
     \item Start with an empty ensemble
     \item Add the model that gives the largest validation improvement
     \item Repeat until the iteration budget is reached
     \item Return the best intermediate ensemble
 \end{enumerate}
+\end{frame}
+
+\begin{frame}{Greedy Ensemble Selection: Pseudocode}
+\scriptsize
+\textbf{Greedy Ensemble Selection (GES)}
+\begin{algorithmic}[1]
+\State \textbf{Input:} Base models $\{\bl[1],\ldots,\bl[M]\}$, validation set $\datasetval$, budget $T$
+\State \textbf{Output:} Ensemble weights $\ensweights^\star$
+\State $\vec{c} \gets (0,\ldots,0)$; $s \gets 0$; $b \gets +\infty$; $\vec{c}^{\,\star} \gets \vec{c}$
+\State \textbf{for} $t \gets 1$ \textbf{to} $T$ \textbf{do}
+\State \hspace{1em}\textbf{for} $m \gets 1$ \textbf{to} $M$ \textbf{do}
+\State \hspace{2em}$s_m \gets \frac{t-1}{t} s + \frac{1}{t}\bl[m](\x)$
+\State \hspace{2em}$r_m \gets \riske(s_m;\datasetval)$
+\State \hspace{1em}\textbf{end for}
+\State \hspace{1em}$m_t \gets \argmin_{m \in \{1,\ldots,M\}} r_m$
+\State \hspace{1em}$s \gets s_{m_t}$; $c_{m_t} \gets c_{m_t} + 1$
+\State \hspace{1em}\textbf{if} $r_{m_t} < b$ \textbf{then}
+\State \hspace{2em}$b \gets r_{m_t}$; $\vec{c}^{\,\star} \gets \vec{c}$
+\State \hspace{1em}\textbf{end if}
+\State \textbf{end for}
+\State \textbf{for} $m \gets 1$ \textbf{to} $M$ \textbf{do}
+\State \hspace{1em}$\ensweights^\star_m \gets c^\star_m / \sum_{j=1}^{M} c^\star_j$
+\State \textbf{end for}
+\State \Return $\ensweights^\star$
+\end{algorithmic}
 \end{frame}
 
 \begin{frame}{Why GES Works Well in Practice}
@@ -38,26 +64,43 @@ Assume a set of trained models and a validation set.
 The final weight of a model is proportional to how often it was selected.
 \end{frame}
 
-\begin{frame}{Example Run of GES}
+\begin{frame}{Example: GES}
 \begin{table}[h]
-\footnotesize
+\scriptsize
 \centering
-\begin{tabular}{lcc}
+\begin{tabular}{lccccc}
 \hline
-\textbf{Iteration} & \textbf{Selected Counts (RF, k-NN, LogReg)} & \textbf{Best Valid BACC} \\
-\hline
-1 & (1, 0, 0) & 0.837 \\
-5 & (4, 0, 1) & 0.855 \\
-7 & (4, 1, 1) & 0.917 \\
-10 & (7, 1, 2) & 0.917 \\
+\textbf{Iter} & \textbf{Sel. Learners} & \textbf{Current BACC} (Valid) & \multicolumn{3}{c}{\textbf{BACC if Learner added} (Valid)}\\ \cline{4-6}
+& & & RF & k-NN & Log. Reg.\\ \hline
+1  & $\{$RF: 0, k-NN: 0, Log. Reg.: 0$\}$ & NA    & \textbf{0.837} & 0.809 & 0.766\\
+\pause
+2  & $\{$RF: 1, k-NN: 0, Log. Reg.: 0$\}$ & 0.837 & \textbf{0.837} & 0.809 & 0.766\\
+\pause
+3  & $\{$RF: 2, k-NN: 0, Log. Reg.: 0$\}$ & 0.837 & \textbf{0.837} & 0.809 & 0.809\\
+\pause
+4  & $\{$RF: 3, k-NN: 0, Log. Reg.: 0$\}$ & 0.837 & \textbf{0.837} & 0.769 & 0.832\\
+\pause
+5  & $\{$RF: 4, k-NN: 0, Log. Reg.: 0$\}$ & 0.837 & 0.837 & 0.792 & \textbf{0.855}\\
+\pause
+6  & $\{$RF: 4, k-NN: 0, Log. Reg.: 1$\}$ & 0.855 & 0.897 & \textbf{0.917} & 0.809\\
+\pause
+7  & $\{$RF: 4, k-NN: 1, Log. Reg.: 1$\}$ & \textbf{0.917} & \textbf{0.917} & 0.895 & 0.809\\
+\pause
+8  & $\{$RF: 5, k-NN: 1, Log. Reg.: 1$\}$ & 0.917 & \textbf{0.897} & 0.875 & 0.875\\
+\pause
+9  & $\{$RF: 6, k-NN: 1, Log. Reg.: 1$\}$ & 0.897 & \textbf{0.877} & 0.875 & 0.875\\
+\pause
+10 & $\{$RF: 7, k-NN: 1, Log. Reg.: 1$\}$ & 0.877 & 0.857 & 0.855 & \textbf{0.917}\\
+\pause
+11 & $\{$RF: 7, k-NN: 1, Log. Reg.: 2$\}$ & 0.917 & ... & ... & ...\\
 \hline
 \end{tabular}
+\label{table:learners_valid_test}
 \end{table}
-\vspace{0.2cm}
-Best ensemble in this run: $(4,1,1)$, corresponding to
-\[
-\ensweights^{\star} = \left(\frac{4}{6}, \frac{1}{6}, \frac{1}{6}\right)^\top
-\]
+\pause
+Best iteration: 6 with BACC (Valid) of $0.917$\\
+$\rightarrow$ $\{$RF: 4, k-NN: 1, Log. Reg.: 1$\}$\\
+$\rightarrow$ $\mathbf{w}^{\star} = (\frac{4}{6}, \frac{1}{6}, \frac{1}{6})^\intercal$
 \end{frame}
 
 \begin{frame}{Validation vs Test Performance}
@@ -83,6 +126,19 @@ GES Weights & 0.917 & 0.864 \\
     \item Always verify on untouched test data
 \end{itemize}
 \end{frame}
+
+\begin{frame}{Tricks of the trade}
+ \begin{itemize}
+  \item Use cross-validation instead of a single validation set (see videos on stacking)
+  \item Use a secondary metric (log loss) for tie breaking
+  \item Do not prune based on the validation set~\liturl{Purucker et al. (2023b)}{https://proceedings.mlr.press/v224/purucker23b.html}
+  \item Prune the number of models in the library to only include the top 50 - top 200~\liturl{Caruana et al. (2004)}{https://dl.acm.org/doi/10.1145/1015330.1015432}
+  \item When using multiple model classes, include models from each class nonetheless
+  \item Insights can be applied to optimize weights with CMA-ES~\liturl{Purucker et al. (2023a)}{https://proceedings.mlr.press/v224/purucker23a.html}
+ \end{itemize}
+
+\end{frame}
+
 
 \begin{frame}{Summary}
 Most important insights from this video:
