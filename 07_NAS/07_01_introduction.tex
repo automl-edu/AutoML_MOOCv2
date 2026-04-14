@@ -19,14 +19,14 @@
 %----------------------------------------------------------------------
 %----------------------------------------------------------------------
 \begin{frame}{Neural Architecture Design}
-\onslide<1-2>
+\onslide<1-3>
 Common Deep Learning procedure for ever-improving neural networks, e.g., on ImageNet~\liturl{Deng et al. 2009}{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5206848}:
-\onslide<2>
+\onslide<2-3>
 \begin{itemize}
     % \item Deep learning with Convolutional Neural Networks~\liturl{Krizhevsky et al. 2009}{https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf} is the main driver for success in computer vision 
     \item Define network topology from \alert{various configuration options} and \alert{various layer types}
 \end{itemize}
-\onslide<1-2>
+\onslide<1-3>
 \begin{minipage}[t]{0.3\textwidth}    
    \begin{tikzpicture} 
     \node (img6) {\includegraphics[height=2cm]{images/01/img_net/ILSVRC2012_val_00005770.jpeg}};
@@ -39,14 +39,14 @@ Common Deep Learning procedure for ever-improving neural networks, e.g., on Imag
       \end{minipage}
       % \vspace{-3cm}
    \hspace{1cm}
-   \onslide<2>
+   \onslide<2-3>
    \begin{minipage}{0.1\textwidth}  
    \vspace{-4cm}
       \includegraphics[height=3cm]{images/01/example_graph.pdf}
    \end{minipage}
    \hspace{1.5cm}
-\onslide<2>
-\begin{minipage}[t]{0.39\textwidth}  
+   \onslide<3>
+\begin{minipage}[t]{0.39\textwidth} 
 \begin{flushright}
 \resizebox{0.8\textwidth}{!}
 { 
@@ -94,19 +94,23 @@ Limitations:
     \item Trial and error
     \item Expert knowledge
 \end{enumerate}
-\pause
+\onslide<3>
 $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years of trial and error by experts  \\
 \end{minipage}
+\onslide<2-3>
 \begin{minipage}{0.25\textwidth} 
 \begin{center}
     \includegraphics[height=5cm, width=2cm]{images/01/inceptionoverall.pdf}
-    \captionof{figure}{GoogLeNet network \liturl{Szegedy et al. 2015}{http://openaccess.thecvf.com/content_cvpr_2015/papers/Szegedy_Going_Deeper_With_2015_CVPR_paper.pdf}}
+    \captionof{figure}{
+    \centering 
+    GoogLeNet network \liturl{Szegedy et al. 2015}{http://openaccess.thecvf.com/content_cvpr_2015/papers/Szegedy_Going_Deeper_With_2015_CVPR_paper.pdf}}
 \end{center}
 \end{minipage}
 \end{frame}
 
 \begin{frame}{Neural Architecture Search}
 \alert{Neural Architecture Search} (NAS): Find a neural network with strong performance in an automatic and efficient way
+\pause
 % \begin{itemize}
     % \item Optionally, subject to a resource constraint 
 % \end{itemize}
@@ -115,6 +119,7 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
        \begin{itemize}
     \item Overcoming the limitation of the manual design of neural networks 
     \item Intensely researched
+    \pause
     \item Initial methods extremely expensive
     \begin{itemize}
         \item Now more efficient
@@ -124,7 +129,9 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
 \begin{minipage}{0.45\textwidth} 
 \begin{center}
 \includegraphics[height=4cm]{07_NAS/images/01/no_papers_NAS.png}
-    \captionof{figure}{Number of NAS papers by year~\liturl{AutoML.org}{https://www.automl.org/automl/literature-on-neural-architecture-search/?tsr=&yr=0000&type=&auth=&tps_button=Search}}
+    \captionof{figure}{
+     \centering 
+     Number of NAS papers by year~\liturl{AutoML.org}{https://www.automl.org/automl/literature-on-neural-architecture-search/?tsr=&yr=0000&type=&auth=&tps_button=Search}}
 \end{center}
 \end{minipage}
 \end{frame}
@@ -200,7 +207,7 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
         \end{minipage}
         \\
     \end{tabular}
-    \caption{NAS-Bench-360~\liturl{Tu et al. 2022}{https://proceedings.neurips.cc/paper_files/paper/2022/file/506630e4a43bb9d64a49f98b9ba934e9-Paper-Datasets_and_Benchmarks.pdf}}
+    \caption{\centering NAS-Bench-360~\liturl{Tu et al. 2022}{https://proceedings.neurips.cc/paper_files/paper/2022/file/506630e4a43bb9d64a49f98b9ba934e9-Paper-Datasets_and_Benchmarks.pdf}}
     \label{tab:placeholder}
 \end{table}
     
@@ -280,7 +287,7 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
     \begin{column}{0.4\textwidth}
     \begin{itemize}
         \item \textbf{Goal}: find architectures with a good \alert{clean accuracy / robust accuracy} trade-off
-    \item \textbf{Challenge}: evaluating robust accuracy requires \alert{adversarial training} (or at minimum adversarial evaluation) — very expensive
+    \item \textbf{Challenge}: evaluating robust accuracy requires a \alert{fully trained network} — very expensive
     \end{itemize}
     \end{column}          
    
@@ -308,7 +315,7 @@ $\rightsquigarrow$ Complex state-of-the-art architectures are a result of years 
 \begin{minipage}[c]{0.4 \textwidth}
     \begin{center}
 \includegraphics[height=5cm]{images/01/hardware_types.jpg}
-    \captionof{figure}{Different hardware types ~\liturl{Benmeziane et al. 2021}{https://arxiv.org/pdf/2101.09336.pdf}}
+    \captionof{figure}{\centering Different hardware types ~\liturl{Benmeziane et al. 2021}{https://arxiv.org/pdf/2101.09336.pdf}}
 \end{center}
 \end{minipage}
 \end{frame}
@@ -325,17 +332,18 @@ Two main approaches:
     \pause
     \item \alert{Multi-objective search (Scalarization)}: combine objectives into a single weighted sum
     \[
-        \mathcal{L}(a) = -\cost_{\text{acc}}(a) + \lambda \cdot \cost_{\text{hw}}(a)
+        \mathcal{L}(a) = \cost_{\text{acc}}(a) + \lambda \cdot \cost_{\text{hw}}(a)
     \]
     \begin{itemize}
         \item $\lambda$ controls the trade-off
-        \item Changing $\lambda$ moves along the Pareto front — cheap to sweep
+        \item Changing $\lambda$ moves along the Pareto front
+        %— cheap to sweep
         % \item Assumes a linear trade-off which may not hold globally
     \end{itemize}
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{Beyond Benchmarks: Hardware Efficiency}
+\begin{frame}{Hardware Efficiency}
 %
     \begin{center}
 \includegraphics[height=6cm]{images/01/hw_chart.pdf}%

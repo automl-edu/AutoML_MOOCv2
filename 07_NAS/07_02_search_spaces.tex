@@ -103,12 +103,20 @@ e.g. MobileNetV2~\liturl{Sandler et al. 2018}{https://openaccess.thecvf.com/cont
     \end{enumerate}
 \end{itemize}
 
+\begin{minipage}[c]{0.35\textwidth}
 \begin{minipage}[c]{0.3\textwidth}
-    \includegraphics[height=5cm]{images/02/Conv_Structure.pdf}
-    \captionof{figure}{Example of an entire architecture encoding ~\liturl{Zoph and Le 2017}{https://openreview.net/pdf?id=r1Ue8Hcxg}}
+    \includegraphics[height=3cm]{images/02/0.pdf}
+\end{minipage}
+\begin{minipage}[c]{0.3\textwidth}
+    \includegraphics[height=3cm]{images/02/1.pdf}
+\end{minipage}
+\begin{minipage}[c]{0.3\textwidth}
+    \includegraphics[height=3cm]{images/02/2.pdf}
+\end{minipage}
+    \captionof{figure}{\centering Example of an entire architecture encoding~ \liturl{Kandasamy et al. 2018}{https://proceedings.neurips.cc/paper_files/paper/2018/file/f33ba15effa5c10e873bf3842afb46a6-Paper.pdf}}
 \end{minipage}
 \onslide<2>
-\begin{minipage}[c]{0.65\textwidth}
+\begin{minipage}[c]{0.6\textwidth}
         \includegraphics[height=2cm]{images/02/size-search-space.pdf}
     \captionof{figure}{Example of macro-level hyperparameters~\liturl{Dong et al. 2021}{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9336247}}
 \end{minipage}
@@ -136,17 +144,17 @@ e.g. MobileNetV2~\liturl{Sandler et al. 2018}{https://openaccess.thecvf.com/cont
     \end{itemize}
 \end{itemize}
 \pause 
-\begin{minipage}[c]{0.45\textwidth}
-\centering
-    \includegraphics[height=3cm]{images/02/mobilenet_v2_block.pdf}
-    \captionof{figure}{Convolution blocks in MobileNet V2 ~\liturl{Sandler et al. 2018}{https://openaccess.thecvf.com/content_cvpr_2018/papers/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.pdf}}
-\end{minipage}
-\pause
-\begin{minipage}[c]{0.45\textwidth}
+% \begin{minipage}[c]{0.45\textwidth}
+% \centering
+%     \includegraphics[height=3cm]{images/02/mobilenet_v2_block.pdf}
+%     \captionof{figure}{Convolution blocks in MobileNet V2 ~\liturl{Sandler et al. 2018}{https://openaccess.thecvf.com/content_cvpr_2018/papers/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.pdf}}
+% \end{minipage}
+% \pause
+% \begin{minipage}[c]{0.45\textwidth}
 \centering
         \includegraphics[height=3cm]{images/02/chain_mb_space_v2.pdf}
     \captionof{figure}{left: Example of chain-structured search space. right: More complex search space with multiple branches. \liturl{Elksen et al. 2019}{https://www.jmlr.org/papers/volume20/18-598/18-598.pdf}}
-\end{minipage}   
+% \end{minipage}   
 \end{frame}
 
 \begin{frame}{Cell-based Search Spaces}
@@ -155,6 +163,7 @@ e.g. MobileNetV2~\liturl{Sandler et al. 2018}{https://openaccess.thecvf.com/cont
     \item Most popular search space in NAS
     \item Inspired by repetitive block in human designed CNNs (e.g., ResNet blocks \liturl{He et al. 2016}{https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/He_Deep_Residual_Learning_CVPR_2016_paper.pdf})
     % \item Start with NASNet~\liturl{Zoph et al. 2018}{https://openaccess.thecvf.com/content_cvpr_2018/papers/Zoph_Learning_Transferable_Architectures_CVPR_2018_paper.pdf}: Search for small cells and stack them several times (i.e., micro structure with fixed macro architecture)
+    \pause
     \item Different types of cells used: normal and reduction cell (same structure with different strides)
         
 \end{itemize}

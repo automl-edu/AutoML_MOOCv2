@@ -1,0 +1,138 @@
+\documentclass[main]{subfiles}
+
+\title[AutoML: Introduction]{Chapter 1 -- Quiz}
+\subtitle{Multiple Choice Questions}
+\author[Marius Lindauer]{Marius Lindauer}
+\date{}
+
+\titlebackground*{images/AutoML_AutoDL}
+
+\newcommand{\correct}[1]{\textcolor{ForestGreen}{\textbf{#1} \checkmark}}
+\newcommand{\wrong}[1]{#1}
+
+\begin{document}
+
+    \maketitle
+
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q0 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What does AutoML stand for?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Automated Men Learning.}
+    \item \wrong{(B) \; Autos and MobiLes.}
+    \item \correct{(C) \; Automated Machine Learning.}
+    \item \wrong{(D) \; Automated Marius Lindauer.}
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Q1 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Why is ``without explicit programming'' only partially true for ML?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Models always need a user-fixed architecture.}
+    \item \correct{(B) \; Good performance needs adapting HPs, architecture \& preprocessing.}
+    \item \wrong{(C) \; ML models cannot generalize beyond training data.}
+    \item \wrong{(D) \; Programming is still needed to define each loss function.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q2 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Which are key advantages of AutoML? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; Outperforms humans in data science competitions.}
+    \item \wrong{(B) \; Guarantees fairness regardless of the chosen metric.}
+    \item \correct{(C) \; Provides systematic evaluation, reducing human bias.}
+    \item \wrong{(D) \; Automatically finds the best performance metric.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q3 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{In formal AutoML, what does $\optconf$ minimise?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Empirical risk $\riske$ on $\datasettrain$.}
+    \item \wrong{(B) \; Number of hyperparameters in $\pcs$.}
+    \item \correct{(C) \; Generalization risk $\riskg$ on $\datasetval$.}
+    \item \wrong{(D) \; Wall-clock training time of $\mathcal{I}$.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q4 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{What can config space $\pcs$ represent? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; Hyperparameter settings (e.g., learning rate).}
+    \item \correct{(B) \; Neural architecture (operators \& connections).}
+    \item \correct{(C) \; ML pipeline (e.g., normalization $\to$ SVM).}
+    \item \correct{(D) \; Ensemble (which models to combine).}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q5 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{When should you NOT blindly apply AutoML? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; Constraints directly imply a specific model.}
+    \item \wrong{(B) \; Working on a novel task with no prior baseline.}
+    \item \correct{(C) \; The relevant fairness metric is unknown.}
+    \item \correct{(D) \; Well-known dataset with established HP settings exists.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q6 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Which AutoML interface is called the ``holy grail''?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Data + Config Space $\to$ Model}
+    \item \correct{(B) \; Data $\to$ Model}
+    \item \wrong{(C) \; Data + Constraints $\to$ Model}
+    \item \wrong{(D) \; Data + Documentation $\to$ Code}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q7 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Which about AutoML components is correct? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; Can target full pipeline or individual components.}
+    \item \wrong{(B) \; One AutoML approach works best for all tasks.}
+    \item \wrong{(C) \; Bayesian Opt.\ guarantees finding the global opt.}
+    \item \correct{(D) \; Optimizes measurable objectives (accuracy, speed\ldots).}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+\end{document}

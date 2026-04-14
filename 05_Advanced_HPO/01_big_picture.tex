@@ -24,17 +24,18 @@ Standard Bayesian optimization is:
 \pause
 
 \begin{itemize}
-    \item theoretically grounded, well-established, and widely studied,
-    \pause
     \item built for sequential decision-making under uncertainty in which evaluations are expensive and the objective function is unknown,
+    \pause
+    \item theoretically grounded, well-established, and widely studied,
     \pause
     \item based on standard smoothness assumptions\footnote{For example, some regret guarantees assume the objective lies in the RKHS induced by the chosen kernel.}, which makes it widely applicable.
 \end{itemize}
-\pause
 
-$\leadsto$ \textbf{Often yes,} because it can be more sample-efficient than random search, more adaptive than grid search, and more systematic than manual search. \\
+\vspace{0.5cm}
 \pause
-$\leadsto$ \textbf{But}, it might still be too inefficient for practical HPO tasks (e.g. where a single function evaluation requires training and evaluating a large neural network).
+$\leadsto$ \textbf{Yes,} because it can be more sample-efficient than random search, more adaptive than grid search, and more systematic than manual search. \\
+\pause
+$\leadsto$ \textbf{But}, it might still be too inefficient for practical HPO tasks (e.g., where a single function evaluation requires training and evaluating a large neural network).
 
 \end{frame}
 %-----------------------------------------------------------------------
@@ -53,7 +54,8 @@ Some observations:
 \end{itemize}
 \pause
 
-$\leadsto$ HPO has a lot of structure; treating it as generic black-box optimization is unnecessarily general and may be inefficient
+\vspace{1cm}
+HPO has a lot of structure $\leadsto$ treating it as generic black-box optimization task is unnecessarily general.
 
 \end{frame}
 %-----------------------------------------------------------------------

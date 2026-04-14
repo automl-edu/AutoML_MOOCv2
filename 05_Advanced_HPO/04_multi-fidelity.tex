@@ -1,0 +1,209 @@
+\documentclass[main]{subfiles}
+
+
+\title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
+\subtitle{Multi-Fidelity Optimization}
+\author[Katharina Eggensperger]{Katharina Eggensperger}
+\date{}
+
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Can't We Discard Bad Performing Configurations Early?}
+
+$\leadsto$ Full evaluations yield the most accurate signal, but may waste resources in practice.
+
+\vspace{0.5cm}
+
+In practice, we often have access to cheap approximations or intermediate results of the target function, which can be useful for identifying promising regions and discarding poor-performing candidates early, e.g.,
+\begin{itemize}
+    \item subsampling training data
+    \item partial training
+    \item downscaled images
+    \item smaller models
+\end{itemize}
+
+\vspace{0.5cm}
+\textbf{$\leadsto$ How can we use this information to increase the efficiency of Bayesian optimization?} \\
+
+\end{frame}
+
+
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{A Motivating Example}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{05_Advanced_HPO/images/multi-fidelity_example.png}
+    \caption{From: \liturl{Franceschi et al. "Hyperparameter Optimization in Machine Learning"}{https://arxiv.org/abs/2410.22854}}
+\end{figure}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Formal Definition}
+
+We refer to an approximation of the true objective $\cost(\conf)$ as $\cost_b(\conf)$, where $b \in [b_{min}, b_{max}]$. Furthermore, we assume that $\cost_{b_{max}}(\conf) = \cost(\conf)$ and that $b$ correlates with evaluation costs (e.g. compute costs).
+
+\\~\\
+Our optimization objective is then to find:
+
+\begin{equation*}
+\conf^* \in \argmin_{\conf \in \pcs} \cost_{b_{max}}(\conf)
+\end{equation*}
+
+This requires allocating resources efficiently across configurations.
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Assumptions}
+
+Multi-fidelity methods exploit three structural observations
+\begin{enumerate}
+    \item the \textbf{error shrinks smoothly} as the fidelity budget increases,
+    \item \textbf{ranks are approximately consistent} across fidelities,
+    \item and \textbf{higher fidelities provide a more accurate approximation} of the true objective value.
+\end{enumerate}
+
+\vspace{0.5cm}
+$\leadsto$ In practice, these assumptions are not necessarily satisfied. HPO must be robust against that.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Successive Halving}
+
+\textbf{Idea:} Explore configurations with low budgets and exploit promising configurations with high budgets.
+
+\vspace{0.2cm}
+
+\textbf{Method:} Sample $n$ random configurations $\confs_{cand}$: 
+\begin{enumerate}
+    \item evaluate $\confs_{cand}$ on budget $b$
+    \item keep top $1/\eta$ fraction of $\confs_{cand}$
+    \item increase budget $b \leftarrow \eta b$
+    \item repeat until only one configuration remains or the maximum budget is reached.
+\end{enumerate}
+
+\vspace{0.2cm}
+
+\textbf{Key parameter:} The reduction factor $\eta > 1$ controls how quickly we discard configurations and increase budget.
+\begin{itemize}
+    \item $\eta=0.5$ $\leadsto$ successively \emph{halves} the number of configurations and \emph{doubles} the budget.
+    \item Larger $\eta$ $\leadsto$ aggressive pruning, greedy exploitation
+    \item Smaller $\eta$ $\leadsto$ gentle pruning, guarded exploitation
+\end{itemize}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Successive Halving Limitations}
+
+\textbf{Sensitivity to early decisions:} Pruning is based on low-fidelity evaluations. \\
+$\leadsto$ Risk of discarding good configurations due to noise or a too low budget.
+
+\vspace{0.3cm}
+
+\textbf{No adaptive sampling:} Configurations are sampled randomly. \\
+$\leadsto$ Does not learn from previous evaluations.
+
+\vspace{0.3cm}
+
+\textbf{Extensions:}
+\begin{itemize}
+    \item Successive halving with varying values for $b_{min}$ and $n$ $\leadsto$ Hyperband \liturl{Li et al. JMLR'18}{https://www.jmlr.org/papers/v18/16-558.html}
+    \item Combine with Bayesian Optimization $\leadsto$ BOHB \liturl{Falkner et al. ICML'18}{https://proceedings.mlr.press/v80/falkner18a/falkner18a.pdf}
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Hyperband}
+
+\textbf{Motivation:} A small $b_{min}$ enables fast progress, if low-fidelity evaluations preserve ranking. The optimal value depends on the task and is typically unknown.
+
+\vspace{0.3cm}
+
+\begin{columns}[T,onlytextwidth]
+  \column{0.48\textwidth}
+  \textbf{Idea:} Run Successive Halving with different resource allocation schedules. In each \emph{bracket}, use the same total budget. \\
+  $\leadsto$ Large $n$, small $b_{min}$ \hfill (broad exploration) \\
+  $\leadsto$ Small $n$, large $b_{min}$ \hfill (deep evaluation) \\
+
+  \vspace{0.3cm}
+  \textbf{Intuition:} At least one bracket is close to optimal allocation, and the method is robust against budget constraints.
+
+  \column{0.50\textwidth}
+  \begin{figure}
+      \centering
+      \includegraphics[width=\linewidth]{05_Advanced_HPO/images/SH_pseudocode.png}
+      \caption{From: \liturl{Falkner et al. JMLR'18}{proceedings.mlr.press/v80/falkner18a/falkner18a.pdf}}
+  \end{figure}
+\end{columns}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Model-Based Multi-Fidelity Optimization}
+
+\textbf{Motivation:} Replace random sampling with Bayesian Optimization
+
+\vspace{0.3cm}
+
+\textbf{Idea:} Use past observations to bias the selection of new configurations. Once there are sufficient observations per fidelity, replace random sampling with Bayesian Optimization\footnote{The original method uses a Tree-Parzen Estimator method for sampling-based Bayesian Optimization. See \liturl{BOHB}{https://proceedings.mlr.press/v80/falkner18a/falkner18a.pdf} and \liturl{TPE}{https://proceedings.neurips.cc/paper_files/paper/2011/hash/86e8f7ab32cfd12577bc2619bc635690-Abstract.html}.}.
+
+\vspace{0.5cm}
+\textbf{Intuition:} Focus search on promising regions.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Empirical Results}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{05_Advanced_HPO/images/BOHB.png}
+    \caption{From \liturl{Falkner et al. JMLR'18}{https://proceedings.mlr.press/v80/falkner18a/falkner18a.pdf}}
+\end{figure}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Alternatives and Extensions}
+
+Modern methods can further exploit \emph{parallelism} and \emph{structure}:
+
+\begin{itemize}
+    \item \textbf{Asynchronous} methods remove the synchronization barrier in Hyperband.
+    \item \textbf{Learning Curve} methods predict performance of configurations from partial evaluations.
+    \item \textbf{Scaling Laws} methods exploit predictable trends as a function of compute or data to extrapolate even more reliably from small budgets.
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Conclusion and Key Takeaway}
+
+Multi-fidelity methods improve the efficiency of hyperparameter optimization by allocating resources adaptively, e.g., by
+\begin{itemize}
+    \item evaluating many configurations with small budgets and progressively pruning (Successive Halving),
+    \item hedging over multiple resource allocation strategies (Hyperband),
+    \item combining adaptive resource allocation with model-based sampling (BOHB).
+\end{itemize}
+
+\vspace{0.5cm}
+
+Performance depends on the quality of low-fidelity signals and the choice of resource allocation.
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+
+\end{document}

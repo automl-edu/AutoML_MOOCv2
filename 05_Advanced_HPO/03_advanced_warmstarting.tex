@@ -1,0 +1,248 @@
+\documentclass[main]{subfiles}
+
+\title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
+\subtitle{Warmstarting via Meta-Learning Across Tasks}
+\author[Katharina Eggensperger]{Katharina Eggensperger}
+\date{}
+
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{What if we have more tasks?}
+
+\begin{columns}[T,onlytextwidth]
+    \column{0.50\textwidth}
+    \vspace{10pt}
+    In practice, we often run HPO on similar but slightly different datasets, e.g., 
+    \begin{itemize}
+        \item to track changes in data(streams),
+        \item to adapt to similar tasks.
+    \end{itemize}
+    The best setting tends to remain stable across tasks.
+    \column{0.50\textwidth}
+    \vspace{0pt}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{05_Advanced_HPO/images/meta-learning_hpo.png}
+        \caption{Adapted from: \liturl{Schneider et al. PPSN'2022}{https://arxiv.org/abs/2208.00220}}
+    \end{figure}
+\end{columns}
+
+\vspace{0.5cm}
+\textbf{$\leadsto$ How can we increase the efficiency of HPO on a sequence of related tasks?} \\
+
+\end{frame}
+%-----------------------------------------------------------------------%-----------------------------------------------------------------------%----------------------------------------------------------------------
+\begin{frame}[c]{A Motivating Example}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.4\linewidth]{05_Advanced_HPO/images/HPO_multidata.png}
+        \caption{Adapted from: \liturl{Greff et al. 2017}{https://arxiv.org/abs/1503.04069}}
+    \end{figure}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+
+\begin{frame}[c]{Meta-Learning Across Tasks}
+
+Assuming a fixed search space (i.e., HPO task), a given target dataset $\dataset_t$, and a given set of prior datasets $\datasets_{meta} = \{\dataset_1, \dots, \dataset_{t-1}\}$ on which we have collected prior observations.
+
+\vspace{0.5cm}
+\textbf{Why?} Objective functions of tasks are correlated. \\
+\textbf{Idea:} Positive transfer from similar tasks, zero transfer from different tasks. \\
+\textbf{Method:} Portfolios to (partially) replace the initial design.
+
+\vspace{0.5cm}
+\pause
+\textbf{$\leadsto$Direction 1:} \textbf{Task-agnostic} portfolios covering well-performing regions of "all" tasks. \\
+\textbf{$\leadsto$Direction 2:} \textbf{Task-specific} portfolios covering well-performing regions on similar tasks.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Task-Agnostic Portfolios}
+
+Given meta-datasets $\datasets_{meta}$ and a candidate pool $\confs_{cand} = \{\conf_1, ..., \conf_n\}$. 
+
+The goal is to construct a portfolio $\portfolio \subseteq \confs_{cand}, |\portfolio| = k$, that minimizes the objective:
+
+\begin{equation*}
+\loss(\portfolio, \datasets_{meta}) = \sum_{i=1}^{t-1} \min_{\conf \in \portfolio} \cost(\conf, \dataset_i)
+\end{equation*}
+
+\pause
+\textbf{Key idea:}
+\begin{itemize}
+    \item Portfolio performance is determined by the single best configuration.
+    \item The portfolio should include at least one well-performing configuration per task.
+    \item The portfolio covers optima across diverse tasks.
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Greedy Forward Selection}
+
+\textbf{Intuition:}
+\begin{itemize}
+    \item Each step adds a configuration that improves performance on "uncovered" tasks
+    \item Encourages diversity via complementary performance
+\end{itemize}
+\pause
+\vspace{0.5cm}
+
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.45\textwidth}
+\textbf{Input:} $\confs_{cand} = \{\conf_1, \dots, \conf_n\}$, $\datasets_{meta}$, $\cost(\cdot)$ \\
+\textbf{Initialize:} $\portfolio \gets \emptyset$ \\
+\begin{enumerate}
+    \item \textbf{while $|\portfolio| < k$ do} \\
+    \item \quad $\conf^+ \in \argmin_{\lambda \in \confs_{cand}} \loss \left(\portfolio \cup \conf, \datasets_{meta} \right)$ \\
+    \item \quad $\portfolio \gets \portfolio \cup \conf^+, \confs_{cand} \gets \confs_{cand} \setminus \conf^+$ \\
+    \item \textbf{return $\portfolio$}
+\end{enumerate}
+\end{column}
+\pause
+\begin{column}{0.45\textwidth}
+{%
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\linewidth]{05_Advanced_HPO/images/portfolio.png}
+\end{figure}
+}%
+\end{column}
+\end{columns}
+\vspace{0.5cm}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Task-Specific Portfolios}
+
+\begin{columns}[T,onlytextwidth]
+  \column{0.60\textwidth}
+  \vspace{0pt}
+  Instead of finding a global portfolio, we want a portfolio specifically for our target task $t$.
+
+  \vspace{0.2cm}
+  \textbf{Key idea} on how to adapt greedy portfolio construction:
+  \begin{itemize}
+      \item Find the $k$-closest tasks
+      \item Choose best performing configurations on these tasks to warmstart optimization
+  \end{itemize}
+  \column{0.35\textwidth}
+  \vspace{-2cm}
+  \begin{figure}
+      \centering
+      \includegraphics[width=\linewidth]{05_Advanced_HPO/images/news_task_similarity.png}
+      \caption{Adapted from \liturl{Schneider et al. PPSN'2022}{https://arxiv.org/abs/2208.00220}}
+      \label{fig:placeholder}
+  \end{figure}
+\end{columns}
+
+\pause
+\vspace{-0.5cm}
+\textbf{How do we define task similarity?} \\
+(Intuition: If tasks are similar, similar configurations achieve similar performance, i.e., if the datasets are similar, good configurations transfer.)
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Meta-features as Dataset Descriptors}
+
+Meta-features $\mathbf{z} = \{\phi_1(\dataset) \dots, \phi_d(\dataset)\}$ representing dataset characteristics, e.g.,
+\begin{itemize}
+    \item \textbf{simple} features (e.g., \#samples, \#features),
+    \item \textbf{information-theoretic} meta-features (e.g., entropy of features and labels),
+    \item \textbf{model-based} features (e.g. depth of a tree),
+    \item and \textbf{landmarking} features (e.g., performance of simple, fast ML models)
+\end{itemize}
+can be used to describe datasets.
+
+\vspace{0.5cm}
+Task similarity can then be computed as $\text{sim}(t, t') = -\| \mathbf{z}_t - \mathbf{z}_{t'}\|$
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Meta-feature-based Portfolios}
+
+Now, we can build task-specific portfolios:
+\begin{enumerate}
+    \item Compute $\{\mathbf{z}_1, \cdots, \mathbf{z}_t\}$
+    \item Compute $k$-closest datasets 
+    \item Use the best performing configurations of the closest $k$ datasets as the portfolio
+\end{enumerate}
+   
+\end{frame}
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Task-specific vs Task-agnostic}
+
+\setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
+\setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
+\begin{columns}[T,onlytextwidth]
+  \column{0.45\textwidth}
+  \vspace{0pt}
+  \begin{block}{\raggedright Task-Agnostic}
+\begin{itemize}
+    \item can be built offline once
+    \item covers diverse settings
+    \item emphasizes complementarity in configurations
+\end{itemize}
+\end{block}
+\pause
+\column{0.45\textwidth}
+\begin{block}{\raggedright Task-Dependent}
+\begin{itemize}
+    \item build per task
+    \item requires hand-designed meta-features
+    \item emphasizes performance
+    \item configurations might be very similar
+\end{itemize}
+\end{block}
+   \end{columns}
+
+\end{frame}
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------\begin{frame}{Alternatives and Extensions}
+
+Instead of meta-features, we can also use a
+\begin{itemize}
+    \item \textbf{ranking-based} similarity via comparing performance across shared configurations,
+    \item or \textbf{learned} similarity via task embeddings, e.g, Dataset2Vec \liturl{Jomaa et al. 2021}{https://dl.acm.org/doi/abs/10.1007/s10618-021-00737-9} or embeddings of textual descriptions.
+\end{itemize}
+
+\pause
+\vspace{0.5cm}
+Instead of portfolios, we can also:
+\begin{itemize}
+    \item combine/ensemble \textbf{surrogate models} across tasks
+    \item combine/ensemble \textbf{acquisition values} across tasks
+\end{itemize}
+\end{frame}
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Conclusion and Key Takeaway}
+
+Prior observations on \emph{related tasks} can increase the efficiency of Bayesian optimization, e.g., by warmstarting with a
+\begin{itemize}
+    \item \textbf{task-agnostic} portfolio covering diverse settings,
+    \item \textbf{task-specific} portfolio consisting of configurations that performed well in similar tasks.
+\end{itemize}
+Task similarity can be defined using meta-features, configuration rankings, or learned embeddings.
+\pause
+\vspace{0.5cm}
+
+$\leadsto$ If the assumed task similarity is incorrect, transfer can be harmful (negative transfer).
+
+\end{frame}
+
+\end{document}

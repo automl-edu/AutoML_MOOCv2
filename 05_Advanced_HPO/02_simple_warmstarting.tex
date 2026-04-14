@@ -1,0 +1,129 @@
+\documentclass[main]{subfiles}
+
+\title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
+\subtitle{Warmstarting From Prior Observations}
+\author[Katharina Eggensperger]{Katharina Eggensperger}
+\date{}
+
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Why Should We Start From Scratch?}
+
+In practice, we have more data available from:
+\begin{itemize}
+    \item tune the same model repeatedly
+    \item previous work on similar datasets
+    \item re-run experiments with slight modifications
+\end{itemize}
+
+\vspace{1cm}
+\textbf{$\leadsto$ How can we use this information to increase the efficiency of Bayesian optimization?} \\
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{A Motivating Example}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{05_Advanced_HPO/images/lr_bs_rule_of-thumb.png}
+    \caption{Source: \liturl{Li et al. NeurIPS'24}{https://proceedings.neurips.cc/paper_files/paper/2024/file/ef74413c7bf1d915c3e45c72e19a5d32-Paper-Conference.pdf}}
+\end{figure}
+\end{frame}
+
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{The Initial Design}
+In Bayesian optimization, we iteratively build a surrogate model: 
+
+\begin{equation*}
+    \surro_N (\conf | \hist), \qquad \hist = D_{init} \cup \{(\conf_i, \cost_i)\}_{i=n}^N
+\end{equation*}
+
+\vspace{0.5cm}
+We start with an initial design $\dataset_{init}$:
+\begin{itemize}
+    \item typically random or space-filling designs (e.g., Latin Hypercube)
+    \item efficiency of early iterations is highly sensitive to the initial design.
+\end{itemize}
+
+\vspace{0.5cm}
+\textbf{$\leadsto$ How do we inject knowledge into this uninformed initialization?}
+
+\end{frame}
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+
+\begin{frame}[c]{Prior Observations on the Same Task}
+
+Assuming a fixed search space and given a target dataset $\dataset_t$, how can existing observations from manual exploration?
+
+\vspace{0.1cm}
+\textbf{Why?} Existing observations cover (human) intuition and serve as good starting points. \\
+\textbf{Goal:} Inject knowledge into the early stages of Bayesian Optimization. \\
+\textbf{Method:} (Partially) replace initial design. \\
+
+\pause
+\setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
+\setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
+\begin{columns}[T,onlytextwidth]
+  \column{0.48\textwidth}
+  \begin{block}{\raggedright Impact}
+    \begin{itemize}
+      \item reduces initial uncertainty volume
+      \item biases surrogate towards existing (good) observations
+      \item accelerates early exploitation
+    \end{itemize}
+  \end{block}
+
+  \column{0.48\textwidth}
+  \begin{block}{\raggedright Limitations}
+    \begin{itemize}
+      \item does not work across tasks
+      \item performance depends on prior observations
+    \end{itemize}
+  \end{block}
+\end{columns}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Alternatives}
+
+Based on existing observations from a manual exploration, we can also:
+
+\begin{itemize}
+    \item choose a better surrogate model (e.g., kernel or model family)
+    \item learn hyperparameters of surrogate (e.g., lengthscales)
+    \item estimate noise of the objective function
+    \item adjust the search space
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Conclusion and Key Takeaway}
+
+Prior observations can increase the efficiency of Bayesian optimization, e.g., by
+\begin{itemize}
+    \item (partially) replacing the initial design with prior observations,
+    \item restricting the search space,
+    \item using stronger priors/surrogates (e.g., kernel hyperparameters and noise estimation)
+\end{itemize}
+
+\vspace{0.5cm}
+However, if prior observations are inconsistent (e.g., due to changes in code/data/seed) or biased, they can mislead optimization.
+
+\end{frame}
+
+\end{document}

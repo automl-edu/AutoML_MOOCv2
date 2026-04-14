@@ -53,6 +53,7 @@ Can we \textbf{reliably predict} which architecture will perform best — withou
 In the early stages of NAS the architectures were evaluated for their ground truth performance ~\liturl{Zoph and Le 2017}{https://openreview.net/pdf?id=r1Ue8Hcxg}
 \begin{itemize}
     \item Up to 20k architectures on CIFAR-10~\liturl{Krizhevsky et al. 2009}{https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf} $\rightarrow$ 800 GPU hours
+     \pause
     \item Since then, the goal is to speed up the evaluation
 \end{itemize}
 \end{frame}
@@ -60,8 +61,11 @@ In the early stages of NAS the architectures were evaluated for their ground tru
 \begin{frame}{Performance Prediction}
 \begin{itemize}
     \item Given a search space $\mathcal{A}$, an architecture $a \in \mathcal{A}$ and the final validation accuracy $\cost(a)$ after full training pipeline $P$
+    \pause
     \item A \textit{performance predictor} $\cost'(a)$ is a function, which predicts the score of the architecture $a$, without $P$. 
+     \pause
     \item Motivation is based on $\cost'(a)$ needing less time for evaluations than $\cost(a)$
+     \pause
     \item Also $\{\cost'(a) \vert a \in A\}$ is ideally highly correlated with  $\{\cost(a) \vert a \in A\}$
 \end{itemize}
 \end{frame}
@@ -136,13 +140,16 @@ Data:\\ $\displaystyle ( a\ \in \ \mathcal{A} ,\ \cost( a))_{i=1,...,N}$
 \end{tikzpicture}
 \captionof{figure}{Overview of performance prediction components}
 Performance prediction methods are based on \textbf{three} components:
+ \pause
 \begin{itemize}
     \item Dataset to train the prediction method
     \begin{itemize}
         \item Can be also used with learning curve extrapolation
     \end{itemize}
+     \pause
     \item Prediction method for the target $\cost(a)$
-    \item Architecture encoding which is the input to the prediction method
+     \pause
+    \item Architecture encoding which is the input to the prediction method  \pause
 \end{itemize}
 
     % \begin{itemize}
@@ -197,7 +204,9 @@ Data:\\ $\displaystyle ( a\ \in \ \mathcal{A} ,\ \cost( a))_{i=1,...,N}$
 
 \end{tikzpicture}
 \captionof{figure}{Overview of performance prediction methods}
-The prediction method can be selected from various regression methods in machine learning
+The prediction method can be selected from various regression methods in machine learning 
+ \pause
+ 
 Most popular in NAS are: 
 % \redtodo{(or some examples are?)}
 \begin{itemize}

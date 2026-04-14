@@ -44,7 +44,7 @@ There are two different categories commonly used in NAS:
     
 \end{frame}
 
-\begin{frame}{Black-Box Optimization Techniques}
+\begin{frame}{Basic and Black-Box Optimization Techniques}
 \begin{itemize}
     \item Basic algorithms
         \begin{itemize}
@@ -96,13 +96,13 @@ Evolutionary algorithm:
     \item In each step, one (or more) parent architecture (mostly high-scoring architecture) in the population is sampled, combined, and mutated to create new children architectures
     \item Children are trained and added to the population and replace individuals (with worse scores)
 \end{itemize}
-\pause
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\linewidth]{07_NAS/images/03/ga_flow_chart.pdf}
-    \caption{\liturl{Sun et al. 2020}{https://arxiv.org/pdf/1808.03818}}
-    \label{fig:placeholder}
-\end{figure}
+% \pause
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.8\linewidth]{07_NAS/images/03/ga_flow_chart.pdf}
+%     \caption{\liturl{Sun et al. 2020}{https://arxiv.org/pdf/1808.03818}}
+%     \label{fig:placeholder}
+% \end{figure}
 \end{frame}
 
 \begin{frame}{Evolutionary and Genetic Algorithms}
@@ -132,33 +132,60 @@ Methods differ in several steps:
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Regularized Evolution~\liturl{Real et al. 2019}{https://arxiv.org/pdf/1802.01548}}
+\begin{frame}{Regularized/ Aging Evolution~\liturl{Real et al. 2019}{https://arxiv.org/pdf/1802.01548}}
 Regularized evolution is the most successful evolutionary algorithm method in NAS due to maintaining population diversity and preventing premature convergence
 \pause
 \begin{itemize}
-    \item Search for blocks (cells) with 5 choices (applied on the NASNet search space~\liturl{Zoph et al. 2018}{https://openaccess.thecvf.com/content_cvpr_2018/papers/Zoph_Learning_Transferable_Architectures_CVPR_2018_paper.pdf}):
-    \begin{itemize}
-        \item Choose 2 previous feature maps
-        \item Choose operations for both (convolutions, pooling)
+    \item Search for blocks (cells) with 5 choices (applied on the NASNet search space~\liturl{Zoph et al. 2018}{https://openaccess.thecvf.com/content_cvpr_2018/papers/Zoph_Learning_Transferable_Architectures_CVPR_2018_paper.pdf}): 
+        \begin{itemize}
+        \item Choose two previous feature maps
+        \item Choose operations for both (convolutions, pooling, etc.)
         \item Choose operation to merge (add or concat)
     \end{itemize}
+    \only<2-3>{
+    \begin{columns}
+        \begin{column}{0.6\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{07_NAS/images/03/Figure-2.pdf}
+        \end{column}
+        \begin{column}{0.35\textwidth}
+        \centering
+        \includegraphics[width=0.4\linewidth]{07_NAS/images/03/Figure-2-Part-B.pdf}
+        \end{column}
+    \end{columns}}
+
     \pause
-    \item Evolution simply tackles this as a \textit{hyperparameter optimization} (HPO) problem with $2 \times 5$ variables
+    \item Evolution simply tackles this as a \textit{hyperparameter optimization} (HPO) problem with $2 \times 5$ variables (normal and reduction cell)
     \item Worst/oldest solution is dropped from the population
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Regularized/ Aging Evolution~\liturl{Real et al. 2019}{https://arxiv.org/pdf/1802.01548}}
+\begin{itemize}
+    \item Quite standard evolutionary algorithm
 \end{itemize}
 \pause
     \alert{Novelty:} Dropping the architecture in each step, which has been in the population the longest (even if it's the best).
     Achieved state-of-the-art performance on ImageNet~\liturl{Deng et al. 2009}{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5206848} at release time
+    \pause
+    
+ \centering{
+        \includegraphics[width=0.3\linewidth]{07_NAS/images/03/mutations.pdf}\\
+        Different types of mutations in cell search space
+    }
 \end{frame}
 
 \begin{frame}{Bayesian Optimization for NAS}
 Bayesian optimization (BO) is a powerful tool for optimizing expensive functions
+\pause
 \begin{itemize}
     \item Two key components
     \begin{enumerate}
         \item Probabilistic surrogate
         \item Acquisition function
     \end{enumerate}
+    \pause
     \item Iterative algorithm
     \begin{enumerate}
         \item Selecting architecture maximizing the acquisition function (computing  using the surrogate)
@@ -219,7 +246,7 @@ Acquisition functions popular in NAS:
         \item BOHAMIANN~\liturl{Springenberg et al. 2016}{https://proceedings.neurips.cc/paper_files/paper/2016/file/a96d3afec184766bfeca7a9f989fc7e7-Paper.pdf}
         \item  BANANAS~\liturl{White et al. 2021}{https://arxiv.org/pdf/1910.11858}
     \end{itemize}
-    \item BO very competitive on NAS, has been shown to outperform RL \liturl{Ying et al. 2019}{https://proceedings.mlr.press/v97/ying19a/ying19a.pdf}
+    % \item BO very competitive on NAS, has been shown to outperform RL \liturl{Ying et al. 2019}{https://proceedings.mlr.press/v97/ying19a/ying19a.pdf}
 \end{itemize}
 \end{frame}
 
@@ -245,8 +272,13 @@ Most important insights from this video:
 
 \begin{enumerate}
     \item Basic algorithms perform well on highly engineered search spaces but face issues in larger diverse ones
-    \item Black-box optimization methods are widely used due to their strong performance, can be used in joint optimization with other hyperparameters, and allow for easier adaptation to new problems
-    \item Bayesian optimization tends to use more computational resources than one-shot techniques, but is very competitive against other approaches
+    \item Black-box optimization methods are widely used due to their strong performance
+    \begin{itemize}
+        \item They can be used in joint optimization with other hyperparameters
+        \item They allow for easier adaptation to new problems
+        \item Can be combined with different performance estimation strategies
+    \end{itemize}
+    % \item Bayesian optimization tends to use more computational resources than one-shot techniques, but is very competitive against other approaches
 \end{enumerate}
 
 

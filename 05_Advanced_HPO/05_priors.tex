@@ -1,0 +1,179 @@
+\documentclass[main]{subfiles}
+
+
+\title[Advanced Hyperparameter Optimization]{Advanced Hyperparameter Optimization}
+\subtitle{Priors in Bayesian Optimization}
+\author[Katharina Eggensperger]{Katharina Eggensperger}
+\date{}
+
+\titlebackground*{images/AutoML_Speeding_up_HPO.jpg}
+
+%\institute{}
+%\date{}
+
+\begin{document}
+	
+	\maketitle
+	
+
+%----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Shouldn't we use all available knowledge?}
+
+\begin{quote}
+    [...] Researchers traded heuristics like Pokémon cards. Pick the largest learning rate that doesn’t NaN out. Decay the learning rate smoothly over time. Drop it by a factor of 10 every so often, and three times total. Warm it up. Make it oscillate. Pick different learning rates for different layers of the neural net. These choices seemed to hold the key to unlocking the riches of deep learning. [...] \\
+    \liturl{Hardt et al.\ 2025}{https://mlbenchmarks.org/00-prologue.html}
+\end{quote}
+
+\vspace{0.5cm}
+$\leadsto$ Often, we know more about the objective function and the relation between performance and configurations. How can we incorporate external knowledge as additional priors in Bayesian optimization to improve efficiency?
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Motivation: Priors in Bayesian Optimization}
+
+Bayesian Optimization relies on two main ingredients:
+\begin{itemize}
+    \item a surrogate model, e.g., a GP: $\surro(\conf) \sim \mathcal{GP}(\mu(\conf), \kernel(\conf,\conf'))$
+    \item an acquisition function, e.g., EI: $\acq(\conf) = \expectation [ I(\conf)]$
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Key question:} How do we encode prior knowledge about $c$?
+
+\vspace{0.3cm}
+
+\textbf{Examples of prior knowledge:}
+\begin{itemize}
+    \item Smoothness
+    \item Expected noise level
+    \item Known good regions of the search space
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Where Do Priors Enter BO?}
+
+Priors influence multiple components:
+
+\vspace{0.3cm}
+
+\textbf{Initialization:} Defines the initial evidence on which the surrogate model is built.
+\vspace{0.3cm}
+
+\textbf{Surrogate model:} Defines which functions are plausible before seeing data.
+\vspace{0.3cm}
+
+\textbf{Acquisition function:} Defines the trade-off between exploration and exploitation.
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Example: Implicit Priors in the Surrogate Model}
+
+Typically speficied beforehands:
+\vspace{-0.3cm}
+\setbeamercolor{block title}{use=normal text,fg=normal text.fg}%
+\setbeamercolor{block body}{use=normal text,fg=normal text.fg}%
+\begin{columns}[T,onlytextwidth]
+  \column{0.48\textwidth}
+  \vspace{0pt}
+  \begin{block}{\raggedright Kernel family}
+    \raggedright
+    Encodes structural assumptions:
+    \begin{itemize}
+        \item RBF $\leadsto$ very smooth functions
+        \item Mat\'ern $\leadsto$ less smooth, more flexible
+        \item Periodic $\leadsto$ repeating patterns
+    \end{itemize}
+  \end{block}
+  \pause
+  \column{0.48\textwidth}
+  \vspace{0pt}
+  \begin{block}{\raggedright Mean function}
+    \raggedright
+    Defines \emph{where} good values are expected:
+    \begin{itemize}
+        \item often $\mu(\conf)=0$
+        \item can encode trends
+    \end{itemize}
+  \end{block}
+\end{columns}
+\pause
+\vspace{0.3cm}
+Typically optimized while running Bayesian optimization:
+\begin{block}{\raggedright Kernel hyperparameters}
+  \raggedright
+  Define the scale of variation: small lengthscale $\leadsto$ rapidly varying functions; large lengthscale $\leadsto$ slowly varying functions
+\end{block}
+
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Prior-Guided Bayesian Optimization (PiBO)}
+
+\textbf{Why?} Prior knowledge about promising regions to increase efficiency. \\
+\textbf{Idea:} Inject this knowledge into the acquisition function. \\
+\textbf{Method:} Formulate as a prior over the configuration space and combine with acquisition function. \\
+
+\vspace{0.3cm}
+\pause
+\textbf{Standard BO:} Choose next configuration: $\conf_{n+1} = \arg\max_{\conf \in \pcs} \acq(\conf)$
+
+\vspace{0.3cm}
+\pause
+\textbf{PiBO:} Introduce a prior over configurations $\pi(\conf)$ and "bias" the acquisition function: 
+\begin{equation*}
+\conf_{n+1} = \arg\max_{\conf \in \pcs} \; \acq(\conf)\, \pi(\conf)^{\beta/n}
+\end{equation*}
+
+\vspace{0.3cm}
+
+$\leadsto$ guides search toward promising regions early on and improves efficiency \emph{if} prior is informative
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Illustration}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{05_Advanced_HPO/images/pibo.png}
+    \caption{Adapted from \liturl{Hvarfner et al. ICLR'22}{https://openreview.net/forum?id=MMAeCXIa89}}
+    \label{fig:placeholder}
+\end{figure}
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}[c]{Alternatives and Extensions}
+
+Instead of user-defined explicit priors, we can also:
+\begin{itemize}
+    \item \textbf{extract} data-driven priors from prior observations,
+    \item \textbf{extract} model-driven priors from foundation models (e.g., LLMs~\liturl{Liu et al ICLR'24}{https://openreview.net/forum?id=OOxotBmGol}),
+    \item \textbf{learn} implicit priors by pre-training foundation models on historical HPO data and trajectories (e.g., Optformer~\liturl{Chen et al. 22}{https://openreview.net/forum?id=r-6Z1SJbCpv})
+\end{itemize}
+
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Conclusion and Key Takeaway}
+
+Additional priors can improve the efficiency of Bayesian optimization by encoding assumptions about promising configurations, e.g., 
+\begin{itemize}
+    \item \textbf{implicitly via the surrogate model} by defining plausible functions,
+    \item \textbf{implicitly via the acquisition function} by specifying how posterior beliefs are translated into decisions,
+    \item and \textbf{explicitly via additional user-defined or learned priors over configurations} guiding the search (e.g., $\pi$BO~\liturl{Hvarfner et al. ICLR'22}{https://openreview.net/forum?id=MMAeCXIa89}).
+\end{itemize}
+
+\vspace{0.5cm}
+
+Performance depends on how well the prior matches the true structure of the optimization problem.
+\end{frame}
+%-----------------------------------------------------------------------
+%----------------------------------------------------------------------
+
+\end{document}

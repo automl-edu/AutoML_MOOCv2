@@ -113,7 +113,7 @@
         \item Null hypothesis: $\mathbb{E}[\bar{d}] = 0$
         \item Sensitive to violations of the normality and the i.i.d.\ assumption
         \item CV folds are not independent (sharing training data)
-        \item Corrected resampled $t$-test \liturl{Nadeau \& Bengio 2003}{https://link.springer.com/article/10.1023/A:1024068626366}: Adjusts for the dependency of CV folds to avoid inflated type-I error
+        \item Corrected resampled $t$-test \liturl{Nadeau \& Bengio 2003}{https://link.springer.com/article/10.1023/A:1024068626366}: Adjusts for the dependency of MCCV folds to avoid inflated type-I error
     \end{itemize}
 \end{frame}
 
@@ -179,7 +179,7 @@
 \end{itemize}
 \textcolor{red}{Common pitfalls}:
 \begin{itemize}
-    \item Using an uncorrected $t$-test on CV folds (inflated type-I error)
+    \item Using an uncorrected $t$-test on MCCV folds (inflated type-I error)
     \item Fixing $\alpha$ after seeing the data
     \item Interpreting $p > \alpha$ as evidence that configurations are equivalent
     \item Running many pairwise tests without correction: accumulates false positives
