@@ -26,19 +26,57 @@
 In principle, this can be extended to deeper stacks.
 \end{frame}
 
-\begin{frame}{Design Choices in Higher Layers}
-\begin{itemize}
-    \item Typical higher-level models:
-    \begin{itemize}
-        \item Linear or logistic regression
-        \item Greedy ensemble selection on previous-layer predictions
-    \end{itemize}
-    \item Use probabilities instead of hard labels for richer meta-features
-    \item Decide whether to include original input features
-\end{itemize}
+\begin{frame}{Origins: Stacknet~\liturl{Michialidis, 2017}{https://discovery.ucl.ac.uk/id/eprint/10031000/1/Full_copy.pdf}}
+
+Most successful machine learning approach in Kaggle competitions for tabular data:
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{06_Ensembling/images/stacknet_illustration_2.png}
+    \caption{Stacknet architecture with three layers (from \liturl{Michialidis, 2017}{https://discovery.ucl.ac.uk/id/eprint/10031000/1/Full_copy.pdf})}
+\end{figure}
+
 \end{frame}
 
-\begin{frame}{Example: AutoGluon}
+
+\begin{frame}{How to ``train'' Stacknet?}
+
+\begin{itemize}
+    \item Use out-of-fold predictions to train meta-model
+    \item Architecture could be optimized, but was chosen manually
+    \item Analogy of training a neural network
+\end{itemize}
+\pause
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{06_Ensembling/images/stacknet_modes.png}
+    \caption{Illustration of neural network analogy (from \liturl{Michialidis, 2017}{https://discovery.ucl.ac.uk/id/eprint/10031000/1/Full_copy.pdf}). Left: standard stacking, right: re-stacking}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Selecting models}
+\begin{itemize}
+ \item Base models
+ \begin{itemize}
+  \item Manually~\liturl{Michialidis, 2017}{https://discovery.ucl.ac.uk/id/eprint/10031000/1/Full_copy.pdf}
+  \item Evolutionary Search~\liturl{Chen et al. (2018)}{https://dl.acm.org/doi/abs/10.1145/3205455.3205586}
+  \item Meta-Learning~\liturl{Salinas and Erickson (2024)}{https://proceedings.mlr.press/v256/salinas24a.html}
+  \item Re-use model types from level 1 in all further levels~\liturl{Erickson et al. (2020)}{https://arxiv.org/abs/2003.06505}
+ \end{itemize}
+ \item Combiner
+ \begin{itemize}
+  \item Greedy Ensemble Selection~\liturl{Erickson et al. (2020)}{https://arxiv.org/abs/2003.06505}
+  \item Logistic regression~\liturl{Michialidis, 2017}{https://discovery.ucl.ac.uk/id/eprint/10031000/1/Full_copy.pdf}
+  \item any other ML model
+ \end{itemize}
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Example: AutoGluon~\liturl{Erickson et al. (2020)}{https://arxiv.org/abs/2003.06505}}
 \begin{columns}
     \begin{column}{0.35\textwidth}
         \begin{figure}

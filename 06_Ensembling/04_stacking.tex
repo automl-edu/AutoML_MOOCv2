@@ -24,7 +24,7 @@
             \item Level-0: train multiple base models
             \item Build meta-features from their predictions
             \item Level-1: train a meta-model on these features
-            \item Also called stacked generalization
+            \item Also called stacked generalization~\liturl{Wolpert (1992)}{https://www.sciencedirect.com/science/article/abs/pii/S0893608005800231}
         \end{itemize}
     \end{column}
 \end{columns}
@@ -49,7 +49,7 @@
     \begin{column}{0.5\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=0.85\textwidth]{06_Ensembling/images/stacking_cv_better.png}
+            \includegraphics[width=0.55\textwidth]{06_Ensembling/images/stacking_cv_better.png}
         \end{figure}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -74,14 +74,21 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Prediction with a Trained Stacker}
-\begin{enumerate}
-    \item Predict with each base model on test data
-    \item Build the test meta-feature matrix from these predictions
-    \item Apply the trained meta-model to obtain final predictions
-\end{enumerate}
-\vspace{0.3cm}
-\textbf{Key point:} the same feature construction used in training must be used at prediction time.
+\begin{frame}{Higher Level Models}
+\vfill
+Popular choices of combiner models in stacking include:
+\begin{itemize}
+    \item linear / logistic regression
+    %\item random forest (especially in the case of multilevel stacking)
+    \item GES (average the predictions of the models at the previous level)
+\end{itemize}
+\vfill
+Higher-level training data:
+\begin{itemize}
+    \item Probabilities instead of class labels~\liturl{Ting and Witten (1999)}{https://dl.acm.org/doi/10.5555/1622859.1622868}
+    \item Include original dataset $\X$ or not?
+\end{itemize}
+\vfill
 \end{frame}
 
 \begin{frame}{Summary}
