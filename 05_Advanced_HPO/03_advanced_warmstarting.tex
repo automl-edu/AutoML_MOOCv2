@@ -28,7 +28,7 @@
     \end{itemize}
     The best setting tends to remain stable across tasks.
     \column{0.50\textwidth}
-    \vspace{0pt}
+    \vspace{-1cm}
     \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{05_Advanced_HPO/images/meta-learning_hpo.png}
@@ -37,7 +37,7 @@
 \end{columns}
 
 \vspace{0.5cm}
-\textbf{$\leadsto$ How can we increase the efficiency of HPO on a sequence of related tasks?} \\
+\textbf{$\leadsto$ How can we increase the efficiency of HPO on a sequence of \\related tasks?} \\
 
 \end{frame}
 %-----------------------------------------------------------------------%-----------------------------------------------------------------------%----------------------------------------------------------------------
@@ -62,8 +62,8 @@ Assuming a fixed search space (i.e., HPO task), a given target dataset $\dataset
 
 \vspace{0.5cm}
 \pause
-\textbf{$\leadsto$Direction 1:} \textbf{Task-agnostic} portfolios covering well-performing regions of "all" tasks. \\
-\textbf{$\leadsto$Direction 2:} \textbf{Task-specific} portfolios covering well-performing regions on similar tasks.
+\textbf{Option 1:} \textbf{Task-agnostic} $\leadsto$ well-performing regions of "all" tasks. \\
+\textbf{Option 2:} \textbf{Task-specific} $\leadsto$ well-performing regions on similar tasks.
 
 \end{frame}
 %-----------------------------------------------------------------------
@@ -79,11 +79,11 @@ The goal is to construct a portfolio $\portfolio \subseteq \confs_{cand}, |\port
 \end{equation*}
 
 \pause
-\textbf{Key idea:}
+\textbf{Key idea:} The portfolio
 \begin{itemize}
-    \item Portfolio performance is determined by the single best configuration.
-    \item The portfolio should include at least one well-performing configuration per task.
-    \item The portfolio covers optima across diverse tasks.
+    \item should include at least one well-performing configuration per task,
+    \item covers optima across diverse tasks,
+    \item and its performance is defined by the single best configuration per task.
 \end{itemize}
 
 \end{frame}
@@ -119,6 +119,9 @@ The goal is to construct a portfolio $\portfolio \subseteq \confs_{cand}, |\port
 \end{figure}
 }%
 \end{column}
+\begin{column}{0.2\textwidth}
+    
+\end{column}
 \end{columns}
 \vspace{0.5cm}
 
@@ -128,7 +131,7 @@ The goal is to construct a portfolio $\portfolio \subseteq \confs_{cand}, |\port
 \begin{frame}{Task-Specific Portfolios}
 
 \begin{columns}[T,onlytextwidth]
-  \column{0.60\textwidth}
+  \column{0.4\textwidth}
   \vspace{0pt}
   Instead of finding a global portfolio, we want a portfolio specifically for our target task $t$.
 
@@ -146,12 +149,13 @@ The goal is to construct a portfolio $\portfolio \subseteq \confs_{cand}, |\port
       \caption{Adapted from \liturl{Schneider et al. PPSN'2022}{https://arxiv.org/abs/2208.00220}}
       \label{fig:placeholder}
   \end{figure}
+  \column{0.05\textwidth}
 \end{columns}
 
 \pause
 \vspace{-0.5cm}
 \textbf{How do we define task similarity?} \\
-(Intuition: If tasks are similar, similar configurations achieve similar performance, i.e., if the datasets are similar, good configurations transfer.)
+(Intuition: If tasks are similar, similar configurations achieve similar \\ performance, i.e., if the datasets are similar, good configurations transfer.)
 
 \end{frame}
 %-----------------------------------------------------------------------
@@ -212,7 +216,8 @@ Now, we can build task-specific portfolios:
 
 \end{frame}
 %----------------------------------------------------------------------
-%----------------------------------------------------------------------\begin{frame}{Alternatives and Extensions}
+%----------------------------------------------------------------------
+\begin{frame}{Alternatives and Extensions}
 
 Instead of meta-features, we can also use a
 \begin{itemize}

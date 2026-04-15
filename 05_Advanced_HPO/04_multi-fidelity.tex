@@ -33,7 +33,7 @@ In practice, we often have access to cheap approximations or intermediate result
 \end{itemize}
 
 \vspace{0.5cm}
-\textbf{$\leadsto$ How can we use this information to increase the efficiency of Bayesian optimization?} \\
+\textbf{$\leadsto$ How can we use this information to increase the \\ efficiency of Bayesian optimization?} \\
 
 \end{frame}
 
@@ -55,7 +55,7 @@ In practice, we often have access to cheap approximations or intermediate result
 
 We refer to an approximation of the true objective $\cost(\conf)$ as $\cost_b(\conf)$, where $b \in [b_{min}, b_{max}]$. Furthermore, we assume that $\cost_{b_{max}}(\conf) = \cost(\conf)$ and that $b$ correlates with evaluation costs (e.g. compute costs).
 
-\\~\\
+\vspace{1cm}
 Our optimization objective is then to find:
 
 \begin{equation*}
@@ -99,7 +99,7 @@ $\leadsto$ In practice, these assumptions are not necessarily satisfied. HPO mus
 
 \textbf{Key parameter:} The reduction factor $\eta > 1$ controls how quickly we discard configurations and increase budget.
 \begin{itemize}
-    \item $\eta=0.5$ $\leadsto$ successively \emph{halves} the number of configurations and \emph{doubles} the budget.
+    \item $\eta=2$ $\leadsto$ successively \emph{halves} the \#configurations; \emph{doubles} the budget.
     \item Larger $\eta$ $\leadsto$ aggressive pruning, greedy exploitation
     \item Smaller $\eta$ $\leadsto$ gentle pruning, guarded exploitation
 \end{itemize}
@@ -143,6 +143,7 @@ $\leadsto$ Does not learn from previous evaluations.
   \textbf{Intuition:} At least one bracket is close to optimal allocation, and the method is robust against budget constraints.
 
   \column{0.50\textwidth}
+  \vspace{-0.5cm}
   \begin{figure}
       \centering
       \includegraphics[width=\linewidth]{05_Advanced_HPO/images/SH_pseudocode.png}
@@ -159,7 +160,7 @@ $\leadsto$ Does not learn from previous evaluations.
 
 \vspace{0.3cm}
 
-\textbf{Idea:} Use past observations to bias the selection of new configurations. Once there are sufficient observations per fidelity, replace random sampling with Bayesian Optimization\footnote{The original method uses a Tree-Parzen Estimator method for sampling-based Bayesian Optimization. See \liturl{BOHB}{https://proceedings.mlr.press/v80/falkner18a/falkner18a.pdf} and \liturl{TPE}{https://proceedings.neurips.cc/paper_files/paper/2011/hash/86e8f7ab32cfd12577bc2619bc635690-Abstract.html}.}.
+\textbf{Idea:} Use past observations to bias the selection of new configurations. Once there are sufficient observations per fidelity, replace random sampling with Bayesian Optimization\footnote{The original method uses a Tree-Parzen Estimator method for \\sampling-based Bayesian Optimization. See \liturl{BOHB}{https://proceedings.mlr.press/v80/falkner18a/falkner18a.pdf} and \liturl{TPE}{https://proceedings.neurips.cc/paper_files/paper/2011/hash/86e8f7ab32cfd12577bc2619bc635690-Abstract.html}.}.
 
 \vspace{0.5cm}
 \textbf{Intuition:} Focus search on promising regions.

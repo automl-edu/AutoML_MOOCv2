@@ -1,0 +1,98 @@
+#1 Which statement is true?
+A. Every HPO task must be treated as a fully general black-box problem
+B. HPO lacks reusable information across tasks
+-> C. HPO contains structure such as task similarity, prior information, and intermediate results
+D. Only random search can exploit the structure of HPO
+
+#2 Why might standard Bayesian optimization still be insufficient in practice for HPO?
+A. It cannot handle continuous variables
+B. It is less systematic than a manual search
+-> C. A single evaluation can still be too expensive, such as training a large neural network
+-> D. It does not make use of additional, external knowledge
+
+---
+
+#3 What is the main motivation for warmstarting from prior observations?
+A. To avoid using surrogate models
+--> B. To use existing data from repeated tuning, similar reruns, or prior work
+C. To make the search space larger
+D. To ensure transfer across unrelated tasks
+
+#4 How does replacing the initial design with prior observation impact the search?
+A. It guarantees cross-task transfer
+--> B. It accelerates early exploitation
+C. It increases uncertainty about the objective function
+D. It eliminates the need for a search space
+
+---
+
+#5 What motivates meta-learning across tasks for HPO?
+A. Objective functions across tasks are entirely independent
+--> B. The best setting tends to remain stable across similar tasks
+C. It decreases the search space
+D. Bayesian optimization is unnecessary across tasks
+
+#6 What is a task-agnostic portfolio intended to do?
+A. Optimize only the current target dataset
+--> B. Cover optima across diverse tasks using a set of complementary configurations
+C. Cover optima of tasks similar to the target task
+D. Serve as a replacement for Bayesian optimization
+
+#7 What is a task-specific portfolio intended to do?
+A. Optimize the average performance across meta tasks
+B. Cover optima across diverse tasks using a set of complementary configurations
+--> C. Cover optima of tasks similar to the target task
+D. Learn dataset similarity
+
+#8 In greedy forward selection for portfolio construction, what is added at each step?
+A. The configuration that minimizes uncertainty
+B. The configuration that minimizes performance on the target task
+--> C. The configuration that most improves portfolio loss
+D. A random candidate from the pool
+
+#9 Which of the following can serve as a meta-feature of a dataset?
+--> A. the fraction of missing values
+--> B. the ranking of landmarking algorithms
+--> C. learned dataset embeddings
+--> D. the average correlation between features
+
+---
+
+#10 What is the main idea of multi-fidelity optimization in HPO?
+A. Always evaluate every configuration at maximum budget
+--> B. Use low-cost approximations to prune poor candidates early
+C. Restrict optimization to only a few hyperparameters
+D. Use only model-free methods
+
+#11 What is a /are the typical assumptions for multi-fidelity optimization methods?
+A. Higher fidelities are noisier and less accurate
+--> C. Lower fidelities are noisier and less accurate
+--> B. Ranks are approximately consistent across fidelities
+D. Budgets are unrelated to evaluation cost
+
+#12 What role does the reduction factor eta in Successive Halving do?
+--> A. It controls how aggressively configurations are pruned
+B. It defines the kernel lengthscale
+C. It measures task similarity
+D. It estimates observation noise
+
+#13 What distinguishes BOHB from Hyperband?
+A. BOHB removes all fidelity levels
+--> B. BOHB replaces random sampling with model-based Bayesian optimization
+C. BOHB replaces the initial design with a portfolio
+D. BOHB works only for convex objectives
+
+---
+
+#14 What is the main idea of Prior-Guided Bayesian Optimization (PiBO)?
+A. Replace the initial design with a portfolio
+--> B. Combine a prior over configurations with the acquisition function
+C. Automatically adapt lengthscales 
+D. Implementing multi-fidelity optimization
+
+#15 What does the factor beta/n in PiBO do?
+A. To decay the impact of the additional prior
+B. To rescale the objective function
+C. To normalize the acquisition across configurations
+D. To estimate the objective noise level
+
