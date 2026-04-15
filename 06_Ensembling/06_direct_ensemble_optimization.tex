@@ -11,16 +11,156 @@
 
 \maketitle
 
-\begin{frame}{This Chunk Is Intentionally Left Empty}
+\begin{frame}{Bayesian Hyperparameter Optimization for Ensemble Learning~\liturl{Levesque et al. (2017)}{https://auai.org/uai2016/proceedings/papers/73.pdf}}
+\small
+\vspace{0.2cm}
 \begin{itemize}
-    \item Reserved for new material
-    \item Planned topics:
-    \begin{itemize}
-        \item Work by Julian-Charles Levesque
-        \item Auto-Stacker
-        \item Arber paper
-    \end{itemize}
+    \item Standard Bayesian optimization (BO) tunes one model at a time
+    \item In practice, AutoML systems often deploy ensembles rather than a single model
+    \item Key question: can we optimize hyperparameters \emph{for ensemble contribution} instead of standalone score?
 \end{itemize}
+\vspace{0.2cm}
+\textbf{Core idea:} directly optimize a fixed-size ensemble during BO, not only post-hoc after BO.
+\vspace{0.2cm}
+
+\end{frame}
+
+\begin{frame}{From Single-Model to Ensemble Objective}
+\small
+Classical BO objective:
+\[
+f(\conf) = \loss(\bl[\conf] \mid \datasetval)
+\]
+
+Proposed ensemble-aware objective:
+\[
+f(\conf \mid E) = \loss\left(E \cup \algo(\datasettrain, \conf) \mid \datasetval\right)
+\]
+\begin{itemize}
+    \item $E$: current ensemble members
+    \item $\algo(\datasettrain, \conf)$: model trained with configuration $\conf$
+    \item BO model is fit on \emph{ensemble} performance changes, not single-model losses
+\end{itemize}
+\vspace{0.1cm}
+\textbf{Sanity check:} if $E=\varnothing$, this reduces to classical BO.
+\end{frame}
+
+\begin{frame}{Optimization Procedure (Round-Robin EO)}
+\small
+\begin{columns}
+    \begin{column}{0.58\textwidth}
+        \begin{enumerate}
+            \item Maintain history $\hist$ and fixed-size ensemble $E$ with $m$ slots
+            \item At iteration $i$, remove slot $j=i \bmod m$ from $E$
+            \item Re-evaluate all models in $\hist$ by loss when added to current $E$
+            \item Fit BO surrogate on these observations and pick next $\conf$
+            \item Train new model, add it to $\hist$, refill slot $j$ greedily
+        \end{enumerate}
+        \vspace{0.1cm}
+        \begin{itemize}
+            \item Slot specialization can emerge
+            \item Overhead is modest vs model training
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{06_Ensembling/arXiv-1605.06394v1/figures/eo_method.pdf}
+            \caption*{\scriptsize EO procedure schema from the paper}
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Illustration: Slot Specialization}
+\small
+\begin{columns}
+    \begin{column}{0.58\textwidth}
+        \begin{itemize}
+            \item EO optimizes one ensemble slot at a time, while the other slots stay fixed
+            \item This can induce \textbf{slot-specific objective landscapes}
+            \item Different slots can prefer different regions in configuration space
+            \item Practical effect: members specialize by role within the ensemble
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{06_Ensembling/arXiv-1605.06394v1/figures/ex_specialization.pdf}
+            \caption*{\scriptsize Specialization plot from the paper}
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Why They Change the Loss}
+\small
+\begin{columns}
+    \begin{column}{0.56\textwidth}
+        \begin{itemize}
+            \item Using 0-1 ensemble error leads to discontinuities and plateaus under majority voting
+            \item Better model replacements can have zero immediate effect on 0-1 loss
+        \end{itemize}
+        \vspace{0.1cm}
+        They use a margin-based objective:
+        \[
+        M(E,\x,\y)=\frac{1}{|E|}\sum_{h \in E} \y\,h(\x), \quad
+        l_{M^2}(E,\x,\y)=\frac{(1-M(E,\x,\y))^2}{4}
+        \]
+        \begin{itemize}
+            \item Squared margin loss is smoother for BO
+            \item It emphasizes fixing hard/misclassified points
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{06_Ensembling/arXiv-1605.06394v1/figures/loss_example.pdf}
+            \caption*{\scriptsize Loss landscape example from the paper}
+        \end{figure}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Empirical Findings (Single-Slide)}
+\tiny
+\textbf{Setup (paper)}
+\begin{itemize}
+    \item Methods: BO-best, BO-post, EO, EO-post
+    \item SVM space on 18 UCI datasets ($B=200$, $m=12$)
+    \item Mixed scikit-learn space on same suite ($B=100$)
+    \item CNN tuning on CIFAR-10 ($B=100$, $m=7$)
+    \item Surrogate: GP (Mat\'ern-5/2) with Expected Improvement
+\end{itemize}
+\vspace{0.1cm}
+\textbf{Findings}
+\begin{itemize}
+    \item SVM: EO and EO-post significantly outperform BO-best and BO-post
+    \item Mixed sklearn: EO is best-ranked and significantly better than BO baselines
+    \item CIFAR-10: EO-generated pool gives better post-hoc ensembles than BO-post ($p=0.005$)
+    \item Added ensemble-evaluation overhead is modest relative to training cost
+\end{itemize}
+\textbf{Takeaway:} optimizing for ensemble complementarity improves over single-model-focused BO.
+\end{frame}
+
+\begin{frame}{Practical Takeaways for AutoML}
+\small
+\begin{itemize}
+    \item Post-hoc ensembling is useful, but online ensemble-aware BO can do better
+    \item Optimize each new model for \emph{marginal gain to current ensemble}, not only standalone validation score
+    \item Keep model predictions/history to enable fast re-scoring against evolving ensembles
+    \item Fixed ensemble size $m$ is a design knob; dynamic sizing remains open
+    \item Loss choice matters: smooth ensemble-aware objectives can improve search behavior
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary}
+Most important insights from this paper:
+\begin{enumerate}
+    \item BO can be reformulated to optimize \emph{ensemble-level} objective values
+    \item A round-robin fixed-size ensemble update with BO gives better model pools
+    \item Across SVM, mixed-model, and CNN spaces, ensemble-aware BO beats standard BO baselines
+\end{enumerate}
 \end{frame}
 
 \end{document}
