@@ -19,12 +19,12 @@
 \vspace{0.2cm}
 For classification (probabilities):
 \[
-\fM(\x) = \sum_{m=1}^{M} w_m \cdot \blp[m](\x), \quad w_m \ge 0, \quad \sum_{m=1}^{M} w_m = 1
+\fM(\x) = \sum_{m=1}^{M} \ensweights_m \cdot \blp[m](\x), \quad \ensweights_m \ge 0, \quad \sum_{m=1}^{M} \ensweights_m = 1
 \]
 \vspace{0.1cm}
 For regression:
 \[
-\fM(\x) = \sum_{m=1}^{M} w_m \cdot \bl[m](\x)
+\fM(\x) = \sum_{m=1}^{M} \ensweights_m \cdot \bl[m](\x)
 \]
 \end{frame}
 
@@ -33,7 +33,7 @@ For regression:
     \begin{column}{0.58\textwidth}
         \begin{itemize}
             \item Assume $M$ trained base models $\{\bl[1], \ldots, \bl[M]\}$
-            \item Learn a weight vector $\ensweights=(w_1,\dots,w_M)$
+            \item Learn a weight vector $\ensweights=(\ensweights_1,\dots,\ensweights_M)$
             \item Final prediction $\fM$ is a convex combination
             \item Better weights can improve over equal weighting
         \end{itemize}

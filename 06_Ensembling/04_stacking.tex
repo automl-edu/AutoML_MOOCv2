@@ -32,10 +32,10 @@
 
 \begin{frame}{Single-Layer Stacking Procedure}
 \begin{enumerate}
-    \item Train base models $f_1,\dots,f_M$ on training data
+    \item Train base models $\bl[1],\dots,\bl[M]$ on training data $\datasettrain$
     \item For each training instance, collect base-model predictions
-    \item Construct meta-dataset with these predictions
-    \item Train a meta-model on the meta-dataset
+    \item Construct meta-dataset $\mdata$ from these predictions
+    \item Train a meta-model on $\mdata$
 \end{enumerate}
 \vspace{0.2cm}
 \begin{itemize}

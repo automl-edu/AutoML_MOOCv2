@@ -11,7 +11,7 @@
 
 \maketitle
 
-\begin{frame}{Bayesian Hyperparameter Optimization for Ensemble Learning~\liturl{Levesque et al. (2017)}{https://auai.org/uai2016/proceedings/papers/73.pdf}}
+\begin{frame}{Bayesian Hyperparameter Optimization for Ensemble Learning~\liturl{Levesque et al. (2016)}{https://auai.org/uai2016/proceedings/papers/73.pdf}}
 \small
 \vspace{0.2cm}
 \begin{itemize}
@@ -23,6 +23,17 @@
 \textbf{Core idea:} directly optimize a fixed-size ensemble during BO, not only post-hoc after BO.
 \vspace{0.2cm}
 
+\end{frame}
+
+\begin{frame}{Transition: Why Another Ensemble Method?}
+\small
+\begin{itemize}
+    \item So far, we saw \textbf{fixed combination rules} (averaging), \textbf{greedy subset/weighting} (GES), and \textbf{learned combiners} (stacking)
+    \item All of these mainly use models produced by a separate training/HPO process
+    \item Next step: steer hyperparameter search itself toward models that improve the \emph{current ensemble}
+\end{itemize}
+\vspace{0.2cm}
+\textbf{Question:} can BO choose $\conf$ that is best for $E \cup \{\bl[\conf]\}$, not just best for $\bl[\conf]$ alone?
 \end{frame}
 
 \begin{frame}{From Single-Model to Ensemble Objective}
@@ -123,14 +134,13 @@ f(\conf \mid E) = \loss\left(E \cup \algo(\datasettrain, \conf) \mid \datasetval
 \end{frame}
 
 \begin{frame}{Empirical Findings (Single-Slide)}
-\tiny
+\scriptsize
 \textbf{Setup (paper)}
 \begin{itemize}
     \item Methods: BO-best, BO-post, EO, EO-post
     \item SVM space on 18 UCI datasets ($B=200$, $m=12$)
     \item Mixed scikit-learn space on same suite ($B=100$)
     \item CNN tuning on CIFAR-10 ($B=100$, $m=7$)
-    \item Surrogate: GP (Mat\'ern-5/2) with Expected Improvement
 \end{itemize}
 \vspace{0.1cm}
 \textbf{Findings}

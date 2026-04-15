@@ -5,7 +5,7 @@
 \author[Matthias Feurer]{Matthias Feurer}
 \date{}
 
-\titlebackground*{06_Ensembling/images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_HPO_2_2}
 
 \begin{document}
 
@@ -73,25 +73,7 @@ Bias vs. variance: Error = Variance + Bias + Noise
             \includegraphics[width=0.95\textwidth]{06_Ensembling/images/bagging_variance_bias_tree.png}
         \end{figure}
     \end{column}
-    \begin{column}{0.5\textwidth}
-    \end{column}
-\end{columns}
-\vspace{0.3cm}
-\begin{itemize}
-    \item Averaging reduces variance
-    \item Works best for unstable base learners
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Recap: Bagging and Bias-Variance}
-Bias vs. variance: Error = Variance + Bias + Noise
-\begin{columns}
-    \begin{column}{0.5\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=0.95\textwidth]{06_Ensembling/images/bagging_variance_bias_tree.png}
-        \end{figure}
-    \end{column}
+    \pause
     \begin{column}{0.5\textwidth}
         \begin{figure}
             \centering
@@ -110,9 +92,9 @@ Bias vs. variance: Error = Variance + Bias + Noise
 \begin{itemize}
     \item Train an additive ensemble sequentially:
     \[
-        \hat{f}^{(t)}(x) = \hat{f}^{(t-1)}(x) + \eta \cdot h_t(x)
+        \fM^{(t)}(\x) = \fM^{(t-1)}(\x) + \eta \cdot \bl[t](\x)
     \]
-    \item Each new model $h_t$ is fit to the negative gradient of the loss
+    \item Each new base model $\bl[t]$ is fit to the negative gradient of the loss
     \item For squared error, this is equivalent to fitting residuals
     \item Key controls: learning rate, number of boosting iterations, tree depth
     \item Popular implementations: XGBoost, LightGBM, CatBoost
@@ -149,6 +131,7 @@ Bias vs. variance: Error = Variance + Bias + Noise
         \begin{itemize}
             \item $\fM = \frac{1}{M} \sum_{m = 1}^{M} \blx[m]$
         \end{itemize}
+        Often used for models from different model families $\rightarrow$ heterogenouos ensemble
     \end{column}
 \end{columns}
 \end{frame}
