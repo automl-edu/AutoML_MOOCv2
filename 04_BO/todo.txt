@@ -11,10 +11,14 @@ R code umziehen
 01: in manchen plots steht x1 auf den axen sollte aber lambda sein.
 
 
-use "terse" style and remove filler words
+use "terse" style and remove filler words, especially if this saves a nearly empty line
 
 use abe
 
 use punctuation sparingly
 
 auf den ganzen grafiken ist x/y auf den achsen, sollte lambda / c sein
+
+put new thoughts in items on indvididual lines
+
+bilder jumpen, in lecture servie nachsehen
