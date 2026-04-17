@@ -28,8 +28,8 @@
 
 \begin{frame}{Bayesian Surrogate Modeling}
     \begin{itemize}
-        \item \textbf{Idea:} Use a \textbf{Bayesian approach} to build a surrogate model yielding estimates for the posterior mean $\surro(\xv)$ and posterior variance $\sh^2(\xv)$
-        \item $\sh^2(\xv)$ expresses ``confidence''/``certainty'' in the prediction
+        \item \textbf{Idea:} Use a \textbf{Bayesian approach} to build a surrogate model yielding estimates for the posterior mean $\surro(\conf)$ and posterior variance $\sh^2(\conf)$
+        \item $\sh^2(\conf)$ expresses ``confidence''/``certainty'' in the prediction
     \end{itemize}
     \vfill
     \begin{columns}
@@ -48,15 +48,15 @@
 
 \begin{frame}{Bayesian Surrogate Modeling}
     \begin{itemize}
-        \item Denote by $Y \mid \xv, \Dt$ the (conditional) random variable associated with the posterior predictive distribution of a new point $\xv$ under the surrogate model; abbreviated $Y(\xv)$
-        \item Most prominent choice: a \textbf{Gaussian process}, here $Y(\xv) \sim \normal\left(\surro(\xv), \sh^2(\xv)\right)$
+        \item Denote by $Y \mid \conf, \Dt$ the (conditional) random variable associated with the posterior predictive distribution of a new point $\conf$ under the surrogate model; abbreviated $Y(\conf)$
+        \item Most prominent choice: a \textbf{Gaussian process}, here $Y(\conf) \sim \normal\left(\surro(\conf), \sh^2(\conf)\right)$
     \end{itemize}
     \vfill
     \begin{center}
         \includegraphics[width=.5\textwidth]{images/bayesian_loop_sm_normal.png}
     \end{center}
     \begin{footnotesize}
-        For now we assume an interpolating SM; $\surro(\xv) = \cost(\xv)$ and $\sh(\xv) = 0$ at training points.
+        For now we assume an interpolating SM; $\surro(\conf) = \cost(\conf)$ and $\sh(\conf) = 0$ at training points.
     \end{footnotesize}
 \end{frame}
 
@@ -65,18 +65,18 @@
 \begin{frame}{Acquisition Functions}
     To sequentially propose new points based on the surrogate model, we make use of so-called acquisition functions $a: \pcs \to \R$.
     \vfill
-    Let $\fmin := \min\{\cost(\xvsi[1]), \ldots, \cost(\xvsi[t])\}$ denote the best observed value so far (visualized in green).
+    Let $\fmin := \min\{\cost(\confI{1}), \ldots, \cost(\confI{t})\}$ denote the best observed value so far (visualized in green).
     \begin{center}
         \includegraphics[width=.5\textwidth]{images/bayesian_loop_sm_fmin.png}
     \end{center}
-    In the examples before, we simply used the posterior mean $a(\xv) = \surro(\xv)$ as acquisition function -- ignoring uncertainty.
+    In the examples before, we simply used the posterior mean $a(\conf) = \surro(\conf)$ as acquisition function -- ignoring uncertainty.
 \end{frame}
 
 %----------------------------------------------------------------------
 
 \begin{frame}{Lower Confidence Bound}
-    \textbf{Goal:} Find $\xvsi[t+1]$ that minimizes the \textbf{Lower Confidence Bound} (LCB):
-    $$a_{\text{LCB}}(\xv) = \surro(\xv) - \tau \sh(\xv)$$
+    \textbf{Goal:} Find $\confI{t+1}$ that minimizes the \textbf{Lower Confidence Bound} (LCB):
+    $$a_{\text{LCB}}(\conf) = \surro(\conf) - \tau \sh(\conf)$$
     where $\tau > 0$ is a constant that controls the ``mean vs.\ uncertainty'' trade-off.
     \vfill
     The LCB is conceptually very simple and does \textbf{not} rely on distributional assumptions on the posterior predictive distribution.
@@ -91,8 +91,8 @@
         \includegraphics[width=.7\textwidth]{images/bayesian_loop_lcb_0.png}
     \end{center}
     \vfill
-    Top: Design points and surrogate model showing $\surro(\xv)$ (blue) and $\surro(\xv) - \tau \sh(\xv)$ (red).\\
-    Bottom: The red point depicts $\argmin_{\xv \in \pcs} a_{\text{LCB}}(\xv)$.
+    Top: Design points and surrogate model showing $\surro(\conf)$ (blue) and $\surro(\conf) - \tau \sh(\conf)$ (red).\\
+    Bottom: The red point depicts $\argmin_{\conf \in \pcs} a_{\text{LCB}}(\conf)$.
 \end{frame}
 
 %----------------------------------------------------------------------

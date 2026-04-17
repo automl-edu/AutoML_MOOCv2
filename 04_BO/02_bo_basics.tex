@@ -17,16 +17,17 @@
 
 
 \begin{frame}{Optimization via Surrogate Modeling}
-    \textbf{Starting point:}
-    \begin{itemize}
-        \item We do not know the objective function $\cost: \pcs \to \R$
-        \item But we can evaluate $\cost$ for a few different inputs $\xv \in \pcs$
-        \item For now, we assume that those evaluations are noise-free
-    \end{itemize}
-    \textbf{Idea:} Use the data $\Dt = \{(\xvsi, \ysi)\}_{i = 1, \ldots, t}$ with $\ysi := \cost(\xvsi)$ to derive properties about the unknown function $\cost$.
-    \vfill
+  \begin{itemize}
+    \item Want to solve  $$\conf^\ast \in \argmin_{\conf \in \pcs} \cost(\conf)$$
+    \item We do not know the analytical structure of $\cost: \pcs \to \R$
+    \item $\cost$ is more a computer program we can evaluate for some inputs $\conf \in \pcs$
+    \item For now, we assume that those evaluations are noise-free
+    \item \textbf{Idea:} Use historical data $\Dt = \{(\confI{i},  \cost(\confI{i}))\}_{i = 1, \ldots, t}$
+    to learn as much about $\cost$ as we can, to intelligently plan design points sequentially
+  \end{itemize}
+  \vfill
     \begin{center}
-        \includegraphics[width=.5\textwidth]{images/loop_1.png}
+        \includegraphics[width=.2\textwidth]{images/loop_1.png}
     \end{center}
 \end{frame}
 
@@ -73,9 +74,9 @@
 \begin{frame}{Latin Hypercube Sampling}
     Actual sampling of points, e.g.\ constructed via \textbf{Maximin}:
     \begin{itemize}
-        \item The minimum distance between any two points in $\D$ is $2q = \min_{\xv \in \D, \xv' \in \D} \rho(\xv, \xv')$ ($\rho$ any metric, e.g.\ Euclidean distance)
+        \item The minimum distance between any two points in $\D$ is $2q = \min_{\conf \in \D, \conf' \in \D} \rho(\conf, \conf')$ ($\rho$ any metric, e.g.\ Euclidean distance)
         \item $q$ is the packing radius: the radius of the largest ball that can be placed around every design point such that no two balls overlap
-        \item Goal: find $\D$ that maximizes $2q$: $\max_{\D} \min_{\xv \in \D, \xv' \in \D} \rho(\xv, \xv')$
+        \item Goal: find $\D$ that maximizes $2q$: $\max_{\D} \min_{\conf \in \D, \conf' \in \D} \rho(\conf, \conf')$
         \item Ensures that the design points in $\D$ are as far apart from each other as possible
     \end{itemize}
 \end{frame}
@@ -192,8 +193,8 @@
     The basic loop of our sequential optimization procedure:
     \begin{enumerate}
         \item Fit surrogate model $\surro$ on previous evaluations $\Dts$
-        \item Optimize the surrogate model $\surro$ to obtain a new point $\xvsi[t+1] := \argmin_{\xv \in \pcs} \surro(\xv)$
-        \item Evaluate $\xvsi[t+1]$ and update data $\Dt[t+1] = \Dt \cup \{(\xvsi[t+1], \cost(\xvsi[t+1]))\}$
+        \item Optimize the surrogate model $\surro$ to obtain a new point $\confI{t+1} := \argmin_{\conf \in \pcs} \surro(\conf)$
+        \item Evaluate $\confI{t+1}$ and update data $\Dt[t+1] = \Dt \cup \{(\confI{t+1}, \cost(\confI{t+1}))\}$
     \end{enumerate}
 \end{frame}
 

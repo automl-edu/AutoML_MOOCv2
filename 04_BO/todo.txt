@@ -9,3 +9,12 @@ quiz questions machen
 R code umziehen
 
 01: in manchen plots steht x1 auf den axen sollte aber lambda sein.
+
+
+use "terse" style and remove filler words
+
+use abe
+
+use punctuation sparingly
+
+auf den ganzen grafiken ist x/y auf den achsen, sollte lambda / c sein

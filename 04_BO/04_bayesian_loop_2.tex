@@ -17,8 +17,8 @@
 
 
 \begin{frame}{Probability of Improvement}
-    \textbf{Goal:} Find $\xvsi[t+1]$ that maximizes the \textbf{Probability of Improvement} (PI):
-    $$a_{\text{PI}}(\xv) = \P(Y(\xv) < \fmin) = \Phi\!\left(\frac{\fmin - \surro(\xv)}{\sh(\xv)}\right)$$
+    \textbf{Goal:} Find $\confI{t+1}$ that maximizes the \textbf{Probability of Improvement} (PI):
+    $$a_{\text{PI}}(\conf) = \P(Y(\conf) < \fmin) = \Phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right)$$
     where $\Phi(\cdot)$ is the standard normal cdf (assuming Gaussian posterior).
     \vfill
     \begin{columns}
@@ -31,19 +31,19 @@
             \includegraphics[width=\textwidth]{images/bayesian_loop_pi_0.png}
         \end{center}
     \end{columns}
-    \footnotesize \textbf{Left:} The green vertical line represents $\fmin$. \textbf{Right:} $a_{\text{PI}}(\xv)$ is given by the black area.
+    \footnotesize \textbf{Left:} The green vertical line represents $\fmin$. \textbf{Right:} $a_{\text{PI}}(\conf)$ is given by the black area.
 \end{frame}
 
 %----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
-    \textbf{Note:} $a_\text{PI}(\xv) = 0$ for design points $\xv$, since
+    \textbf{Note:} $a_\text{PI}(\conf) = 0$ for design points $\conf$, since
     \begin{itemize}
-        \item $\sh(\xv) = 0$,
-        \item $\surro(\xv) = \cost(\xv) \geq \fmin \;\Leftrightarrow\; \fmin - \surro(\xv) \leq 0$.
+        \item $\sh(\conf) = 0$,
+        \item $\surro(\conf) = \cost(\conf) \geq \fmin \;\Leftrightarrow\; \fmin - \surro(\conf) \leq 0$.
     \end{itemize}
     Therefore:
-    $$\Phi\!\left(\frac{\fmin - \surro(\xv)}{\sh(\xv)}\right) = \Phi(-\infty) = 0$$
+    $$\Phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right) = \Phi(-\infty) = 0$$
 \end{frame}
 
 %----------------------------------------------------------------------
@@ -58,7 +58,7 @@
     \begin{center}
         \includegraphics[width=.6\textwidth]{images/bayesian_loop_pi_1.png}
     \end{center}
-    The red point depicts $\argmax_{\xv \in \pcs} a_{\text{PI}}(\xv)$.
+    The red point depicts $\argmax_{\conf \in \pcs} a_{\text{PI}}(\conf)$.
 \end{frame}
 
 %----------------------------------------------------------------------
@@ -145,8 +145,8 @@
 %----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
-    \textbf{Goal:} Propose $\xvsi[t+1]$ that maximizes the \textbf{Expected Improvement} (EI):
-    $$a_{\text{EI}}(\xv) = \E(\max\{\fmin - Y(\xv), 0\})$$
+    \textbf{Goal:} Propose $\confI{t+1}$ that maximizes the \textbf{Expected Improvement} (EI):
+    $$a_{\text{EI}}(\conf) = \E(\max\{\fmin - Y(\conf), 0\})$$
     \vfill
     \begin{columns}
         \column{.5\textwidth}
@@ -170,11 +170,11 @@
 %----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
-    If $Y(\xv) \sim \normal\left(\surro(\xv), \sh^2(\xv)\right)$, we can express the EI in closed form as:
-    $$a_{\text{EI}}(\xv) = (\fmin-\surro(\xv))\, \Phi\!\left(\frac{\fmin - \surro(\xv)}{\sh(\xv)}\right) + \sh(\xv)\, \phi\!\left(\frac{\fmin - \surro(\xv)}{\sh(\xv)}\right)$$
+    If $Y(\conf) \sim \normal\left(\surro(\conf), \sh^2(\conf)\right)$, we can express the EI in closed form as:
+    $$a_{\text{EI}}(\conf) = (\fmin-\surro(\conf))\, \Phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right) + \sh(\conf)\, \phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right)$$
     \begin{itemize}
-        \item $a_\text{EI}(\xv) = 0$ at design points $\xv$:
-        $$a_{\text{EI}}(\xv) = (\fmin-\surro(\xv)) \underbrace{\Phi\!\left(\frac{\fmin - \surro(\xv)}{\sh(\xv)}\right)}_{= 0, \text{ see PI}} + \underbrace{\sh(\xv)}_{= 0}\, \phi\!\left(\frac{\fmin - \surro(\xv)}{\sh(\xv)}\right)$$
+        \item $a_\text{EI}(\conf) = 0$ at design points $\conf$:
+        $$a_{\text{EI}}(\conf) = (\fmin-\surro(\conf)) \underbrace{\Phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right)}_{= 0, \text{ see PI}} + \underbrace{\sh(\conf)}_{= 0}\, \phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right)$$
     \end{itemize}
 \end{frame}
 
@@ -187,7 +187,7 @@
         \includegraphics[width=.7\textwidth]{images/bayesian_loop_1.png}
     \end{center}
     \vfill
-    The red point depicts $\argmax_{\xv \in \pcs} a_{\text{EI}}(\xv)$.
+    The red point depicts $\argmax_{\conf \in \pcs} a_{\text{EI}}(\conf)$.
 \end{frame}
 
 %----------------------------------------------------------------------
@@ -240,7 +240,7 @@
     \begin{center}
         \includegraphics[width=.7\textwidth]{images/bayesian_loop_6.png}
     \end{center}
-    Here, also a result of well-calibrated uncertainty $\sh(\xv)$ of our GP.
+    Here, also a result of well-calibrated uncertainty $\sh(\conf)$ of our GP.
 \end{frame}
 
 %----------------------------------------------------------------------

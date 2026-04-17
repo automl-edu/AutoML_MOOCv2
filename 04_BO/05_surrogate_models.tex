@@ -36,14 +36,14 @@
 
 \begin{frame}{Gaussian Process}
     \small
-    Posterior predictive distribution for test point $\xv \in \pcs$ under zero mean:
-    $$Y(\xv) \mid \xv, \Dt \sim \normal\left(\surro(\xv), \sh^2(\xv)\right)$$
+    Posterior predictive distribution for test point $\conf \in \pcs$ under zero mean:
+    $$Y(\conf) \mid \conf, \Dt \sim \normal\left(\surro(\conf), \sh^2(\conf)\right)$$
     with
-    $$\surro(\xv) = k(\xv)^\top \bm{K}^{-1} \yv, \quad \sh^2(\xv) = k(\xv, \xv) - k(\xv)^\top \bm{K}^{-1} k(\xv)$$
+    $$\surro(\conf) = k(\conf)^\top \bm{K}^{-1} \yv, \quad \sh^2(\conf) = k(\conf, \conf) - k(\conf)^\top \bm{K}^{-1} k(\conf)$$
     \begin{center}
         \includegraphics[width=.4\textwidth]{images/bayesian_loop_sm_normal.png}
     \end{center}
-    \footnotesize Note: $\xv$ here denotes the test input. $k(\xv) := (k(\xv, \xvsi[1]), \ldots, k(\xv, \xvsi[t]))^\top$, $\yv := (\ysi[1], \ldots, \ysi[t])^\top$. Kernel/Gram matrix $\bm{K} := (k(\xvsi, \xvsi[j]))_{i,j}$ for $i, j \in \{1, \ldots, t\}$.
+    \footnotesize Note: $\conf$ here denotes the test input. $k(\conf) := (k(\conf, \confI{1}), \ldots, k(\conf, \confI{t}))^\top$, $\yv := (\ysi[1], \ldots, \ysi[t])^\top$. Kernel/Gram matrix $\bm{K} := (k(\confI{i}, \confI{j}))_{i,j}$ for $i, j \in \{1, \ldots, t\}$.
 \end{frame}
 
 %----------------------------------------------------------------------
@@ -53,13 +53,13 @@
     Example kernel functions:
     \begin{itemize}
         \item Radial basis function kernel (aka Gauss kernel):
-        $$k(\xv, \xv') = \exp\!\left(-\frac{d(\xv, \xv')^2}{2 l^2}\right)$$
+        $$k(\conf, \conf') = \exp\!\left(-\frac{d(\conf, \conf')^2}{2 l^2}\right)$$
         \begin{itemize}
             \item $l$ length scale; $d(\cdot, \cdot)$ Euclidean distance
             \item Infinitely differentiable -- very ``smooth''
         \end{itemize}
         \item Matérn kernels:
-        $$k(\xv, \xv') = \frac{1}{\Gamma(\nu)\, 2^{\nu-1}}\left(\frac{\sqrt{2\nu}}{l} d(\xv, \xv')\right)^\nu K_\nu\!\left(\frac{\sqrt{2\nu}}{l} d(\xv, \xv')\right)$$
+        $$k(\conf, \conf') = \frac{1}{\Gamma(\nu)\, 2^{\nu-1}}\left(\frac{\sqrt{2\nu}}{l} d(\conf, \conf')\right)^\nu K_\nu\!\left(\frac{\sqrt{2\nu}}{l} d(\conf, \conf')\right)$$
         \begin{itemize}
             \item $l$ length scale; $K_\nu(\cdot)$ modified Bessel function; $\Gamma(\cdot)$ Gamma function
             \item For $\nu = 3/2$ once differentiable, for $\nu = 5/2$ twice differentiable
@@ -110,11 +110,11 @@
 \begin{frame}{Random Forest -- Mean and Variance}
     \small
     \begin{itemize}
-        \item Let $\surro_b: \pcs \to \R$ be the mean prediction of tree $b$ (mean of all data points in the same node as $\xv$)
-        \item Let $\sh_{b}^2: \pcs \to \R$ be the variance prediction (variance of all data points in the same node as $\xv$)
-        \item Mean prediction of forest: $\surro: \pcs \to \R, \xv \mapsto \frac{1}{B} \sum_{b=1}^{B} \surro_{b}(\xv)$
+        \item Let $\surro_b: \pcs \to \R$ be the mean prediction of tree $b$ (mean of all data points in the same node as $\conf$)
+        \item Let $\sh_{b}^2: \pcs \to \R$ be the variance prediction (variance of all data points in the same node as $\conf$)
+        \item Mean prediction of forest: $\surro: \pcs \to \R, \conf \mapsto \frac{1}{B} \sum_{b=1}^{B} \surro_{b}(\conf)$
         \item Variance prediction of forest:
-        $$\xv \mapsto \left(\frac{1}{B} \sum_{b=1}^{B} \sh_{b}^2(\xv) + \surro_{b}(\xv)^{2}\right) - \surro(\xv)^{2}$$
+        $$\conf \mapsto \left(\frac{1}{B} \sum_{b=1}^{B} \sh_{b}^2(\conf) + \surro_{b}(\conf)^{2}\right) - \surro(\conf)^{2}$$
         (law of total variance assuming a mixture of $B$ models)
         \item Alternative variance estimator: (infinitesimal) Jackknife
         \item Variance prediction derived from randomness of individual trees

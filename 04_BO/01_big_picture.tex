@@ -47,58 +47,46 @@ Many optimization problems in AutoML share three features:
     \end{itemize}
     \item $\riskg$ notation here is simplified to the use of a single validation set,
     in practice $\riskg$ might be a resampled performance, e.g. by using CV
-    \item Same structure shows up beyond HPO: neural architecture search, pipeline construction, engineering design, scientific experiments\ldots
 \end{itemize}
 \end{frame}
 
 %----------------------------------------------------------------------
 
-\begin{frame}{ML Pipelines Can Also Be Configured}
-\begin{itemize}
-    \item A full ML \textbf{pipeline} chains preprocessing, feature engineering, learner, and post-processing
-    \item Let $\conf$ encode \emph{all} pipeline choices, not just HPs of a single learner:
-    \begin{itemize}
-        \item Which imputation / scaling / encoding step
-        \item Which feature selection or dimensionality reduction
-        \item Which learner (e.g., random forest vs.\ SVM vs.\ gradient boosting)
-        \item The hyperparameters of \emph{each} active component
-    \end{itemize}
-    \item The search space $\pcs$ becomes \textbf{hierarchical / conditional}:
-    some hyperparameters are only active if a specific component was chosen
-    \item The objective $\cost(\conf)$ is still a black box --\\
-    BO can optimize over this combined pipeline + HP space
-\end{itemize}
-\end{frame}
 
 %----------------------------------------------------------------------
 
 \begin{frame}{Why Not Manual Tuning?}
-\begin{itemize}
-    \item Relies on expert intuition about the learner and the dataset
-    \item Very inefficient and not automated
-    \item Poorly reproducible -- choices are hard to document and communicate
-    \item Prone to bias: \\
-    humans revisit familiar settings and miss unusual but good regions
-\end{itemize}
-\vspace{0.3cm}
-\begin{center}
-\textbf{We want a systematic, adaptive, and reproducible alternative.}
-\end{center}
+\begin{columns}
+    \column{.85\textwidth}
+    \begin{itemize}
+        \item Relies on expert intuition about the learner and the dataset
+        \item Very inefficient and not automated
+        \item Poorly reproducible -- choices are hard to document and communicate
+        \item Prone to bias: humans revisit familiar settings and miss unusual but good regions
+    \end{itemize}
+    \vspace{0.3cm}
+    \textbf{We want a systematic, adaptive, and reproducible alternative.}
+    \column{.15\textwidth}
+    \begin{center}
+        {\Huge\emoji{control-knobs}}\\[0.4cm]
+        {\Huge\emoji{thinking-face}}\\[0.4cm]
+    \end{center}
+\end{columns}
 \end{frame}
 
 %----------------------------------------------------------------------
 
 \begin{frame}{Why Not Just Grid or Random Search?}
 \begin{columns}
-    \column{.55\textwidth}
+    \column{.6\textwidth}
     \begin{itemize}
-        \item Simple, parallelizable, hard to beat as a baseline
+        \item Simple, parallelizable, not easy to beat as a baseline
         \item But: they are \textbf{non-adaptive}
         \begin{itemize}
             \item Every configuration is sampled independently of previous results
             \item Budget is wasted on obviously unpromising regions
         \end{itemize}
-        \item Scaling is poor in higher-dimensional search spaces
+        \item Scaling is poor in higher-dimensional / clearly structured search spaces
         \item For expensive objectives we want an optimizer that \textbf{learns from its own evaluations}
     \end{itemize}
     \column{.4\textwidth}
@@ -108,6 +96,54 @@ Many optimization problems in AutoML share three features:
     \end{center}
 \end{columns}
 \end{frame}
+
+\begin{frame}{ML Pipelines Can Also Be Configured}
+  \begin{center}
+  \begin{tikzpicture}[
+      node distance=0.6cm and 0.25cm,
+      box/.style={draw, rounded corners, fill=blue!10, minimum width=1.8cm,
+          minimum height=0.75cm, align=center, font=\small},
+      hp/.style={font=\scriptsize\itshape, text=black!65, align=center},
+      arr/.style={->, >=latex, thick}
+  ]
+  \node[box] (data) {Data};
+  \node[box, right=of data] (imp) {Imputation};
+  \node[box, right=of imp] (scale) {Scaling /\\Encoding};
+  \node[box, right=of scale] (fs) {Feature\\Selection};
+  \node[box, right=of fs] (learn) {Learner};
+  \draw[arr] (data) -- (imp);
+  \draw[arr] (imp) -- (scale);
+  \draw[arr] (scale) -- (fs);
+  \draw[arr] (fs) -- (learn);
+  \node[hp, below=0.1cm of imp, text width=1.8cm] {mean\\median\\kNN};
+  \node[hp, below=0.1cm of scale, text width=1.8cm] {std\\minmax\\none};
+  \node[hp, below=0.1cm of fs, text width=1.8cm] {PCA\\filter\\none};
+  \node[hp, below=0.1cm of learn, text width=1.8cm] {RF / SVM /\\XGBoost\\+ their HPs};
+  \end{tikzpicture}
+  \end{center}
+  \begin{itemize}
+      \item Let $\conf$ encode \emph{all} pipeline choices, not just HPs of a single learner
+      \item $\cost(\conf)$ is the resampled performance of complete pipeline
+      \item Search space $\pcs$ becomes more \textbf{hierarchical / conditional} and higher-dimensional --
+      efficiency even more crucial
+
+  \end{itemize}
+  \end{frame}
+
+% \begin{frame}{ML Pipelines Can Also Be Configured}
+%   \begin{itemize}
+%       \item A full ML \textbf{pipeline} chains preprocessing, feature engineering, learner, and post-processing
+%       \item Let $\conf$ encode \emph{all} pipeline choices, not just HPs of a single learner:
+%       \begin{itemize}
+%           \item Which imputation / scaling / encoding step
+%           \item Which feature selection or dimensionality reduction
+%           \item Which learner (e.g., random forest vs.\ SVM vs.\ gradient boosting)
+%           \item The hyperparameters of \emph{each} active component
+%       \end{itemize}
+
+%   \end{itemize}
+%   \end{frame}
+  
 
 %----------------------------------------------------------------------
 
@@ -137,37 +173,81 @@ Many optimization problems in AutoML share three features:
     \begin{itemize}
         \item Noisy evaluations
         \item Multiple objectives (accuracy vs.\ runtime, vs.\ fairness, \ldots)
-        \item Mixed / hierarchical configuration spaces
+        \item Multi-Fidelity
+        \item Warm-Starting
+        \item Priors
     \end{itemize}
-    \item Many advanced HPO ideas (multi-fidelity, warmstarting, priors) build directly on top of BO
 \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{BO Beyond AutoML}
+The same ``expensive, noisy, black-box'' setting appears in many other parts of (computational) science:
+\begin{columns}[t]
+    \column{.33\textwidth}
+    \begin{center}
+        \includegraphics[width=.7\textwidth,height=2cm,keepaspectratio]{images/robot_gait.png}\\[0.2cm]
+        \textbf{Robotics}\\
+        \footnotesize Tune a parameterized controller so a robot walks fast and stably
+    \end{center}
+    \column{.33\textwidth}
+    \begin{center}
+        \includegraphics[width=.9\textwidth,height=2cm,keepaspectratio]{images/cookie.jpg}\\[0.2cm]
+        \textbf{Recipe / Product Design}\\
+        \footnotesize Find ingredient ratios that maximize a taste / quality rating~\liturl{Kochanski et al. 2017}{https://research.google.com/pubs/archive/46507.pdf}
+    \end{center}
+    \column{.33\textwidth}
+    \begin{center}
+        {\Huge\emoji{test-tube}\;\emoji{dna}}\\[0.3cm]
+        \textbf{Science \& Engineering}\\
+        \footnotesize Drug / material design, chip layout, physical experiments, simulator calibration
+    \end{center}
+\end{columns}
+% \vspace{0.2cm}
+% \begin{center}
+% \small\textbf{Whenever each evaluation is slow / costly and gradients are unavailable -- BO is a natural choice.}
+% \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Historical Roots: DACE and Expensive Simulations}
+BO did not originate in ML -- grew out of \textbf{Design and Analysis of Computer Experiments} (DACE) community~\liturl{Sacks et al. 1989}{https://projecteuclid.org/journals/statistical-science/volume-4/issue-4/Design-and-Analysis-of-Computer-Experiments/10.1214/ss/1177012413.full}.
+\vspace{0.2cm}
+\begin{itemize}
+    \item Classical engineering setting: a single run of a physics / CFD / finite-element simulator can take hours or days
+    \item Idea: treat the simulator as an unknown function, fit a \emph{Gaussian process} (aka Kriging) to a small design, and use it as a cheap proxy
+    \item \textbf{EGO} (Efficient Global Optimization,~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147}) pairs a GP with \emph{Expected Improvement} -- the direct ancestor of today's BO
+\end{itemize}
+\vspace{0.2cm}
+Typical applications: aerodynamic shape, car crash / airfoil simulations, reservoir / groundwater models, climate / weather code calibration, chip / circuit design.
 \end{frame}
 
 %----------------------------------------------------------------------
 
 \begin{frame}{Guiding Questions for This Chapter}
 \begin{itemize}
-    \item What makes an optimization problem a ``black-box'' problem?
     \item What does the basic BO loop look like?
     \item How do we quantify uncertainty with a surrogate model?
     \item How do acquisition functions (LCB, PI, EI) balance exploration and exploitation?
     \item Which surrogate models are useful in practice (GPs, random forests)?
-    \item How do we handle noise and multiple objectives?
-    \item Which practical choices matter when implementing or using BO?
+    \item Which practical choices matter when implementing or using BO?\\
+    E.g. ACQF optimization or parallelization
 \end{itemize}
 \end{frame}
 
 %----------------------------------------------------------------------
 
-\begin{frame}{Summary}
-\begin{enumerate}
-    \item HPO and many AutoML tasks are expensive, noisy, black-box optimization problems
-    \item Grid and random search are non-adaptive and waste evaluations
-    \item Bayesian optimization uses a surrogate model and an acquisition function to pick \emph{informative} points, making it sample-efficient
-    \item BO is a key building block for modern AutoML systems
-\end{enumerate}
-\vspace{0.3cm}
-$\leadsto$ The rest of this chapter develops the BO loop, surrogate models, and acquisition functions in detail.
-\end{frame}
+% \begin{frame}{Summary}
+% \begin{enumerate}
+%     \item HPO and many AutoML tasks are expensive, noisy, black-box optimization problems
+%     \item Grid and random search are non-adaptive and waste evaluations
+%     \item Bayesian optimization uses a surrogate model and an acquisition function to pick \emph{informative} points, making it sample-efficient
+%     \item BO is a key building block for modern AutoML systems
+% \end{enumerate}
+% \vspace{0.3cm}
+% $\leadsto$ The rest of this chapter develops the BO loop, surrogate models, and acquisition functions in detail.
+% \end{frame}
 
 \end{document}
