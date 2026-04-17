@@ -30,7 +30,6 @@ Many optimization problems in AutoML share three features:
 \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{HPO Is a Black-Box Optimization Problem}
 \begin{itemize}
@@ -43,17 +42,14 @@ Many optimization problems in AutoML share three features:
     \begin{itemize}
         \item No closed-form expression
         \item Evaluation requires training / resampling a model
-        \item Mixed / hierarchical search space 
+        \item Mixed / hierarchical search space\\
+        (numeric / integer / cat / conditional HPs)
     \end{itemize}
     \item $\riskg$ notation here is simplified to the use of a single validation set,
     in practice $\riskg$ might be a resampled performance, e.g. by using CV
 \end{itemize}
 \end{frame}
 
-%----------------------------------------------------------------------
-
-
-%----------------------------------------------------------------------
 
 \begin{frame}{Why Not Manual Tuning?}
 \begin{columns}
@@ -80,14 +76,15 @@ Many optimization problems in AutoML share three features:
 \begin{columns}
     \column{.6\textwidth}
     \begin{itemize}
-        \item Simple, parallelizable, not easy to beat as a baseline
+        \item Simple, parallelizable
         \item But: they are \textbf{non-adaptive}
         \begin{itemize}
             \item Every configuration is sampled independently of previous results
-            \item Budget is wasted on obviously unpromising regions
+            \item Does not exploit structure in objective
+            \item Budget wasted on obviously unpromising regions
         \end{itemize}
-        \item Scaling is poor in higher-dimensional / clearly structured search spaces
-        \item For expensive objectives we want an optimizer that \textbf{learns from its own evaluations}
+        \item Scaling poor in higher-dim. search spaces           
+        \item For expensive objectives we want an optimizer that \textbf{learns from its own evaluations} and follows promising local directions
     \end{itemize}
     \column{.4\textwidth}
     \begin{center}
@@ -130,22 +127,6 @@ Many optimization problems in AutoML share three features:
   \end{itemize}
   \end{frame}
 
-% \begin{frame}{ML Pipelines Can Also Be Configured}
-%   \begin{itemize}
-%       \item A full ML \textbf{pipeline} chains preprocessing, feature engineering, learner, and post-processing
-%       \item Let $\conf$ encode \emph{all} pipeline choices, not just HPs of a single learner:
-%       \begin{itemize}
-%           \item Which imputation / scaling / encoding step
-%           \item Which feature selection or dimensionality reduction
-%           \item Which learner (e.g., random forest vs.\ SVM vs.\ gradient boosting)
-%           \item The hyperparameters of \emph{each} active component
-%       \end{itemize}
-
-%   \end{itemize}
-%   \end{frame}
-  
-
-%----------------------------------------------------------------------
 
 \begin{frame}{The Core Idea of Bayesian Optimization}
 \begin{itemize}
@@ -163,9 +144,8 @@ Many optimization problems in AutoML share three features:
 \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Why Care Specifically in AutoML?}
+\begin{frame}{BO as an AutoML Backbone}
 \begin{itemize}
     \item BO is the \textbf{backbone} of many modern AutoML systems (e.g., SMAC, Spearmint, BoTorch, Optuna)
     \item It is typically much more \textbf{sample-efficient} than random or evolutionary search on HPO benchmarks
@@ -179,8 +159,6 @@ Many optimization problems in AutoML share three features:
     \end{itemize}
 \end{itemize}
 \end{frame}
-
-%----------------------------------------------------------------------
 
 \begin{frame}{BO Beyond AutoML}
 The same ``expensive, noisy, black-box'' setting appears in many other parts of (computational) science:
@@ -210,7 +188,6 @@ The same ``expensive, noisy, black-box'' setting appears in many other parts of 
 % \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Historical Roots: DACE and Expensive Simulations}
 BO did not originate in ML -- grew out of \textbf{Design and Analysis of Computer Experiments} (DACE) community~\liturl{Sacks et al. 1989}{https://projecteuclid.org/journals/statistical-science/volume-4/issue-4/Design-and-Analysis-of-Computer-Experiments/10.1214/ss/1177012413.full}.
@@ -224,8 +201,6 @@ BO did not originate in ML -- grew out of \textbf{Design and Analysis of Compute
 Typical applications: aerodynamic shape, car crash / airfoil simulations, reservoir / groundwater models, climate / weather code calibration, chip / circuit design.
 \end{frame}
 
-%----------------------------------------------------------------------
-
 \begin{frame}{Guiding Questions for This Chapter}
 \begin{itemize}
     \item What does the basic BO loop look like?
@@ -237,17 +212,5 @@ Typical applications: aerodynamic shape, car crash / airfoil simulations, reserv
 \end{itemize}
 \end{frame}
 
-%----------------------------------------------------------------------
-
-% \begin{frame}{Summary}
-% \begin{enumerate}
-%     \item HPO and many AutoML tasks are expensive, noisy, black-box optimization problems
-%     \item Grid and random search are non-adaptive and waste evaluations
-%     \item Bayesian optimization uses a surrogate model and an acquisition function to pick \emph{informative} points, making it sample-efficient
-%     \item BO is a key building block for modern AutoML systems
-% \end{enumerate}
-% \vspace{0.3cm}
-% $\leadsto$ The rest of this chapter develops the BO loop, surrogate models, and acquisition functions in detail.
-% \end{frame}
 
 \end{document}
