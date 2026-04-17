@@ -24,7 +24,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Bayesian Surrogate Modeling}
     \begin{itemize}
@@ -32,7 +31,7 @@
         \item $\sh^2(\conf)$ expresses ``confidence''/``certainty'' in the prediction
     \end{itemize}
     \vfill
-    \begin{columns}
+    \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
         \begin{center}
             \includegraphics[width=\textwidth]{images/bayesian_loop_ee.png}
@@ -44,7 +43,6 @@
     \end{columns}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Bayesian Surrogate Modeling}
     \begin{itemize}
@@ -60,7 +58,6 @@
     \end{footnotesize}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Acquisition Functions}
     To sequentially propose new points based on the surrogate model, we make use of so-called acquisition functions $a: \pcs \to \R$.
@@ -72,7 +69,6 @@
     In the examples before, we simply used the posterior mean $a(\conf) = \surro(\conf)$ as acquisition function -- ignoring uncertainty.
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Lower Confidence Bound}
     \textbf{Goal:} Find $\confI{t+1}$ that minimizes the \textbf{Lower Confidence Bound} (LCB):
@@ -82,7 +78,6 @@
     The LCB is conceptually very simple and does \textbf{not} rely on distributional assumptions on the posterior predictive distribution.
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Lower Confidence Bound}
     $\tau = 1$
@@ -95,7 +90,6 @@
     Bottom: The red point depicts $\argmin_{\conf \in \pcs} a_{\text{LCB}}(\conf)$.
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Lower Confidence Bound}
     $\tau = 5$
@@ -105,7 +99,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Lower Confidence Bound}
     $\tau = 10$
@@ -115,7 +108,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Summary}
 \begin{enumerate}

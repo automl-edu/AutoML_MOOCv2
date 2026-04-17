@@ -4,16 +4,11 @@
 \begin{document}
 
 \title[AutoML: BO]{Important Surrogate Models}
-\subtitle{Gaussian Processes and Random Forests}
+\subtitle{Gaussian Processes}
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
-
 \titlebackground*{images/AutoML_HPO_2_2}
-
-%\institute{}
-%\date{}
-
-    \maketitle
+\maketitle
 
 
 \begin{frame}{Surrogate Models}
@@ -82,81 +77,6 @@
         \item Can be sensitive to the choice of kernel and hyperparameters
     \end{itemize}
 \end{frame}
-
-
-\begin{frame}{Random Forest}
-    \begin{itemize}
-        \item Bagging ensemble
-        \item Fit $B$ decision trees on bootstrap samples
-        \item Feature subsampling
-    \end{itemize}
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/random_forests.jpg}
-    \end{center}
-    ``extratrees'' / random splits:
-    \begin{itemize}
-        \item Choose split location uniformly at random
-        \item Results in a ``smoother'' mean prediction
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}{Random Forest -- Mean and Variance}
-    \small
-    \begin{itemize}
-        \item Let $\surro_b: \pcs \to \R$ be the mean prediction of tree $b$ (mean of all data points in the same node as $\conf$)
-        \item Let $\sh_{b}^2: \pcs \to \R$ be the variance prediction (variance of all data points in the same node as $\conf$)
-        \item Mean prediction of forest: $\surro: \pcs \to \R, \conf \mapsto \frac{1}{B} \sum_{b=1}^{B} \surro_{b}(\conf)$
-        \item Variance prediction of forest:
-        $$\conf \mapsto \left(\frac{1}{B} \sum_{b=1}^{B} \sh_{b}^2(\conf) + \surro_{b}(\conf)^{2}\right) - \surro(\conf)^{2}$$
-        (law of total variance assuming a mixture of $B$ models)
-        \item Alternative variance estimator: (infinitesimal) Jackknife
-        \item Variance prediction derived from randomness of individual trees
-        \begin{itemize}
-            \item Bagging / bootstrap samples
-            \item Features sampled at random
-            \item (Randomized split locations in the case of ``extratrees'')
-        \end{itemize}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}{Random Forest -- Different Choices}
-    \begin{center}
-        \includegraphics[width=.95\textwidth]{images/surrogate_1.png}
-    \end{center}
-\end{frame}
-
-
-\begin{frame}{Random Forest}
-    \textbf{Pros:}
-    \begin{itemize}
-        \item Cheap(er) to train
-        \item Scales well with the number of data points
-        \item Scales well with the number of dimensions
-        \item Can easily handle hierarchical mixed spaces (via imputation or directly in the tree structure)
-        \item Robust
-    \end{itemize}
-    \textbf{Cons:}
-    \begin{itemize}
-        \item Suboptimal uncertainty estimates
-        \item Not really Bayesian (no real posterior predictive distribution)
-        \item Poor extrapolation
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}{Example}
-    Minimize the 2D Ackley function using BO\_GP (GP with Matérn 3/2, EI), BO\_RF (standard Random Forest, EI), BO\_RF\_ET (Random Forest with extratrees, EI) or random search:
-    \begin{center}
-        \includegraphics[width=.6\textwidth]{images/surrogate_2.png}
-    \end{center}
-    \begin{footnotesize}
-        Strong BO\_GP performance. BO\_RF and BO\_RF\_ET not too bad either. BO\_RF\_ET maybe slightly better final performance than BO\_RF.
-    \end{footnotesize}
-\end{frame}
-
 
 \begin{frame}{Summary}
 \begin{enumerate}

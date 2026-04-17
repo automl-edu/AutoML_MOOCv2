@@ -3,6 +3,17 @@
 
 \begin{document}
 
+% Place the running-example loop_*.png images at a fixed absolute
+% position on the page via tikz overlay, so they do not jump around
+% across the surrogate-modeling sequence. Keep text above short
+% (1-3 lines) to avoid overlap.
+\newcommand{\looppic}[1]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=south] at ([yshift=0.3cm]current page.south)
+      {\includegraphics[width=.5\paperwidth,height=.45\paperheight,keepaspectratio]{#1}};
+  \end{tikzpicture}%
+}
+
 \title[AutoML: BO]{Basic BO Loop and Surrogate Modeling}
 \subtitle{Initial Design, Surrogate Modeling, and Iterative Loop}
 \author[Bernd Bischl]{Bernd Bischl}
@@ -16,216 +27,240 @@
     \maketitle
 
 
-\begin{frame}{Optimization via Surrogate Modeling}
+\begin{frame}[t]{Optimization via Surrogate Modeling}
   \begin{itemize}
-    \item Want to solve  $$\conf^\ast \in \argmin_{\conf \in \pcs} \cost(\conf)$$
-    \item We do not know the analytical structure of $\cost: \pcs \to \R$
-    \item $\cost$ is more a computer program we can evaluate for some inputs $\conf \in \pcs$
-    \item For now, we assume that those evaluations are noise-free
-    \item \textbf{Idea:} Use historical data $\Dt = \{(\confI{i},  \cost(\confI{i}))\}_{i = 1, \ldots, t}$
-    to learn as much about $\cost$ as we can, to intelligently plan design points sequentially
+    \item Want to solve $$\conf^\ast \in \argmin_{\conf \in \pcs} \cost(\conf)$$
+    \item We do not know the analytical structure of $\cost: \pcs \to \R$;\\
+     it is only available as a black-box we can \emph{query} at points $\conf \in \pcs$
+    \item For now, we assume evaluations are noise-free
+    \item \textbf{Idea:} Use the archive $\Dt = \{(\confI{i}, \cost(\confI{i}))\}_{i = 1, \ldots, t}$ to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
   \end{itemize}
-  \vfill
-    \begin{center}
-        \includegraphics[width=.2\textwidth]{images/loop_1.png}
-    \end{center}
+  \looppic{images/loop_1.png}
 \end{frame}
 
-%----------------------------------------------------------------------
+
+\begin{frame}[t]{Surrogate Modeling -- Running Example}
+  \begin{itemize}
+    \item Simple 1D toy example
+    \item Somewhat oversimplified, but we need something to visualize
+  \end{itemize}
+  \looppic{images/loop_0.png}
+\end{frame}
+
 
 \begin{frame}{Initial Design}
+    We need a first batch of evaluations before any surrogate can be fit.
     \begin{itemize}
-        \item Should cover / explore the input space sufficiently:
+        \item Should \textbf{cover / explore} the input space sufficiently so the initial surrogate is not biased toward one region:
             \begin{itemize}
                 \item Random design
-                \item Latin hypercube sampling
-                \item Sobol sampling
+                \item Latin hypercube sampling (LHS)
+                \item Sobol / Halton quasi-random sequences
             \end{itemize}
         \item Type of design usually does not have the largest effect
-        \item A more important choice is the \textbf{size} of the initial design
+        \item More important: the \textbf{size} of the initial design
             \begin{itemize}
-                \item Should neither be too small (bad initial fit) nor too large (spending too much budget without ``intelligent'' optimization)
-                \item Rule of thumb: $4d$
+                \item Too small: bad initial fit, surrogate misleading
+                \item Too large: budget wasted before ``intelligent'' optimization even starts
+                \item Rule of thumb: $4d$, where $d = \dim(\pcs)$
             \end{itemize}
     \end{itemize}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Latin Hypercube Sampling}
-    \begin{columns}
+    \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
         \begin{itemize}
             \item LHS partitions the search space into bins of equal probability
             \item Goal: attain a more even distribution of sample points than random sampling
-            \item Allow at most one sample per bin; exactly one sample per row and column
+            \item Allow at most 1 sample per bin; exactly 1 sample per row and column
+            \item Either use midpoint or uniform sample from bin
         \end{itemize}
         \column{.5\textwidth}
         \begin{center}
-            \includegraphics[width=.75\textwidth]{images/init_0.png}\\
-            \includegraphics[width=.75\textwidth]{images/init_1.png}\\
-            \footnotesize Marginal histograms: RS vs.\ LHS
+            \includegraphics[width=.5\textwidth]{images/init_0.png}\\
+            \includegraphics[width=.5\textwidth]{images/init_1.png}
+            % \footnotesize Marginal histograms: RS vs.\ LHS
         \end{center}
     \end{columns}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Latin Hypercube Sampling}
-    Actual sampling of points, e.g.\ constructed via \textbf{Maximin}:
+% \begin{frame}{Constructing an LHS Design}
+%     For $n$ points in $d$ dimensions on $[0,1]^d$ (box-constrained $\pcs$ is rescaled):
+%     \begin{enumerate}
+%         \item Split each dimension $j = 1, \ldots, d$ into $n$ equal intervals $I_j^{(i)} = \!\left[\tfrac{i-1}{n}, \tfrac{i}{n}\right]$ for $i = 1, \ldots, n$
+%         \item For each dimension $j$, draw an independent random permutation $\pi_j$ of $\{1, \ldots, n\}$
+%         \item Point $k \in \{1, \ldots, n\}$ has coordinate in dim $j$:
+%         $$\confI{k}_j \sim \operatorname{Uniform}\!\left(I_j^{(\pi_j(k))}\right) \quad \text{(or use the bin midpoint)}$$
+%     \end{enumerate}
+%     \vspace{0.2cm}
+%     \textbf{Effect:}\hspace{1em}every 1D projection has \emph{exactly one} point per interval $\leadsto$ good marginal coverage.\\[0.2cm]
+%     \textbf{Note:}\hspace{1em}the permutations $\pi_j$ are the only freedom -- different permutations give very different 2D spreads. Maximin picks a good one (next slide).
+% \end{frame}
+
+\begin{frame}{Space-Filling Criterion: Maximin}
+\begin{columns}[onlytextwidth]
+    \column{.7\textwidth}
     \begin{itemize}
-        \item The minimum distance between any two points in $\D$ is $2q = \min_{\conf \in \D, \conf' \in \D} \rho(\conf, \conf')$ ($\rho$ any metric, e.g.\ Euclidean distance)
-        \item $q$ is the packing radius: the radius of the largest ball that can be placed around every design point such that no two balls overlap
-        \item Goal: find $\D$ that maximizes $2q$: $\max_{\D} \min_{\conf \in \D, \conf' \in \D} \rho(\conf, \conf')$
-        \item Ensures that the design points in $\D$ are as far apart from each other as possible
+    \item Specific LHS design selected via extra criterion, e.g.\ \textbf{maximin}
+    \item Min.\ pairwise distance for any metric $\rho$\\
+     $2q = \min_{\conf \neq \conf' \in \D} \rho(\conf, \conf')$
+    \item $q$ = \textbf{packing radius}: radius of largest ball around each point s.t. no 2 balls overlap
+    \item Goal: find $\D$ that maximizes $2q$, keeping design points as far apart as possible:
+    $$\max_{\D} \min_{\conf \neq \conf' \in \D} \rho(\conf, \conf')$$
     \end{itemize}
+    \column{.3\textwidth}
+    \begin{center}
+    \begin{tikzpicture}[scale=2.3,
+        pt/.style={circle, fill=black, inner sep=1.2pt},
+        ball/.style={draw=blue!60, fill=blue!10, thick}]
+        \draw[black!40] (0,0) rectangle (1,1);
+        \foreach \x/\y in {0.12/0.82, 0.40/0.30, 0.72/0.68, 0.88/0.15, 0.22/0.45} {
+            \draw[ball] (\x,\y) circle (0.18);
+        }
+        \foreach \x/\y in {0.12/0.82, 0.40/0.30, 0.72/0.68, 0.88/0.15, 0.22/0.45} {
+            \node[pt] at (\x,\y) {};
+        }
+        \draw[red, thick, <->] (0.40,0.30) -- (0.22,0.45)
+            node[midway, above right, font=\scriptsize, red] {$2q$};
+    \end{tikzpicture}\\[0.2cm]
+    % \footnotesize Packing radius $q$ around each point; closest pair determines $2q$.
+    \end{center}
+\end{columns}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    Running example: minimize this ``black-box''.
-    \vfill
-    \begin{center}
-        \includegraphics[width=.8\textwidth]{images/loop_0.png}
-    \end{center}
+% \begin{frame}{Sobol Sequences}
+%     Alternative, based on \textbf{quasi-random low-discrepancy sequences}:
+%     \begin{itemize}
+%         \item \textbf{Deterministic} -- constructed from the binary digit expansion of $k = 1, 2, 3, \ldots$ combined with direction numbers; no random permutations
+%         \item \textbf{Low discrepancy} -- points are spread more evenly than i.i.d.\ uniform; error of Monte-Carlo-type averages drops roughly as $(\log n)^d / n$ instead of $1/\sqrt{n}$
+%         \item \textbf{Extensible} -- adding the next point never moves the previous ones\\
+%         $\leadsto$ can grow the design incrementally, unlike LHS (which is fixed at size $n$)
+%         \item Scales better than LHS in moderate-to-high dimensions
+%         \item Scrambled / randomized variants (Owen scrambling) combine determinism and stochastic guarantees
+%     \end{itemize}
+%     \vspace{0.2cm}
+%     In practice: BO toolboxes often default to \textbf{Sobol} or \textbf{LHS}; either works well for the initial design.
+% \end{frame}
+
+
+
+
+\begin{frame}[t]{Surrogate Modeling -- Fit}
+  \begin{itemize}
+    \item \textbf{Fit} a \textbf{regression model} $\surro: \pcs \to \R$ (blue)
+    \item Extract maximum information from design points and learn $\cost$
+    \item If we can evaluate $\cost$ without noise, we fit an interpolator
+  \end{itemize}
+  \looppic{images/loop_2.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    \textbf{Fit} a \textbf{regression model} $\surro: \Dt \to \R$ (blue) to extract maximum information from the design points (black) and learn properties of $\cost$.
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_2.png}
-    \end{center}
-    \begin{center}
-        As we can evaluate $\cost$ without noise, we fit an interpolator.
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Propose}
+  \begin{itemize}
+    \item Instead of the expensive $\cost$, we optimize the cheap surrogate $\surro$
+    \item Obtained minimum is \textbf{proposed} as new point (red) for evaluation
+  \end{itemize}
+  \looppic{images/loop_3.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    Instead of the expensive $\cost$, we optimize the cheap surrogate $\surro$ (blue) to \textbf{propose} a new point (red) for evaluation.
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_3.png}
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Evaluate}
+  \begin{itemize}
+    \item We evaluate the newly proposed point
+  \end{itemize}
+  \looppic{images/loop_4.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    We finally evaluate the newly proposed point.
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_4.png}
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Update}
+  \begin{itemize}
+    \item After evaluation, we \textbf{adjust} the model on the expanded dataset
+    \item Use complete refitting or a (cheaper) online update
+  \end{itemize}
+  \looppic{images/loop_5.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    After evaluation of the new point, we \textbf{adjust} the model on the expanded dataset via (slower) refitting or a (cheaper) online update.
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_5.png}
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Propose}
+  \begin{itemize}
+    \item Optimize surrogate again
+  \end{itemize}
+  \looppic{images/loop_6.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    We again obtain a new candidate point (red) by optimizing the cheap surrogate model function (blue)\ldots
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_6.png}
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Evaluate}
+  \begin{itemize}
+    \item \ldots and evaluate proposed point
+  \end{itemize}
+  \looppic{images/loop_7.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    \ldots and evaluate that candidate.
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_7.png}
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Iterate: Fit}
+  \begin{itemize}
+    \item We repeat: (i) \textbf{fit} the model\ldots
+  \end{itemize}
+  \looppic{images/loop_8.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    We repeat: (i) \textbf{fit} the model\ldots
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_8.png}
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Iterate: Propose}
+  \begin{itemize}
+    \item (ii) \textbf{propose} a new point\ldots
+  \end{itemize}
+  \looppic{images/loop_9.png}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Surrogate Modeling}
-    (ii) \textbf{propose} a new point\ldots
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_9.png}
-    \end{center}
+\begin{frame}[t]{Surrogate Modeling -- Iterate: Evaluate}
+  \begin{itemize}
+    \item (iii) \textbf{evaluate} that point -- the algorithm has converged
+  \end{itemize}
+  \looppic{images/loop_10.png}
 \end{frame}
 
-%----------------------------------------------------------------------
-
-\begin{frame}{Surrogate Modeling}
-    (iii) \textbf{evaluate} that point.
-    \vfill
-    \begin{center}
-        \includegraphics[width=.7\textwidth]{images/loop_10.png}
-    \end{center}
-    \begin{itemize}
-        \item We observe that the algorithm converged.
-    \end{itemize}
+\begin{frame}[t]{Exploration vs.\ Exploitation}
+  The algorithm ran straight into a \textbf{local} minimum -- it did not explore the most crucial areas and \textbf{missed} the global optimum.
+  \vspace{0.3cm}
+  \begin{columns}[onlytextwidth,T]
+      \column{.48\textwidth}
+      \includegraphics[width=\textwidth]{images/loop_11.png}
+      \column{.48\textwidth}
+      \begin{itemize}
+          \item Optimizing $\surro$ directly uses the \emph{mean prediction} as proposal rule
+          \item That is pure \textbf{exploitation}, no \textbf{exploration}
+          \item Smarter proposal rules -- \textbf{acquisition functions} -- also reward visiting uncertain regions
+      \end{itemize}
+  \end{columns}
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Basic Loop}
-    The basic loop of our sequential optimization procedure:
+\begin{frame}{Summary - The Basic BO Loop}
     \begin{enumerate}
-        \item Fit surrogate model $\surro$ on previous evaluations $\Dts$
-        \item Optimize the surrogate model $\surro$ to obtain a new point $\confI{t+1} := \argmin_{\conf \in \pcs} \surro(\conf)$
-        \item Evaluate $\confI{t+1}$ and update data $\Dt[t+1] = \Dt \cup \{(\confI{t+1}, \cost(\confI{t+1}))\}$
+        \item Create initial design  
+        \item \textbf{Fit} surrogate model $\surro$ on previous evaluations $\Dts$
+        \item \textbf{Propose} a new point by optimizing the surrogate: $\confI{t+1} := \argmin_{\conf \in \pcs} \surro(\conf)$
+        \item \textbf{Evaluate} $\confI{t+1}$ and \textbf{update} the archive: $\Dt[t+1] = \Dt \cup \{(\confI{t+1}, \cost(\confI{t+1}))\}$
+        \item Repeat from step 2. until budget is exhausted
     \end{enumerate}
+    \vspace{0.3cm}
+    Core design choices: the \emph{initial design}, the \emph{surrogate model}, and the \emph{rule} used to propose the next point.
 \end{frame}
 
-%----------------------------------------------------------------------
 
-\begin{frame}{Exploration vs.\ Exploitation}
-    We ran into a local minimum. We did not ``explore'' the most crucial areas and \textbf{missed} the global minimum.
-    \vfill
-    \begin{columns}
-        \column{.5\textwidth}
-        \begin{center}
-            \includegraphics[width=\textwidth]{images/loop_11.png}
-        \end{center}
-        \column{.5\textwidth}
-        \begin{itemize}
-            \item Better ways to propose points based on our model exist, so-called \textbf{acquisition functions}
-            \item Optimizing the surrogate directly corresponds to the raw / mean prediction as acquisition function
-            \item Results in \textbf{high exploitation but low exploration}
-        \end{itemize}
-    \end{columns}
-\end{frame}
 
-%----------------------------------------------------------------------
-
-\begin{frame}{Summary}
-\begin{enumerate}
-    \item BO starts with an initial design that covers the search space
-    \item A surrogate model is fit to the evaluated points to approximate $\cost$
-    \item The basic loop iterates: fit, propose, evaluate, update
-    \item Using only the surrogate's mean prediction leads to strong exploitation but weak exploration
-\end{enumerate}
-\end{frame}
+% \begin{frame}{Summary}
+% \begin{enumerate}
+%     \item BO starts with a space-filling \textbf{initial design}; size $\approx 4d$ works as a rule of thumb
+%     \item A cheap \textbf{surrogate} $\surro$ is fit to the evaluations to approximate $\cost$
+%     \item The basic loop iterates: \emph{fit, propose, evaluate, update}
+%     \item Using only $\surro$'s mean prediction leads to strong exploitation but weak exploration
+% \end{enumerate}
+% \end{frame}
 
 \end{document}

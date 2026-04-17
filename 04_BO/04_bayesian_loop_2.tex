@@ -21,7 +21,7 @@
     $$a_{\text{PI}}(\conf) = \P(Y(\conf) < \fmin) = \Phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right)$$
     where $\Phi(\cdot)$ is the standard normal cdf (assuming Gaussian posterior).
     \vfill
-    \begin{columns}
+    \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
         \begin{center}
             \includegraphics[width=\textwidth]{images/bayesian_loop_sm_normal_fmin.png}
@@ -34,7 +34,6 @@
     \footnotesize \textbf{Left:} The green vertical line represents $\fmin$. \textbf{Right:} $a_{\text{PI}}(\conf)$ is given by the black area.
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \textbf{Note:} $a_\text{PI}(\conf) = 0$ for design points $\conf$, since
@@ -46,7 +45,6 @@
     $$\Phi\!\left(\frac{\fmin - \surro(\conf)}{\sh(\conf)}\right) = \Phi(-\infty) = 0$$
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \begin{itemize}
@@ -61,7 +59,6 @@
     The red point depicts $\argmax_{\conf \in \pcs} a_{\text{PI}}(\conf)$.
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \ldots evaluate that point, refit the SM and propose the next point.
@@ -72,7 +69,6 @@
     (grey point = previous point from last iteration)
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \ldots
@@ -82,7 +78,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     In our example, using the PI results in spending plenty of time optimizing the local optimum\ldots
@@ -92,7 +87,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \ldots
@@ -102,7 +96,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \ldots
@@ -112,7 +105,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \ldots
@@ -122,7 +114,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \ldots eventually, we explore other regions\ldots
@@ -132,7 +123,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Probability of Improvement}
     \ldots
@@ -142,13 +132,12 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     \textbf{Goal:} Propose $\confI{t+1}$ that maximizes the \textbf{Expected Improvement} (EI):
     $$a_{\text{EI}}(\conf) = \E(\max\{\fmin - Y(\conf), 0\})$$
     \vfill
-    \begin{columns}
+    \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
         \begin{center}
             \includegraphics[width=\textwidth]{images/bayesian_loop_sm_normal_fmin.png}
@@ -167,7 +156,6 @@
     \end{small}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     If $Y(\conf) \sim \normal\left(\surro(\conf), \sh^2(\conf)\right)$, we can express the EI in closed form as:
@@ -178,7 +166,6 @@
     \end{itemize}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     We use the EI (red line) to propose the next point\ldots
@@ -190,7 +177,6 @@
     The red point depicts $\argmax_{\conf \in \pcs} a_{\text{EI}}(\conf)$.
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     \ldots evaluate that point, refit the SM and propose the next point.
@@ -202,7 +188,6 @@
     (grey point = previous point from last iteration)
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     \ldots
@@ -212,7 +197,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     \ldots
@@ -222,7 +206,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     \ldots
@@ -232,7 +215,6 @@
     \end{center}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Expected Improvement}
     The EI is capable of exploration and quickly proposes promising points in areas we have not visited yet.
@@ -243,7 +225,6 @@
     Here, also a result of well-calibrated uncertainty $\sh(\conf)$ of our GP.
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Discussion}
     \begin{itemize}
@@ -262,7 +243,6 @@
     \end{itemize}
 \end{frame}
 
-%----------------------------------------------------------------------
 
 \begin{frame}{Summary}
 \begin{enumerate}
