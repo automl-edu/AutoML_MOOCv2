@@ -1,0 +1,137 @@
+\documentclass[main]{subfiles}
+
+\title[AutoML: Introduction]{Chapter 2 -- Quiz}
+\subtitle{Multiple Choice Questions}
+\author[Marcel Wever]{Marcel Wever}
+\date{}
+
+
+\titlebackground*{images/AutoML_ML_Evaluation}
+
+\newcommand{\correct}[1]{\textcolor{ForestGreen}{\textbf{#1} \checkmark}}
+\newcommand{\wrong}[1]{#1}
+
+\begin{document}
+
+    \maketitle
+
+%----------------------------------------------------------------------
+\begin{frame}{Q1 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What does estimand $\riskg^{(n)}(\conf)$ represent?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Training loss of $\inducer(\datasettrain, \conf)$ on $\datasettrain$.}
+    \item \correct{(B) \; Expected gen.\ risk of $\inducer(\cdot,\conf)$ at training size $n$.}
+    \item \wrong{(C) \; Minimum risk over all $\conf \in \pcs$.}
+    \item \wrong{(D) \; Variance of the risk estimator across splits.}
+\end{itemize}
+
+\end{frame}
+%
+
+%----------------------------------------------------------------------
+\begin{frame}{Q2 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{What are the consequences of selection effects in AutoML? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; System picks the config with most favourable noise.}
+    \item \correct{(B) \; Validation score of $\optconf$ is optimistically biased.}
+    \item \correct{(C) \; Optimistic bias grows with number of configs $T$.}
+    \item \correct{(D) \; Search can overfit to $\datasetval$ (meta-overfitting).}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q3 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What are correct description of an anytime performance curve?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Smooth curve showing gradual improvement over time.}
+    \item \wrong{(B) \; Bar chart of performance at a fixed budget $T$.}
+    \item \correct{(C) \; Step function; only changes when a better config is found.}
+    \item \wrong{(D) \; Confidence interval over all evaluated configs.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q4 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{What are desiderata for a fair AutoML benchmark? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; Identical resources (time, memory, hardware) for all.}
+    \item \correct{(B) \; Nested evaluation with outer test set held out.}
+    \item \wrong{(C) \; Report results for the single best system only.}
+    \item \wrong{(D) \; Use proprietary datasets to prevent benchmark leakage.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q5 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is the best procedure to compare $>$2 AutoML systems across datasets?}
+
+\begin{itemize}
+    \item \wrong{(A) \; All pairwise $t$-tests without correction.}
+    \item \wrong{(B) \; Pick best average rank -- no significance test needed.}
+    \item \wrong{(C) \; Wilcoxon test for each pair, independently.}
+    \item \correct{(D) \; Friedman test first, then Holm/Nemenyi post-hoc.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q6 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Which about SE/SD uncertainty bands is correct? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; SE bands shrink as number of runs $n$ grows.}
+    \item \correct{(B) \; SD bands stay large even as $n \to \infty$.}
+    \item \wrong{(C) \; Non-overlapping SE bands prove statistical significance.}
+    \item \correct{(D) \; Use SE (not SD) when comparing methods.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q7 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Purpose of outer test set $\datasettest$ in nested evaluation?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Score configs during search to guide the AutoML system.}
+    \item \correct{(B) \; Unbiased performance estimate; never used in search.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q8 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Which are pitfalls in evaluation \& benchmarking? \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \wrong{(A) \; Applying corrected resampled $t$-test on correlated folds.}
+    \item \correct{(B) \; Fixing significance level $\alpha$ after seeing results.}
+    \item \wrong{(C) \; Using hold-out for very large datasets.}
+    \item \correct{(D) \; Cherry-picking datasets to favour your own system.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+\end{frame}
+\end{document}
