@@ -1,0 +1,190 @@
+%! TeX program = lualatex
+\documentclass[main]{subfiles}
+
+\begin{document}
+
+\title[AutoML: BO]{Multi-Criteria Bayesian Optimization}
+\subtitle{Pareto Optimality, Hypervolume, and MBO Algorithms}
+\author[Lars Kotthoff]{Lars Kotthoff}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+%\institute{}
+%\date{}
+
+    \maketitle
+
+
+\begin{frame}{Multi-Criteria Bayesian Optimization}
+    \small
+    \begin{columns}
+        \column{.4\textwidth}
+        \begin{center}
+            \includegraphics[width=.95\textwidth]{images/01_BlackBox.png}
+        \end{center}
+        \column{.6\textwidth}
+        $$f: \mathcal{S} \to \R^m$$
+        $$\min_{\xv \in \mathcal{S}} f(\xv) = (f_1(\xv), \ldots, f_m(\xv))$$
+        \begin{itemize}
+            \item A configuration $\xv$ \textbf{dominates} ($\prec$) $\tilde{\xv}$ if
+            $$\forall i \in \{1, \ldots, m\}: f_i(\xv) \leq f_i(\tilde{\xv})$$
+            $$\text{and } \exists j \in \{1, \ldots, m\}: f_j(\xv) < f_j(\tilde{\xv})$$
+            \item Set of non-dominated solutions:
+            $$\mathcal{P} := \{\xv \in \mathcal{S} \mid \nexists \tilde{\xv} \in \mathcal{S}: \tilde{\xv} \prec \xv\}$$
+            \item Pareto set $\mathcal{P}$, Pareto front $\mathcal{F} = f(\mathcal{P})$
+            \item \textbf{Goal:} Find $\hat{\mathcal{P}}$ of non-dominated points that estimates the true Pareto set $\mathcal{P}$
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Multi-Criteria Bayesian Optimization}
+    Example Pareto front:
+    \vfill
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{images/multicrit_0.png}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Multi-Criteria Bayesian Optimization}
+    \small
+    The most popular quality indicator is the hypervolume indicator (also called dominated hypervolume or $\mathcal{S}$-metric).\\[0.5em]
+    The hypervolume, $\operatorname{HV}$, of an approximation of the Pareto front $\hat{\mathcal{F}} = f(\hat{\mathcal{P}})$ can be defined as the combined volume of the dominated hypercubes $\text{domHC}_{\bm{r}}$ of all solution points $\xv \in \hat{\mathcal{P}}$ regarding a reference point $\bm{r}$, i.e.,
+    $$\operatorname{HV}_{\bm{r}}(\hat{\mathcal{P}}) := \mu\!\left(\bigcup_{\xv \in \hat{\mathcal{P}}} \text{domHC}_{\bm{r}}(\xv)\right)$$
+    where $\mu$ is the Lebesgue measure and the dominated hypercube is given as:
+    $$\text{domHC}_{\bm{r}}(\xv) := \{\uv \in \R^m \mid f_i(\xv) \leq \uv_i \leq \bm{r}_i \; \forall i \in \{1, \ldots, m\}\}$$
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Multi-Criteria Bayesian Optimization}
+    Hypervolume example:
+    \vfill
+    \begin{center}
+        \includegraphics[width=.7\textwidth]{images/multicrit_1.png}
+    \end{center}
+    Reference point $\bm{r}$ in red, estimated Pareto front $\hat{\mathcal{F}}$ in black; corresponding $\operatorname{HV}_{\bm{r}}(\hat{\mathcal{P}})$ is given by the grey area.
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Taxonomy}
+    \begin{center}
+        \includegraphics[width=.7\textwidth]{images/FlowchartMBMO.pdf}
+    \end{center}
+    \vfill
+    \begin{center}
+        \liturl{Horn et al. 2015}{https://www.slds.stat.uni-muenchen.de/bibrefs/pdfs/model_based_multi_objective_optimization_taxonomy_multi_point_proposal_toolbox_and_benchmark.pdf}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{ParEGO}
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{images/FlowchartMBMO_parego.pdf}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{ParEGO}
+    \begin{enumerate}
+        \item Scalarize standardized objectives using the augmented Tchebycheff norm:
+        $$\max_{i \in \{1, \ldots, m\}} w_i f_i(\xv) + \rho \sum_{i=1}^{m} w_i f_i(\xv)$$
+        with weight vector $\wv$ drawn uniformly from the set of evenly distributed weight vectors $\mathcal{W}$
+        \item Fit SM on the scalarized objective function
+        \item Proceed to use any standard single-objective acquisition function (EI, PI, LCB, \ldots)
+    \end{enumerate}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{ParEGO}
+    ParEGO example, initial design and true Pareto front in black\ldots
+    \vfill
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{images/multicrit_2.png}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{ParEGO}
+    \ldots standardize objectives, obtain scalarized objective via augmented Tchebycheff norm, fit SM and optimize EI\ldots
+    \vfill
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/multicrit_3.png}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{ParEGO}
+    \ldots note that the specific scalarization is different at each iteration.
+    \vfill
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/multicrit_4.png}
+    \end{center}
+    The grey point visualizes the candidate we chose to evaluate in the previous iteration.
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{SMS-EGO}
+    \begin{center}
+        \includegraphics[width=.8\textwidth]{images/FlowchartMBMO_sms.pdf}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\foreach \figbase in {hv_plot, hv_contr_plot, sms_plot} {
+\begin{frame}{SMS-EGO}
+    Individual models for each objective $f_i$.\\[0.5em]
+    Single-objective optimization of aggregating acquisition function:
+    Calculate contribution of the confidence bound of the candidate to the current front approximation.
+    \begin{columns}
+        \column{.55\textwidth}
+        \begin{itemize}
+            \item Calculate LCB for each objective
+            \item Measure contribution with regard to the hypervolume improvement
+            \item For $\varepsilon$-dominated ($\prec_{\varepsilon}$) solutions, a penalty is added
+        \end{itemize}
+        \column{.45\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/\figbase.pdf}
+        \end{center}
+    \end{columns}
+\end{frame}
+}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Outlook}
+    \begin{itemize}
+        \item Many more options exist:
+            \begin{itemize}
+                \item Expected Hypervolume Improvement
+                \item Multi-EGO
+                \item Entropy-based: PESMO, MESMO
+                \item \ldots
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Summary}
+\begin{enumerate}
+    \item Multi-criteria BO seeks to approximate the Pareto set/front of non-dominated solutions
+    \item Hypervolume is the most popular quality indicator for Pareto-front approximations
+    \item Representative algorithms include ParEGO (scalarization) and SMS-EGO (hypervolume contribution)
+\end{enumerate}
+\end{frame}
+
+\end{document}

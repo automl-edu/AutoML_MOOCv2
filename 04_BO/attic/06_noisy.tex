@@ -1,0 +1,183 @@
+%! TeX program = lualatex
+\documentclass[main]{subfiles}
+
+\begin{document}
+
+\title[AutoML: BO]{Noisy Bayesian Optimization}
+\subtitle{Handling Noisy Evaluations}
+\author[Lars Kotthoff]{Lars Kotthoff}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+%\institute{}
+%\date{}
+
+    \maketitle
+
+
+\begin{frame}{Noisy Evaluations}
+    In many real-life applications, we cannot access the true function values $f(\xv)$ but only a \textbf{noisy} version thereof:
+    $$f(\xv) + \eps(\xv)$$
+    For simplicity, we assume $\eps(\xv) \sim \normal(0, \sigma_{\eps}^2)$ for now.
+    \vfill
+    \begin{center}
+        \includegraphics[width=.5\textwidth]{images/noisy_0.png}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Noisy Evaluations}
+    Examples:
+    \begin{itemize}
+        \item HPO (due to non-deterministic learning algorithms and/or resampling techniques)
+        \item Oil drilling optimization (an oil sample is only an estimate)
+        \item Robot gait optimization (velocity of a run of a robot is an estimate of the true velocity)
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Noisy Evaluations}
+    This raises the following problems:
+    \begin{itemize}
+        \item \textbf{Surrogate modeling:} So far we used an interpolating GP based on noise-free observations; consequently, the variance is modeled as $0$:
+        $$s^2(\xvsi) = 0$$
+        for design points $(\xvsi, \ysi) \in \Dt$. This is problematic.
+        \item \textbf{Acquisition functions:} Most acquisition functions are based on the best observed value $\fmin$ so far. If evaluations are noisy, we do not know this value (it is a random variable).
+        \item \textbf{Final best point:} The design point evaluated best is not necessarily the true best point (overestimation).
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Surrogate Model}
+    \begin{columns}
+        \column{.5\textwidth}
+        In case of noisy evaluations, a nugget-effect GP (GP regression) should be used instead of an interpolating GP.\\[1em]
+        The posterior predictive distribution for a new test point $\xv \in \mathcal{S}$ under a GP assuming homoscedastic noise ($\sigma_{\eps}^2$) is:
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/noisy_2.png}
+        \end{center}
+    \end{columns}
+    \vfill
+    $$Y(\xv) \mid \xv, \Dt \sim \normal(\fh(\xv), \sh^2(\xv))$$
+    with
+    $$\fh(\xv) = k(\xv)^\top (\bm{K} + \sigma_{\eps}^2 \bm{I}_t)^{-1} \yv, \quad \sh^2(\xv) = k(\xv, \xv) - k(\xv)^\top (\bm{K} + \sigma_{\eps}^2 \bm{I}_t)^{-1} k(\xv)$$
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Noisy Acquisition Functions: AEI}
+    \textbf{Augmented Expected Improvement}~\liturl{Huang et al. 2006}{https://link.springer.com/article/10.1007/s10898-005-2454-3}:
+    $$a_{\text{AEI}}(\xv) = a_{\text{EI}_{f_{\min_*}}}(\xv) \left(1 - \frac{\sigma_{\eps}}{\sqrt{\sh^2(\xv) + \sigma_{\eps}^2}}\right)$$
+    Here, $a_{\text{EI}_{f_{\min_*}}}$ denotes the \textbf{Expected Improvement with Plugin}. It uses the \textbf{effective best solution} as a plugin for the (unknown) best observed value $\fmin$:
+    $$f_{\min_*} = \min_{\xv \in \{\xvsi[1], \ldots, \xvsi[t]\}} \fh(\xv) + c \sh(\xv)$$
+    where $c > 0$ is a constant that controls the risk aversion.\\[0.5em]
+    $\sigma_{\eps}^2$ is the nugget-effect as estimated by GP regression.
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Noisy Acquisition Functions: AEI}
+    \begin{columns}
+        \column{.5\textwidth}
+        The nugget-effect $\sigma_{\eps}^2$ enters as a penalty term:
+        $$\left(1 - \frac{\sigma_\eps}{\sqrt{\sh^2(\xv) + \sigma_\eps^2}}\right)$$
+        The penalty accounts for ``the diminishing return of additional replicates as the predictions become more accurate''~\liturl{Huang et al. 2006}{https://link.springer.com/article/10.1007/s10898-005-2454-3}.
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/noisy_3.png}
+        \end{center}
+    \end{columns}
+    \vfill
+    \begin{itemize}
+        \item Designs with small predictive variance $\sh^2(\xv)$ are penalized in favor of more exploration
+        \item If $\sigma_\eps^2 = 0$ (noise-free), the AEI corresponds to the EI with plugin
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Reinterpolation}
+    Clean noise from the model and then apply a general acquisition function (EI, PI, LCB, \ldots).\\[0.5em]
+    Reinterpolation suggests building \textbf{two models}: a nugget-effect GP (regression model; left) and then, on the predictions from the first model (grey), an interpolating GP (right).
+    \vfill
+    \begin{columns}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/noisy_2.png}
+        \end{center}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/noisy_4.png}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Reinterpolation}
+    \small
+    \begin{enumerate}
+        \item Build a nugget-effect GP model based on noisy evaluations
+        \item Compute predictions for all points in the design $\fh(\xvsi[1]), \ldots, \fh(\xvsi[t])$
+        \item Train an interpolating GP on $\left\{(\xvsi[1], \fh(\xvsi[1])), \ldots, (\xvsi[t], \fh(\xvsi[t]))\right\}$
+        \item Based on the interpolating model, obtain a new candidate using a noise-free acquisition function
+    \end{enumerate}
+    \vfill
+    \begin{columns}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/noisy_2.png}
+        \end{center}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/noisy_4.png}
+        \end{center}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Identification of Final Best Point}
+    Another problem is the identification of the final best point:
+    \begin{itemize}
+        \item Assume that all evaluations are noisy
+        \item The probability is high that \textbf{by chance}
+            \begin{itemize}
+                \item bad points get overrated
+                \item good points get overlooked
+            \end{itemize}
+    \end{itemize}
+    \vfill
+    \begin{center}
+        \includegraphics[width=.5\textwidth]{images/noisy_5.png}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Identification of Final Best Point}
+    Possibilities to reduce the risk of falsely returning a bad point:
+    \begin{itemize}
+        \item Return the best \emph{predicted} point: $\argmin_{\xv \in \{\xvsi[1], \ldots, \xvsi[t]\}} \fh(\xv)$
+        \item Repeated evaluations of the final point: infer guarantees about it (however, if final point is ``bad'' it is unclear how to find a better one)
+        \item Repeated evaluations of all design points: reduce noise during optimization and the risk of falsely returning a bad point
+        \item More advanced replication strategies, e.g.\ incumbent strategies: also re-evaluate the ``incumbent'' in each iteration
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Summary}
+\begin{enumerate}
+    \item Noisy evaluations break interpolating surrogates, acquisition functions based on $\fmin$, and best-point identification
+    \item Nugget-effect GPs model observation noise; AEI and Reinterpolation adapt acquisition functions to noise
+    \item Returning the best predicted point and replication strategies reduce the risk of falsely returning a bad final point
+\end{enumerate}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,11 @@
+
+
+
+
+
+branch mergen
+quiz questions machen
+
+R code umziehen
+
+01: in manchen plots steht x1 auf den axen sollte aber lambda sein.

@@ -1,0 +1,178 @@
+%! TeX program = lualatex
+\documentclass[main]{subfiles}
+
+\begin{document}
+
+\title[AutoML: BO]{Important Surrogate Models}
+\subtitle{Gaussian Processes and Random Forests}
+\author[Bernd Bischl]{Bernd Bischl}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+%\institute{}
+%\date{}
+
+    \maketitle
+
+
+\begin{frame}{Surrogate Models}
+    Desiderata:
+    \begin{itemize}
+        \item Regression model (there are also classification approaches)
+        \item Non-linear local model
+        \item Accurate predictions (especially for small sample sizes)
+        \item Often: uncertainty estimates
+        \item Robust, works often well without human modeler intervention
+    \end{itemize}
+    Depending on the application:
+    \begin{itemize}
+        \item Can handle different types of inputs (numerical and categorical)
+        \item Can handle dependencies (i.e.\ hierarchical input)
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Gaussian Process}
+    \small
+    Posterior predictive distribution for test point $\xv \in \pcs$ under zero mean:
+    $$Y(\xv) \mid \xv, \Dt \sim \normal\left(\surro(\xv), \sh^2(\xv)\right)$$
+    with
+    $$\surro(\xv) = k(\xv)^\top \bm{K}^{-1} \yv, \quad \sh^2(\xv) = k(\xv, \xv) - k(\xv)^\top \bm{K}^{-1} k(\xv)$$
+    \begin{center}
+        \includegraphics[width=.4\textwidth]{images/bayesian_loop_sm_normal.png}
+    \end{center}
+    \footnotesize Note: $\xv$ here denotes the test input. $k(\xv) := (k(\xv, \xvsi[1]), \ldots, k(\xv, \xvsi[t]))^\top$, $\yv := (\ysi[1], \ldots, \ysi[t])^\top$. Kernel/Gram matrix $\bm{K} := (k(\xvsi, \xvsi[j]))_{i,j}$ for $i, j \in \{1, \ldots, t\}$.
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Gaussian Process}
+    \small
+    Example kernel functions:
+    \begin{itemize}
+        \item Radial basis function kernel (aka Gauss kernel):
+        $$k(\xv, \xv') = \exp\!\left(-\frac{d(\xv, \xv')^2}{2 l^2}\right)$$
+        \begin{itemize}
+            \item $l$ length scale; $d(\cdot, \cdot)$ Euclidean distance
+            \item Infinitely differentiable -- very ``smooth''
+        \end{itemize}
+        \item Matérn kernels:
+        $$k(\xv, \xv') = \frac{1}{\Gamma(\nu)\, 2^{\nu-1}}\left(\frac{\sqrt{2\nu}}{l} d(\xv, \xv')\right)^\nu K_\nu\!\left(\frac{\sqrt{2\nu}}{l} d(\xv, \xv')\right)$$
+        \begin{itemize}
+            \item $l$ length scale; $K_\nu(\cdot)$ modified Bessel function; $\Gamma(\cdot)$ Gamma function
+            \item For $\nu = 3/2$ once differentiable, for $\nu = 5/2$ twice differentiable
+            \item Popular choice as a kernel function when using a GP as SM
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Gaussian Process}
+    \textbf{Pros:}
+    \begin{itemize}
+        \item Smooth, local, powerful estimator, also for small data
+        \item GPs yield well-calibrated uncertainty estimates
+        \item The posterior predictive distribution under a GP is normal
+    \end{itemize}
+    \textbf{Cons:}
+    \begin{itemize}
+        \item Vanilla GPs scale cubically in the number of data points
+        \item Can natively only handle numeric features; mixed inputs / dependencies require special kernels
+        \item Not that robust; numerical problems can occur
+        \item Can be sensitive to the choice of kernel and hyperparameters
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Random Forest}
+    \begin{itemize}
+        \item Bagging ensemble
+        \item Fit $B$ decision trees on bootstrap samples
+        \item Feature subsampling
+    \end{itemize}
+    \vfill
+    \begin{center}
+        \includegraphics[width=.7\textwidth]{images/random_forests.jpg}
+    \end{center}
+    ``extratrees'' / random splits:
+    \begin{itemize}
+        \item Choose split location uniformly at random
+        \item Results in a ``smoother'' mean prediction
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Random Forest -- Mean and Variance}
+    \small
+    \begin{itemize}
+        \item Let $\surro_b: \pcs \to \R$ be the mean prediction of tree $b$ (mean of all data points in the same node as $\xv$)
+        \item Let $\sh_{b}^2: \pcs \to \R$ be the variance prediction (variance of all data points in the same node as $\xv$)
+        \item Mean prediction of forest: $\surro: \pcs \to \R, \xv \mapsto \frac{1}{B} \sum_{b=1}^{B} \surro_{b}(\xv)$
+        \item Variance prediction of forest:
+        $$\xv \mapsto \left(\frac{1}{B} \sum_{b=1}^{B} \sh_{b}^2(\xv) + \surro_{b}(\xv)^{2}\right) - \surro(\xv)^{2}$$
+        (law of total variance assuming a mixture of $B$ models)
+        \item Alternative variance estimator: (infinitesimal) Jackknife
+        \item Variance prediction derived from randomness of individual trees
+        \begin{itemize}
+            \item Bagging / bootstrap samples
+            \item Features sampled at random
+            \item (Randomized split locations in the case of ``extratrees'')
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Random Forest -- Different Choices}
+    \begin{center}
+        \includegraphics[width=.95\textwidth]{images/surrogate_1.png}
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Random Forest}
+    \textbf{Pros:}
+    \begin{itemize}
+        \item Cheap(er) to train
+        \item Scales well with the number of data points
+        \item Scales well with the number of dimensions
+        \item Can easily handle hierarchical mixed spaces (via imputation or directly in the tree structure)
+        \item Robust
+    \end{itemize}
+    \textbf{Cons:}
+    \begin{itemize}
+        \item Suboptimal uncertainty estimates
+        \item Not really Bayesian (no real posterior predictive distribution)
+        \item Poor extrapolation
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Example}
+    Minimize the 2D Ackley function using BO\_GP (GP with Matérn 3/2, EI), BO\_RF (standard Random Forest, EI), BO\_RF\_ET (Random Forest with extratrees, EI) or random search:
+    \begin{center}
+        \includegraphics[width=.6\textwidth]{images/surrogate_2.png}
+    \end{center}
+    \begin{footnotesize}
+        Strong BO\_GP performance. BO\_RF and BO\_RF\_ET not too bad either. BO\_RF\_ET maybe slightly better final performance than BO\_RF.
+    \end{footnotesize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Summary}
+\begin{enumerate}
+    \item A good BO surrogate provides accurate, uncertainty-aware predictions and handles mixed input types if needed
+    \item Gaussian processes are the default choice: well-calibrated uncertainty, but limited scalability and robustness
+    \item Random forests scale better and handle mixed/hierarchical spaces, at the cost of weaker uncertainty estimates
+\end{enumerate}
+\end{frame}
+
+\end{document}

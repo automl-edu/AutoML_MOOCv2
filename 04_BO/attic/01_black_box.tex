@@ -1,0 +1,179 @@
+%! TeX program = lualatex
+\documentclass[main]{subfiles}
+
+\begin{document}
+
+\title[AutoML: BO]{Black Box Optimization}
+\subtitle{Definition, Examples, and Naive Approaches}
+\author[Lars Kotthoff]{Lars Kotthoff}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+%\institute{}
+%\date{}
+
+    \maketitle
+
+
+\begin{frame}{Standard vs.\ Black-Box Optimization}
+    \textbf{Optimization:} Find
+    $$\min_{\xv \in \mathcal{S}} f(\xv)$$
+    with objective function $f: \mathcal{S} \to \R$, where $\mathcal{S}$ is usually box-constrained.
+    \vfill
+    \begin{columns}
+        \column{.4\textwidth}
+        \begin{center}
+            \includegraphics[width=.95\textwidth]{images/Multimodal-example1.png}
+        \end{center}
+        \column{.6\textwidth}
+        If we are lucky\ldots
+        \begin{itemize}
+            \item \ldots we have an analytic description of $f: \mathcal{S} \to \R$
+            \item \ldots we can calculate gradients and use gradient-based methods (e.g.\ gradient descent)
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Standard vs.\ Black-Box Optimization}
+    \textbf{Optimization:} Find
+    $$\min_{\xv \in \mathcal{S}} f(\xv)$$
+    with objective function $f: \mathcal{S} \to \R$, where $\mathcal{S}$ is usually box-constrained.
+    \vfill
+    \begin{columns}
+        \column{.4\textwidth}
+        \begin{center}
+            \includegraphics[width=.95\textwidth]{images/cross-in-tray.jpg}
+        \end{center}
+        \column{.6\textwidth}
+        Optimization gets harder\ldots
+        \begin{itemize}
+            \item \ldots if we cannot calculate gradients (because $f$ is not differentiable or not known)
+            \item \ldots but as long as evaluations of $f$ are cheap, we can use standard derivative-free methods (e.g.\ Nelder-Mead, simulated annealing, EAs)
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Standard vs.\ Black-Box Optimization}
+    \textbf{Optimization:} Find
+    $$\min_{\xv \in \mathcal{S}} f(\xv)$$
+    with objective function $f: \mathcal{S} \to \R$, where $\mathcal{S}$ is usually box-constrained.
+    \vfill
+    \begin{columns}
+        \column{.4\textwidth}
+        \begin{center}
+            \includegraphics[width=.95\textwidth]{images/01_BlackBox.png}
+        \end{center}
+        \column{.6\textwidth}
+        Optimization gets \textbf{really hard} if\ldots
+        \begin{itemize}
+            \item \ldots there is no analytic description of $f: \mathcal{S} \to \R$ (\textbf{black box})
+            \item \ldots evaluations of $f$ are \textbf{time-consuming}
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Examples for Bayesian Optimization}
+    \textbf{Robot Gait Optimization}~\liturl{Calandra et al. 2014}{https://www.ias.tu-darmstadt.de/uploads/Site/EditPublication/Calandra_ICRA2014.pdf}: The robot's gait is controlled by a \textbf{parameterized controller}
+    \begin{center}
+        \includegraphics[width=.25\textwidth]{images/robot_gait.png}
+    \end{center}
+    \begin{itemize}
+        \item \textbf{Goal:} Find parameters such that average velocity (directional speed) of the robot is maximized
+        \item Parameters of the gait control, e.g.\ joints of ankles and knees
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Examples for Bayesian Optimization}
+    \textbf{Optimization of a cookie recipe}~\liturl{Kochanski et al. 2017}{https://research.google.com/pubs/archive/46507.pdf}
+    \begin{columns}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=.8\textwidth]{images/cookie.jpg}
+        \end{center}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=.95\textwidth]{images/cookie2.png}
+        \end{center}
+    \end{columns}
+    \begin{itemize}
+        \item \textbf{Goal:} Find ``optimal'' composition and amounts of ingredients
+        \item \textbf{Evaluation:} Cookies are baked, tested and rated by volunteers
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Naive Approaches}
+    \textbf{Empirical knowledge / manual tuning}
+    \begin{itemize}
+        \item Select parameters based on ``expert'' knowledge
+        \item \textbf{Advantages:} Can lead to fairly good outcomes for known problems
+        \item \textbf{Disadvantages:} Very inefficient, poor reproducibility, chosen solution can be far away from the global optimum
+    \end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Naive Approaches}
+    \textbf{Random search / Grid search}
+    \begin{itemize}
+        \item Random search: evaluate uniformly sampled inputs
+        \item Grid search: exhaustive search on a predefined grid of inputs
+        \item \textbf{Advantages:} Easy, intuitive, parallelization trivial
+        \item \textbf{Disadvantages:} Inefficient, search large irrelevant areas
+    \end{itemize}
+    \vfill
+    \begin{columns}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=.9\textwidth]{images/black_box_0.png}
+        \end{center}
+        \column{.5\textwidth}
+        \begin{center}
+            \includegraphics[width=.9\textwidth]{images/black_box_1.png}
+        \end{center}
+    \end{columns}
+    \begin{center}
+        \footnotesize Rug plots of RS vs.\ GS.
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Naive Approaches}
+    \textbf{Traditional black-box optimization}
+    \begin{itemize}
+        \item Traditional approaches that do not require derivatives
+        \item E.g.\ Nelder-Mead, simulated annealing, EAs
+        \item \textbf{Advantages:} Truly iterative, focuses on relevant regions
+        \item \textbf{Disadvantages:} Still inefficient; usually many evaluations needed to produce good outcomes
+    \end{itemize}
+    \vfill
+    \begin{center}
+        \includegraphics[width=.55\textwidth]{images/black_box_2.png}
+    \end{center}
+    \begin{center}
+        \footnotesize BO vs.\ CMA-ES vs.\ RS on 2D Ackley.
+    \end{center}
+\end{frame}
+
+%----------------------------------------------------------------------
+
+\begin{frame}{Summary}
+\begin{enumerate}
+    \item Black-box optimization: no analytic form, no gradients, expensive to evaluate
+    \item Applications range from robotics to recipe design
+    \item Naive approaches (manual, grid, random, classical derivative-free) are intuitive but inefficient in the expensive setting
+\end{enumerate}
+\end{frame}
+
+\end{document}
