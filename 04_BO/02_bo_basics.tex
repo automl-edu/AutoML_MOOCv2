@@ -35,16 +35,16 @@
     \item For now, we assume evaluations are noise-free
     \item \textbf{Idea:} Use the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bocount}$ to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
   \end{itemize}
-  % \looppic{images/loop_1.png}
+  % \looppic{images/bo_loop_1d_toy_1.pdf}
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Running Example}
+\begin{frame}[t]{Running Example}
   \begin{itemize}
     \item Simple 1D toy example
     \item Somewhat oversimplified, but we need something to visualize
   \end{itemize}
-  \looppic{images/loop_0.png}
+  \looppic{images/bo_loop_1d_toy_0.pdf}
 \end{frame}
 
 
@@ -155,7 +155,7 @@
     \item Extract maximum information from design points and learn $\cost$
     \item If we can evaluate $\cost$ without noise, we fit an interpolator
   \end{itemize}
-  \looppic{images/loop_2.png}
+  \looppic{images/bo_loop_1d_toy_2.pdf}
 \end{frame}
 
 
@@ -164,7 +164,7 @@
     \item Instead of the expensive $\cost$, we optimize the cheap surrogate $\surro$
     \item Obtained minimum is \textbf{proposed} as new point (red) for evaluation
   \end{itemize}
-  \looppic{images/loop_3.png}
+  \looppic{images/bo_loop_1d_toy_3.pdf}
 \end{frame}
 
 
@@ -172,7 +172,7 @@
   \begin{itemize}
     \item We evaluate the newly proposed point
   \end{itemize}
-  \looppic{images/loop_4.png}
+  \looppic{images/bo_loop_1d_toy_4.pdf}
 \end{frame}
 
 
@@ -181,7 +181,7 @@
     \item After evaluation, we \textbf{adjust} the model on the expanded dataset
     \item Use complete refitting or a (cheaper) online update
   \end{itemize}
-  \looppic{images/loop_5.png}
+  \looppic{images/bo_loop_1d_toy_5.pdf}
 \end{frame}
 
 
@@ -189,7 +189,7 @@
   \begin{itemize}
     \item Optimize surrogate again
   \end{itemize}
-  \looppic{images/loop_6.png}
+  \looppic{images/bo_loop_1d_toy_6.pdf}
 \end{frame}
 
 
@@ -197,7 +197,7 @@
   \begin{itemize}
     \item \ldots and evaluate proposed point
   \end{itemize}
-  \looppic{images/loop_7.png}
+  \looppic{images/bo_loop_1d_toy_7.pdf}
 \end{frame}
 
 
@@ -205,7 +205,7 @@
   \begin{itemize}
     \item We repeat: (i) \textbf{fit} the model\ldots
   \end{itemize}
-  \looppic{images/loop_8.png}
+  \looppic{images/bo_loop_1d_toy_8.pdf}
 \end{frame}
 
 
@@ -213,7 +213,7 @@
   \begin{itemize}
     \item (ii) \textbf{propose} a new point\ldots
   \end{itemize}
-  \looppic{images/loop_9.png}
+  \looppic{images/bo_loop_1d_toy_9.pdf}
 \end{frame}
 
 
@@ -221,7 +221,7 @@
   \begin{itemize}
     \item (iii) \textbf{evaluate} that point -- the algorithm has converged
   \end{itemize}
-  \looppic{images/loop_10.png}
+  \looppic{images/bo_loop_1d_toy_10.pdf}
 \end{frame}
 
 \begin{frame}[t]{Exploration vs.\ Exploitation}
@@ -229,7 +229,7 @@
   \vspace{0.3cm}
   \begin{columns}[onlytextwidth,T]
       \column{.48\textwidth}
-      \includegraphics[width=\textwidth]{images/loop_11.png}
+      \includegraphics[width=\textwidth]{images/bo_loop_1d_toy_11.pdf}
       \column{.48\textwidth}
       \begin{itemize}
           \item Optimizing $\surro$ directly uses the \emph{mean prediction} as proposal rule
