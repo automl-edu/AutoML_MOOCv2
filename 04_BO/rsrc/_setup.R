@@ -25,3 +25,20 @@ myggsave = function(name, plot, width = 5, height = 4, ...) {
     ...
   )
 }
+
+
+# Branin on [-5, 10] x [0, 15]
+branin = function(x1, x2) {
+  a = 1; b = 5.1 / (4 * pi^2); c = 5 / pi
+  r = 6; s = 10; t = 1 / (8 * pi)
+  a * (x2 - b * x1^2 + c * x1 - r)^2 + s * (1 - t) * cos(x1) + s
+}
+
+# Branin as bbotk objective
+branin_obj_rfundt = ObjectiveRFunDt$new(
+  fun = function(xdt) data.table(y = branin(xdt$x1, xdt$x2)),
+  domain = ps(x1 = p_dbl(lower = -5, upper = 10),
+              x2 = p_dbl(lower =  0, upper = 15)),
+  codomain = ps(y = p_dbl(tags = "minimize"))
+)
+

@@ -13,126 +13,146 @@
     \maketitle
 
 
-\begin{frame}[t]{Why Optimize the Acquisition Function?}
+\begin{frame}[t]{Acquisition Function Properties}
+  \small
   \begin{itemize}
-    \item BO's inner loop has \emph{two} optimization problems:
-        \begin{itemize}
-            \item \textbf{Outer:} (expensive) evaluations of $\cost$ -- driven by the acquisition function
-            \item \textbf{Inner:} find $\confI{t+1} = \argmax_{\conf \in \pcs} \acq(\conf)$ -- only uses the surrogate and costs CPU time
-        \end{itemize}
-    \item Acquisition function evaluations are \textbf{cheap} (forward pass through surrogate) -- but the inner problem is still non-trivial
-    \item A poor inner optimizer gives BO a bad candidate, wastes an expensive $\cost$ evaluation
+    \item In each BO loop, we exchange the optimization of $\cost(\conf)$ to the acquisition optimization
+    of $\acq(\conf)$
+    \item The 2 optimization problems have many similarities, but also differences
+    \item The $\pcs$ search space structure is the same
+    \item The objective structure $\acq(\conf)$ is somehow changed by the type of ACQF but likely 
+    complicated and multi-modal
+    \item But the problem now becomes cheap
+    \item NB: We do not have to solve this problem perfectly, as the surrogate is only a coarse approximation
   \end{itemize}
   \vspace{0.2cm}
   \begin{center}
-  \textbf{Good inner optimization is crucial for BO performance.}
+  \textbf{We still face a non-trivial, multi-modal problem -- maybe differentiable, maybe on complicated 
+  search space structure}
   \end{center}
 \end{frame}
 
 
 \begin{frame}[t]{The Acquisition Function Landscape}
+  \small
   \begin{itemize}
     \item $\acq$ is typically \textbf{non-convex} and \textbf{multi-modal}
     \item For EI / PI: $\acq(\conf) = 0$ at training points; peaks sit between them
     \item Landscape gets more rugged as the surrogate is fit to more data
     \item In high dimensions: flat plateaus with narrow peaks -- hard to find
   \end{itemize}
-  \vspace{0.2cm}
-  \begin{center}
-    \includegraphics[width=.65\textwidth]{images/bayesian_loop_pi_0.png}\\
-    \footnotesize Example: a PI landscape in 1D -- several peaks, zeros at observed points.
-  \end{center}
+  \vspace{-0.2cm}
+    \begin{columns}[onlytextwidth,T]
+      \column{0.5\textwidth}
+    \begin{center}
+      \includegraphics[width=0.6\textwidth]{images/ei_landscape_branin_few.pdf}\\
+      \footnotesize Few training points: smooth, broad peaks
+    \end{center}
+    \column{0.5\textwidth}
+    \begin{center}
+      \includegraphics[width=0.6\textwidth]{images/ei_landscape_branin_many.pdf}\\
+      \footnotesize More: rugged, narrow peaks on flat plateaus
+    \end{center}
+  \end{columns}
 \end{frame}
 
 
 \begin{frame}[t]{Numeric Search Spaces}
-  \begin{itemize}
-    \item \textbf{Multi-start local search:}
-        \begin{itemize}
-            \item Sample many start points (uniform / LHS / Sobol)
-            \item Run gradient-based local optimizer from each (L-BFGS-B if $\pcs$ is box-constrained)
-            \item Return the best local optimum
-        \end{itemize}
-    \item Gradients through the acquisition function:
-        \begin{itemize}
-            \item GP surrogate: $\surro(\conf)$ and $\sh(\conf)$ are differentiable $\leadsto$ closed-form $\nabla \acq$
-            \item Random forest surrogate: piecewise constant $\leadsto$ no gradients, use gradient-free methods
-        \end{itemize}
-    \item \textbf{DIRECT} (DIviding RECTangles): deterministic, no gradients; covers the box systematically -- nice for low-$d$
-  \end{itemize}
+\begin{itemize}
+\item \textbf{Random search}
+\begin{itemize}
+\item Some people do this due to simplicity and the "we do not have to optimize perfectly" point
+\item Likely not a good idea in higher dimensions
+\end{itemize}
+\item \textbf{Multi-Start local search:}
+\begin{itemize}
+\item Sample multiple start points
+\item Run multiple gradient-based local optimizer from each (L-BFGS-B if $\pcs$ is box-constrained)
+\item Depending on what we do exactly, we might have analytic gradients available for $\acq(\conf)$,
+e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow this 
+\item Works better with GPs than RFs, and if we have gradients
+\end{itemize}
+\end{itemize}
 \end{frame}
+
+
+\begin{frame}[t]{Numeric Search Spaces}
+  \small
+  \begin{itemize}
+  % \item \textbf{DIRECT} (DIviding RECTangles): 
+  % \begin{itemize}
+  % \item Deterministic global optimizer for box-constrained problems
+  % \item Recursively partitions the box into hyperrectangles; evaluates $\acq$ at each center
+  % \item Per iteration: mark ``potentially optimal'' rectangles -- those that could hold a better point under \emph{some} Lipschitz constant -- and trisect them along their longest side
+  % \end{itemize}
+  \item \textbf{CMA-ES -- Covariance Matrix Adaptation Evolution Strategy}
+  \begin{itemize}
+  \item Population-based, gradient-free
+  \item Each generation: sample $\lambda$ candidates from $\mathcal{N}(\bm{m}, \sigma^2 \bm{C})$, rank by $\acq$, update mean $\bm{m}$, step size $\sigma$, and covariance $\bm{C}$ from the best $\mu$
+  \item $\bm{C}$ learns the local curvature\\
+  $\leadsto$ robust on non-convex, ill-conditioned $\acq$; handles medium $d$ well
+  \item But: once $\sigma$ contracts around a basin, the search is effectively \emph{local} -- a single run can miss better modes elsewhere
+  \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
+  \begin{itemize}
+  \item \textbf{IPOP-CMA-ES} (Auger \& Hansen, 2005) -- doubles $\lambda$ on every restart to widen exploration
+  \item \textbf{BIPOP-CMA-ES} (Hansen, 2009) -- interleaves IPOP-like restarts with small-$\lambda$, randomised-$\sigma$ restarts; winner of multiple BBOB benchmarks
+  \end{itemize}
+  \end{itemize}
+  \end{itemize}
+  \end{frame}
+  
 
 
 \begin{frame}[t]{Mixed / Hierarchical Search Spaces}
+  \small
   \begin{itemize}
-    \item Many AutoML spaces mix continuous, integer, categorical, and \emph{conditional} HPs
-    \item Gradients no longer meaningful $\leadsto$ gradient-based methods fail
-    \item Common choices:
-        \begin{itemize}
-            \item \textbf{Random search} with large sample -- cheap, trivially parallel, easy baseline
-            \item \textbf{Evolutionary / local search} (e.g.\ focused search in SMAC): mutate current best along one HP at a time
-            \item \textbf{Interleaved}: random sampling + local refinement on the best candidates
-        \end{itemize}
-    \item Respect conditional structure: only mutate an HP if its parent choice activates it
+    \item AutoML spaces mix continuous, integer, categorical, and \emph{conditional} HPs
+    \item No gradients and no smoothness across categorical cuts $\leadsto$ L-BFGS / DIRECT / CMA-ES don't apply out-of-the-box
+    \item \textbf{SMAC's approach:} interleaved random search + \emph{iterated local search} on $\acq$ (Hutter et al., LION 2011)
   \end{itemize}
-\end{frame}
-
-
-\begin{frame}[t]{Budget and Restarts}
-  \begin{itemize}
-    \item Acquisition optimization has its own \textbf{budget}: \# starts $\times$ iterations per start
-    \item Trade-off:
-        \begin{itemize}
-            \item Too few restarts $\leadsto$ miss the global peak, propose suboptimal points
-            \item Too many restarts $\leadsto$ overhead per BO iteration grows (problematic when $\cost$ is cheap-ish, e.g.\ small HPO benchmarks)
-        \end{itemize}
-    \item Typical defaults: $10$--$50$ restarts for GP + L-BFGS-B in $\le 20$ dimensions
-    \item Scale budget with $d$: higher-dimensional landscapes need more starts
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}[t]{Parallel / Batch Proposals}
-  \begin{itemize}
-    \item Often we can evaluate $\cost$ on several points in parallel (HPC, multi-GPU, lab experiments)
-    \item Need to propose $q > 1$ candidates at once, not just $\confI{t+1}$
-    \item Approaches:
-        \begin{itemize}
-            \item \textbf{$q$-acquisition functions} ($q$EI, $q$UCB): joint expectation over a batch of $q$ points -- estimated via Monte Carlo
-            \item \textbf{Sequential fantasizing}: propose one point, ``pretend'' its outcome ($\sim$ surrogate posterior), refit, propose next
-            \item \textbf{Penalization / local penalization}: after picking a point, down-weight the AF in its neighborhood to force diversity
-        \end{itemize}
-    \item Batch optimization is now a much higher-dimensional inner problem ($q \cdot d$)
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}[t]{When Inner Optimization Matters Most}
-  \begin{itemize}
-    \item \textbf{Expensive $\cost$:} each evaluation is minutes-to-hours -- worth spending CPU on careful inner optimization
-    \item \textbf{Late in the BO run:} surrogate is well-trained, AF peaks are narrow -- easy to miss
-    \item \textbf{Noisy / multi-objective:} AF is stochastic / vector-valued -- needs specialized inner optimizers
-  \end{itemize}
-  \vspace{0.2cm}
-  \begin{itemize}
-    \item When \emph{not} to over-engineer:
-        \begin{itemize}
-            \item $\cost$ is cheap and many BO iterations are planned $\leadsto$ save overhead with simpler inner search
-            \item Low-dim, smooth surrogate $\leadsto$ a short L-BFGS-B with $\sim\!5$ restarts is enough
-        \end{itemize}
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}[t]{Summary}
-  \begin{enumerate}
-    \item BO's inner loop is itself an optimization problem -- but over the \emph{cheap} surrogate
-    \item The AF landscape is non-convex, multi-modal, and gets rugged with more data
-    \item Numeric spaces: multi-start L-BFGS-B (w/ GP gradients) or DIRECT
-    \item Mixed / hierarchical spaces: random search, evolutionary search, or hybrids
-    \item Batch / parallel BO needs $q$-acquisition functions or fantasizing / penalization
-    \item Budget and restarts scale with problem dimensionality
+  \vspace{0.15cm}
+  \textbf{One-exchange local search from each start point:}
+  \begin{enumerate}\setlength\itemsep{0pt}
+    \item Start from the current incumbent (plus the top-$k$ archive entries)
+    \item Generate neighbours by changing \emph{exactly one} HP:
+      \begin{itemize}\setlength\itemsep{0pt}
+        \item Categorical: try each other level
+        \item Numeric / integer: small (Gaussian) perturbation around the current value
+        \item Conditional HPs: only mutate children of \emph{active} parents
+      \end{itemize}
+    \item Move to the best-improving neighbour; stop when no neighbour improves $\acq$
   \end{enumerate}
+  \vspace{0.1cm}
+  \textbf{Interleave with random search to avoid being stuck in local optima:}
+  \begin{itemize}\setlength\itemsep{0pt}
+    \item Draw a large pool of random configs, score under $\acq$
+    \item Return the best across local-search optima and random samples
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Summary and Discussion}
+  \small
+  \textbf{Key takeaways:}
+  \begin{itemize}\setlength\itemsep{0pt}
+    \item BO's inner loop is itself an optimization problem -- but over the \emph{cheap} surrogate; we don't need to solve it perfectly
+    \item $\acq$ is non-convex, multi-modal, and gets rugged with more data
+    \item Numeric $\pcs$: multi-start L-BFGS-B (w/ GP gradients), DIRECT, or CMA-ES (+ IPOP/BIPOP restarts)
+    \item Mixed / hierarchical $\pcs$: SMAC-style iterated local search interleaved with random search
+  \end{itemize}
+  \vspace{0.1cm}
+  \textbf{Budget: \#starts $\times$ iterations per start -- scales with $d$}
+  \begin{itemize}\setlength\itemsep{0pt}
+    \item Too few restarts $\leadsto$ miss the global peak, propose suboptimal points
+    \item Too many $\leadsto$ per-iteration overhead dominates, especially when $\cost$ is cheap
+    \item Typical defaults: $10$--$50$ restarts for GP + L-BFGS-B in $\le 20$ dimensions
+  \end{itemize}
+  \vspace{0.1cm}
+  \textbf{When inner optimization matters most (invest CPU):}
+  \begin{itemize}\setlength\itemsep{0pt}
+    \item Expensive $\cost$ (minutes-to-hours per eval), late in the BO run (AF peaks narrow), noisy / multi-objective $\acq$
+    \item When \emph{not} to over-engineer: cheap $\cost$ with many BO iterations; low-$d$, smooth surrogate ($\sim\!5$ L-BFGS-B restarts suffice)
+  \end{itemize}
 \end{frame}
 
 

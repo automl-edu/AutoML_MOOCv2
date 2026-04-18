@@ -46,6 +46,7 @@
 
 
 \begin{frame}[t]{Joint / $q$-Acquisition Functions}
+  \small
   \begin{itemize}
     \item Extend the single-point acquisition function to a \emph{joint} criterion over a batch $\mathbf{C} = (\confI{1}, \ldots, \confI{q})$:
         $$\acq_q(\mathbf{C}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
@@ -53,21 +54,7 @@
         $$\acq_{\text{qEI}}(\mathbf{C}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \emph{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}[t]{Optimizing a $q$-Acquisition Function}
-  \begin{itemize}
-    \item Inner problem becomes $q \cdot d$-dimensional: jointly optimize all $q$ points
-    \item Standard trick: \textbf{reparameterization} of MC samples + autodiff (BoTorch)
-        \begin{itemize}
-            \item Draw fixed-base random samples $\xi$
-            \item Express $\acq_{\text{qEI}}$ as a differentiable function of $\mathbf{C}$ and $\xi$
-            \item Optimize with stochastic gradient methods (Adam, L-BFGS)
-        \end{itemize}
-    \item Cost scales with $q$ and \# MC samples; feasible up to moderate batch sizes ($q \le 32$)
-    \item For very large $q$: decompose into smaller sub-batches or use heuristics
+    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional; the standard trick (BoTorch) is to reparameterize MC samples with fixed base draws $\xi$ so $\acq_{\text{qEI}}$ becomes differentiable in $\mathbf{C}$ and can be optimized with Adam / L-BFGS. Feasible up to $q\!\le\!32$; for larger $q$ decompose or fall back to heuristics
   \end{itemize}
 \end{frame}
 
@@ -113,24 +100,33 @@
 
 
 \begin{frame}[t]{Synchronous vs.\ Asynchronous Batches}
+  \small
   \begin{columns}[onlytextwidth,T]
       \column{.48\textwidth}
-      \textbf{Synchronous}
-      \begin{itemize}
-          \item Propose $q$ points, wait for all $q$ outcomes, refit, propose next batch
-          \item Simple bookkeeping
-          \item Idle workers if some $\cost$ runs take longer
+      \textbf{Synchronous batch BO}
+      \begin{itemize}\setlength\itemsep{0pt}
+          \item Propose a batch of $q$ points, dispatch to $q$ workers
+          \item Wait for \emph{all} $q$ outcomes, refit surrogate, propose next batch
+          \item Simple bookkeeping; one refit per round
+          \item Slowest config determines round length $\leadsto$ idle workers on skewed runtimes
       \end{itemize}
       \column{.48\textwidth}
-      \textbf{Asynchronous}
-      \begin{itemize}
-          \item Whenever a worker finishes, refit with the new observation and propose \emph{one} new point
-          \item Workers never idle
-          \item Each proposal uses only the partial batch information -- Kriging Believer / fantasizing help
+      \textbf{Asynchronous (ADBO)}
+      \begin{itemize}\setlength\itemsep{0pt}
+          \item Keep $q$ workers busy at all times; react per-completion, not per-batch
+          \item On each finish: update surrogate with the \emph{one} new observation and propose \emph{one} new point
       \end{itemize}
   \end{columns}
-  \vspace{0.3cm}
-  Async is preferred when evaluation times vary a lot (typical for HPO: some configs train fast, some slow).
+  \vspace{0.2cm}
+  \textbf{How ADBO avoids duplicates despite picking one point at a time:}
+  \begin{itemize}\setlength\itemsep{0pt}
+    \item At proposal time there are $q\!-\!1$ configs still running (\emph{pending / in-flight})
+    \item Treat them as observed by \textbf{fantasizing} their outcomes -- Kriging Believer (posterior mean), Constant Liar, or MC samples
+    \item Fantasies inflate posterior certainty around pending points $\leadsto$ next $\argmax \acq$ moves elsewhere, so the proposal is diverse w.r.t.\ currently running work
+    \item Once a real evaluation returns, its fantasy is replaced by the true value and the surrogate is refit
+  \end{itemize}
+  \vspace{0.1cm}
+  \textbf{Why it matters:} full worker utilisation + straggler-tolerant. Typical HPO win, since some configs train in seconds and others in hours. Cost: one refit per completion rather than per batch $\leadsto$ surrogate-update time must be $\ll$ evaluation time.
 \end{frame}
 
 

@@ -60,3 +60,21 @@ issue: symbol for search space dim is missing
 
 
 bobudget und bocount werden falsch verwendet
+
+we should try to visulaie the EI landscape in 2D
+
+
+mention logtrafo for acqfO
+
+add CMAES
+
+
+tell claude: always use   \begin{columns}[onlytextwidth,T]
+
+
+use latex autoformater and dont indent
+
+compare slides with mlr3mbo paper
+
+
+claude: always ue liturl
