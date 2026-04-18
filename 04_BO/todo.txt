@@ -37,3 +37,7 @@ title und subtitle überall prüfen
 mehr lit quellen einbauen
 
 in den bayes_loop pics die bilder die untereinander sind (wie bei LCB) einzeln speichern, damit man sie auch nebeneinander tun kann
+
+eigentlich brauchen wir noch ein paar slides zu noisy
+
+wir sollten wirklich einen schönen plot haben wo man sehen kann das BO besser ist als RS. und in 2d / 3d

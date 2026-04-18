@@ -28,21 +28,21 @@ g = ggplot(aes(x = x1, y = x2), data = xdt[method == "random"]) +
   geom_point(size = 3L) +
   geom_vline(xintercept = qs, linetype = 2) +
   geom_hline(yintercept = qs, linetype = 2) +
-  labs(title = "Random Design", x = expression(x[1]), y = expression(x[2])) +
+  labs(title = "Random Design", x = expression(lambda[1]), y = expression(lambda[2])) +
   theme_minimal()
 
 g = ggMarginal(g, type = "histogram", bins = 11)
 
-ggsave("../images/init_0.png", plot = g, width = 5, height = 4)
+ggsave("images/initdes_randomvslhs_random.png", plot = g, width = 5, height = 4)
 
 g = ggplot(aes(x = x1, y = x2), data = xdt[method == "lhs"]) +
   geom_point(size = 3L) +
   geom_vline(xintercept = qs, linetype = 2) +
   geom_hline(yintercept = qs, linetype = 2) +
-  labs(title = "LHS", x = expression(x[1]), y = expression(x[2])) +
+  labs(title = "LHS", x = expression(lambda[1]), y = expression(lambda[2])) +
   theme_minimal()
 
 g = ggMarginal(g, type = "histogram", bins = 11)
 
-ggsave("../images/init_1.png", plot = g, width = 5, height = 4)
+ggsave("images/initdes_randomvslhs_lhs.png", plot = g, width = 5, height = 4)
 
