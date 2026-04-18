@@ -11,6 +11,7 @@ library(data.table)
 library(mlr3mbo)
 library(mlr3learners)
 library(ggplot2)
+source("rsrc/_setup.R")
 
 set.seed(123)
 
@@ -50,7 +51,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_0.png"), plot = g, width = 5, height = 4)
+myggsave("loop_0", plot = g, width = 5, height = 4)
 
 # initial design
 g = ggplot(aes(x = x, y = y), data = grid) +
@@ -59,7 +60,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_1.png"), plot = g, width = 5, height = 4)
+myggsave("loop_1", plot = g, width = 5, height = 4)
 
 # intial design + surrogate prediction
 g = ggplot(aes(x = x, y = y), data = grid) +
@@ -69,7 +70,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_2.png"), plot = g, width = 5, height = 4)
+myggsave("loop_2", plot = g, width = 5, height = 4)
 
 # initial design + surrogate prediction + arg min of surrogate prediction
 g = ggplot(aes(x = x, y = y), data = grid) +
@@ -80,7 +81,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_3.png"), plot = g, width = 5, height = 4)
+myggsave("loop_3", plot = g, width = 5, height = 4)
 
 instance$eval_batch(mean_argmin[, "x", with = FALSE])
 
@@ -92,7 +93,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_4.png"), plot = g, width = 5, height = 4)
+myggsave("loop_4", plot = g, width = 5, height = 4)
 
 # eval arg min of surrogate prediction, refit surrogate and obtain new arg min of surrogate prediction
 acq_function$surrogate$update()
@@ -110,7 +111,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_5.png"), plot = g, width = 5, height = 4)
+myggsave("loop_5", plot = g, width = 5, height = 4)
 
 g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_hat), colour = "steelblue", linetype = 2) +
@@ -120,7 +121,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_6.png"), plot = g, width = 5, height = 4)
+myggsave("loop_6", plot = g, width = 5, height = 4)
 
 instance$eval_batch(mean_argmin[, "x", with = FALSE])
 
@@ -131,7 +132,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_7.png"), plot = g, width = 5, height = 4)
+myggsave("loop_7", plot = g, width = 5, height = 4)
 
 # eval arg min of surrogate prediction, refit surrogate and obtain new arg min of surrogate prediction
 acq_function$surrogate$update()
@@ -149,7 +150,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_8.png"), plot = g, width = 5, height = 4)
+myggsave("loop_8", plot = g, width = 5, height = 4)
 
 g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_hat), colour = "steelblue", linetype = 2) +
@@ -159,7 +160,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_9.png"), plot = g, width = 5, height = 4)
+myggsave("loop_9", plot = g, width = 5, height = 4)
 
 instance$eval_batch(mean_argmin[, "x", with = FALSE])
 
@@ -170,7 +171,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_10.png"), plot = g, width = 5, height = 4)
+myggsave("loop_10", plot = g, width = 5, height = 4)
 
 # same plot as before but also showing that we actually missed the global optimum
 g = ggplot(aes(x = x, y = y), data = grid) +
@@ -181,5 +182,5 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   ylim(c(-2, 2.2)) +
   theme_minimal()
 
-ggsave(file.path("images/loop_11.png"), plot = g, width = 5, height = 4)
+myggsave("loop_11", plot = g, width = 5, height = 4)
 

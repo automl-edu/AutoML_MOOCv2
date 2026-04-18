@@ -6,6 +6,7 @@
 library(bbotk)
 library(data.table)
 library(ggplot2)
+source("rsrc/_setup.R")
 
 set.seed(123)
 
@@ -21,4 +22,4 @@ g = ggplot(aes(x = x1, y = x2), data = xdt_random) +
   labs(x = expression(lambda[1]), y = expression(lambda[2])) +
   theme_minimal()
 
-ggsave("images/initdes_random.png", plot = g, width = 5, height = 4)
+myggsave("initdes_random", plot = g, width = 5, height = 4)

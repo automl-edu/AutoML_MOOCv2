@@ -13,6 +13,7 @@ library(mlr3mbo)
 library(mlr3learners)
 library(ggplot2)
 library(patchwork)
+source("rsrc/_setup.R")
 
 set.seed(123)
 
@@ -57,7 +58,7 @@ g = ggplot(aes(x = y, y = d), data = pi_normal) +
   labs(x = "Y(x)", y = "Density") +
   theme_minimal()
 
-ggsave("images/bayesian_loop_pi_0.png", plot = g, width = 5, height = 4)
+myggsave("bayesian_loop_pi_0", plot = g, width = 5, height = 4)
 
 acq_function$update()
 set(grid, j = "pi", value = acq_function$eval_dt(grid[, "x"])$acq_pi)
@@ -96,7 +97,7 @@ pi = ggplot(aes(x = x, y = pi), data = grid) +
   ylab("PI") +
   theme_minimal()
 
-ggsave("images/bayesian_loop_pi_1.png", plot = g / pi, width = 5, height = 4)
+myggsave("bayesian_loop_pi_1", plot = g / pi, width = 5, height = 4)
 
 old_pi_argmax = pi_argmax
 
@@ -131,7 +132,7 @@ for (i in 2:9) {
     ylab("PI") +
     theme_minimal()
  
-  ggsave(sprintf("images/bayesian_loop_pi_%i.png", i), plot = g / pi, width = 5, height = 4)
+  myggsave(sprintf("bayesian_loop_pi_%i", i), plot = g / pi, width = 5, height = 4)
 
   old_pi_argmax = pi_argmax
   

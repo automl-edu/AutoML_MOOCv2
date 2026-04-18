@@ -13,6 +13,7 @@ library(mlr3mbo)
 library(mlr3learners)
 library(ggplot2)
 library(patchwork)
+source("rsrc/_setup.R")
 
 set.seed(123)
 
@@ -71,7 +72,7 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   theme_minimal()
 
 g / cb
-ggsave("images/bayesian_loop_lcb_0.png", plot = g / cb, width = 5, height = 4)
+myggsave("bayesian_loop_lcb_0", plot = g / cb, width = 5, height = 4)
 
 set(grid, j = "y_min", value = prediction$mean - 5 * prediction$se)
 set(grid, j = "y_max", value = prediction$mean + 5 * prediction$se)
@@ -101,7 +102,7 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   theme_minimal()
 
 g / cb
-ggsave("images/bayesian_loop_lcb_1.png", plot = g / cb, width = 5, height = 4)
+myggsave("bayesian_loop_lcb_1", plot = g / cb, width = 5, height = 4)
 
 set(grid, j = "y_min", value = prediction$mean - 10 * prediction$se)
 set(grid, j = "y_max", value = prediction$mean + 10 * prediction$se)
@@ -131,5 +132,5 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   theme_minimal()
 
 g / cb
-ggsave("images/bayesian_loop_lcb_2.png", plot = g / cb, width = 5, height = 4)
+myggsave("bayesian_loop_lcb_2", plot = g / cb, width = 5, height = 4)
 

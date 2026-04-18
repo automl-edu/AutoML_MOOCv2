@@ -41,3 +41,9 @@ in den bayes_loop pics die bilder die untereinander sind (wie bei LCB) einzeln s
 eigentlich brauchen wir noch ein paar slides zu noisy
 
 wir sollten wirklich einen schönen plot haben wo man sehen kann das BO besser ist als RS. und in 2d / 3d
+das sollte wohl auch schon auf der "why not GS / RS folie sein"
+
+der lhs 2q plot scheint irgendwie falsch zu sein? mit dem overlap?
+
+
+die pipelines grafik könnte schöner sein

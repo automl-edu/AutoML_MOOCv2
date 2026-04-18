@@ -9,6 +9,7 @@ library(mlr3learners)
 library(ggplot2)
 library(ggExtra)
 library(lhs)
+source("rsrc/_setup.R")
 
 set.seed(5)
 
@@ -33,7 +34,7 @@ g = ggplot(aes(x = x1, y = x2), data = xdt[method == "random"]) +
 
 g = ggMarginal(g, type = "histogram", bins = 11)
 
-ggsave("images/initdes_randomvslhs_random.png", plot = g, width = 5, height = 4)
+myggsave("initdes_randomvslhs_random", plot = g, width = 5, height = 4)
 
 g = ggplot(aes(x = x1, y = x2), data = xdt[method == "lhs"]) +
   geom_point(size = 3L) +
@@ -44,5 +45,5 @@ g = ggplot(aes(x = x1, y = x2), data = xdt[method == "lhs"]) +
 
 g = ggMarginal(g, type = "histogram", bins = 11)
 
-ggsave("images/initdes_randomvslhs_lhs.png", plot = g, width = 5, height = 4)
+myggsave("initdes_randomvslhs_lhs", plot = g, width = 5, height = 4)
 
