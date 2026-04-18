@@ -35,3 +35,5 @@ use \acq
 title und subtitle überall prüfen
 
 mehr lit quellen einbauen
+
+in den bayes_loop pics die bilder die untereinander sind (wie bei LCB) einzeln speichern, damit man sie auch nebeneinander tun kann
