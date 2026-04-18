@@ -33,7 +33,9 @@
     \item We do not know the analytical structure of $\cost: \pcs \to \realnum$;\\
      it is only available as a black-box we can \emph{query} at points $\conf \in \pcs$
     \item For now, we assume evaluations are noise-free
-    \item \textbf{Idea:} Use the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bocount}$ to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
+    \item \textbf{Idea:} Use the archive of past evaluations
+    $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bobudget}$ 
+    to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
   \end{itemize}
   % \looppic{images/bo_loop_1d_toy_1.pdf}
 \end{frame}
@@ -104,8 +106,8 @@
 \begin{columns}[onlytextwidth]
     \column{.7\textwidth}
     \begin{itemize}
-    \item Specific LHS design selected via extra criterion, e.g.\ \textbf{maximin}
-    \item Min.\ pairwise distance for any metric $\rho$\\
+    \item Specific LHS design selected via extra crit., e.g.\ \textbf{maximin}
+    \item For a given design $\dataset$, measure min.\ pairwise distance for any metric $\rho$:
      $2q = \min_{\conf \neq \conf' \in \dataset} \rho(\conf, \conf')$
     \item $q$ = \textbf{packing radius}: radius of largest ball around each point s.t. no 2 balls overlap
     \item Goal: find $\dataset$ that maximizes $2q$, keeping design points as far apart as possible:
@@ -245,7 +247,7 @@
 \begin{frame}{Summary - The Basic BO Loop}
     \begin{enumerate}
         \item Create \textbf{initial design}
-        \item \textbf{Fit} surrogate model $\surro$ on the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bocount}$
+        \item \textbf{Fit} surrogate model $\surro$ on the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bobudget}$
         \item \textbf{Propose} new point $\confI{t+1}$ by optimizing acquisition function $\acq(\conf)$
         \item \textbf{Evaluate} $\confI{t+1}$ and \textbf{update} the archive:\\ $\hist \leftarrow \hist \cup \langle \confI{t+1}, \cost(\confI{t+1}) \rangle$
         \item Repeat from step 2. until budget is exhausted

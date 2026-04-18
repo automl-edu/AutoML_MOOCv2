@@ -53,3 +53,10 @@ bischl für HPO
 
 
 plot GPs better in 2D, more beautifully
+
+
+
+issue: symbol for search space dim is missing
+
+
+bobudget und bocount werden falsch verwendet
