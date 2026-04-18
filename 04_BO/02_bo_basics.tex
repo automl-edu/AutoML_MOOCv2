@@ -117,8 +117,10 @@
         pt/.style={circle, fill=black, inner sep=1.2pt},
         ball/.style={draw=blue!60, fill=blue!10, thick}]
         \draw[black!40] (0,0) rectangle (1,1);
+        % Closest pair is (0.40,0.30)-(0.22,0.45), distance ~0.234,
+        % so packing radius q = 0.117 -> circles just touch, never overlap.
         \foreach \x/\y in {0.12/0.82, 0.40/0.30, 0.72/0.68, 0.88/0.15, 0.22/0.45} {
-            \draw[ball] (\x,\y) circle (0.18);
+            \draw[ball] (\x,\y) circle (0.117);
         }
         \foreach \x/\y in {0.12/0.82, 0.40/0.30, 0.72/0.68, 0.88/0.15, 0.22/0.45} {
             \node[pt] at (\x,\y) {};

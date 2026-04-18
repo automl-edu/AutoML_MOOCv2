@@ -50,3 +50,6 @@ die pipelines grafik könnte schöner sein
 
 books: garnett and forrester
 bischl für HPO
+
+
+plot GPs better in 2D, more beautifully
