@@ -4,6 +4,7 @@
 # FIG: perform Bayesian Optimization (BO) using the Probability of Improvement (PI) 
 #    iteratively select new points, and update the surrogate model 
 #    (Gaussian Process - Kriging).
+# Used in: 04_BO/05_acqf.tex, 04_BO/06_acqf_opt.tex
 # ------------------------------------------------------------------------------
 
 library(bbotk)

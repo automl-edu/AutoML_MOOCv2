@@ -1,9 +1,6 @@
-# ------------------------------------------------------------------------------
-# bayesian optimization
-
-# FIG: compare two sampling strategies for initializing design points
-#      in black-box optimization. 
-# ------------------------------------------------------------------------------
+# Used in: 04_BO/02_bo_basics.tex
+# 
+# Visualize random vs LHS init designs
 
 library(bbotk)
 library(data.table)

@@ -3,6 +3,7 @@
 
 # FIG: performs Bayesian optimization using a Gaussian Process Regression
 #      to approximate the function.
+# Used in: 04_BO/02_bo_basics.tex
 # ------------------------------------------------------------------------------
 
 library(bbotk)

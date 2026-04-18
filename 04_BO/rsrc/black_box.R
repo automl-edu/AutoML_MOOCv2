@@ -3,6 +3,7 @@
 
 # FIG: perform black-box optimization for the Ackley function using 
 #   Random Search, CMA-ES and Bayesian Optimization.
+# Used in: 04_BO/01_big_picture.tex
 # ------------------------------------------------------------------------------
 
 library(bbotk)

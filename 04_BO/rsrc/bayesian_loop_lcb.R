@@ -4,6 +4,7 @@
 # FIG: perform Bayesian Optimization using the Lower Confidence Bound (LCB).
 #     visualize how the surrogate model, confidence intervals, 
 #     and acquisition function evolve over iterations.
+# Used in: 04_BO/05_acqf.tex
 # ------------------------------------------------------------------------------
 
 library(bbotk)

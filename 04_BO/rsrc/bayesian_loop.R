@@ -1,7 +1,8 @@
 # ------------------------------------------------------------------------------
 # bayesian optimization
 
-# FIG: perform Bayesian Optimization (BO) using Expected Improvement (EI). 
+# FIG: perform Bayesian Optimization (BO) using Expected Improvement (EI).
+# Used in: 04_BO/03_gps.tex, 04_BO/05_acqf.tex, 04_BO/06_acqf_opt.tex
 # ------------------------------------------------------------------------------
 
 library(bbotk)
