@@ -1,10 +1,6 @@
-# ------------------------------------------------------------------------------
-# bayesian optimization
-
-# FIG: performs Bayesian optimization using a Gaussian Process Regression
-#      to approximate the function.
 # Used in: 04_BO/02_bo_basics.tex
-# ------------------------------------------------------------------------------
+#
+# render BO loop on 1D toy example
 
 library(bbotk)
 library(data.table)
@@ -27,12 +23,15 @@ instance = OptimInstanceSingleCrit$new(
   terminator = trm("none")
 )
 
+# define initial design manually
 xdt = data.table(x = c(0.1, 0.3, 0.65, 1))
 instance$eval_batch(xdt)
 
 surrogate = srlrn(lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS"), archive = instance$archive)
 acq_function = acqf("mean", surrogate = surrogate)
 
+# `grid` is a fine 1D evaluation grid used for plotting.
+# cols: x (input), y (true objective), y_hat (surrogate mean), mean (mean-AF value)
 grid = generate_design_grid(instance$search_space, resolution = 1001L)$data
 set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
@@ -49,13 +48,10 @@ refresh_surrogate = function() {
 }
 
 
-# loop_plot
-#
-#   Build the canonical 1D running-example plot used throughout 02_bo_basics
-#   and the acquisition-function chapters. Toggle layers via flags:
+# loop_plot -- plot BO iteration
 #
 # Arguments
-#   grid           data.table with columns x, y (true objective), y_hat (surrogate mean)
+#   grid           see above
 #   design         optional data.table of evaluated points (x, y); drawn as black dots
 #   proposal       optional data.table with a single row (x, y_hat); drawn as red dot
 #   show_truth     draw the true objective curve
@@ -90,6 +86,7 @@ loop_plot = function(grid,
   g +
     ggplot2::xlim(xlim) +
     ggplot2::ylim(ylim) +
+    ggplot2::labs(x = expression(lambda), y = expression(c)) +
     ggplot2::theme_minimal()
 }
 
