@@ -244,7 +244,7 @@
     \begin{enumerate}
         \item Create \textbf{initial design}
         \item \textbf{Fit} surrogate model $\surro$ on the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bocount}$
-        \item \textbf{Propose} new point $\confI{t+1}$ by optimizing acquisition function $a(\conf)$
+        \item \textbf{Propose} new point $\confI{t+1}$ by optimizing acquisition function $\acq(\conf)$
         \item \textbf{Evaluate} $\confI{t+1}$ and \textbf{update} the archive:\\ $\hist \leftarrow \hist \cup \langle \confI{t+1}, \cost(\confI{t+1}) \rangle$
         \item Repeat from step 2. until budget is exhausted
     \end{enumerate}
