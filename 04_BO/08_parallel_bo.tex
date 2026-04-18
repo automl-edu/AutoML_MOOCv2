@@ -1,0 +1,167 @@
+%! TeX program = lualatex
+\documentclass[main]{subfiles}
+
+\begin{document}
+
+\title[AutoML: BO]{Parallel / Batch Bayesian Optimization}
+\subtitle{Proposing Multiple Points at Once}
+\author[Bernd Bischl]{Bernd Bischl}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+    \maketitle
+
+
+\begin{frame}[t]{Why Parallel BO?}
+  \begin{itemize}
+    \item Modern compute budgets are \textbf{parallel}, not sequential:
+        \begin{itemize}
+            \item HPC clusters, multi-GPU nodes
+            \item Lab robots running multiple experiments in parallel
+            \item Crowdsourced evaluations
+        \end{itemize}
+    \item Sequential BO leaves most of this hardware idle
+    \item \textbf{Goal:} at each iteration propose a \textbf{batch} of $q > 1$ points to evaluate \emph{simultaneously}
+    \item Trade-off: more wall-clock speedup vs.\ fewer feedback rounds $\leadsto$ slower learning per evaluation
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{The Core Challenge}
+  \begin{itemize}
+    \item Acquisition function $\acq(\conf)$ is designed for \emph{one} candidate at a time
+    \item Naively proposing the top-$q$ maximizers of $\acq$ gives \textbf{near-duplicates}:
+        \begin{itemize}
+            \item They cluster around the current global peak of $\acq$
+            \item Wastes $q-1$ of the $q$ evaluations
+        \end{itemize}
+    \item We need batch proposals that are simultaneously \textbf{informative} and \textbf{diverse}
+  \end{itemize}
+  \vspace{0.2cm}
+  \begin{center}
+  \textbf{Batch BO = how to pick $q$ points that together are most informative about $\cost$.}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}[t]{Joint / $q$-Acquisition Functions}
+  \begin{itemize}
+    \item Extend the single-point acquisition function to a \emph{joint} criterion over a batch $\mathbf{C} = (\confI{1}, \ldots, \confI{q})$:
+        $$\acq_q(\mathbf{C}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
+    \item Example: $q$-Expected Improvement
+        $$\acq_{\text{qEI}}(\mathbf{C}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\fmin - Y(\confI{k}),\,0\right)\right]$$
+    \item Reward the \emph{best} outcome in the batch -- naturally encourages diversity
+    \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Optimizing a $q$-Acquisition Function}
+  \begin{itemize}
+    \item Inner problem becomes $q \cdot d$-dimensional: jointly optimize all $q$ points
+    \item Standard trick: \textbf{reparameterization} of MC samples + autodiff (BoTorch)
+        \begin{itemize}
+            \item Draw fixed-base random samples $\xi$
+            \item Express $\acq_{\text{qEI}}$ as a differentiable function of $\mathbf{C}$ and $\xi$
+            \item Optimize with stochastic gradient methods (Adam, L-BFGS)
+        \end{itemize}
+    \item Cost scales with $q$ and \# MC samples; feasible up to moderate batch sizes ($q \le 32$)
+    \item For very large $q$: decompose into smaller sub-batches or use heuristics
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Heuristic 1: Kriging Believer / Fantasizing}
+  Iteratively fill the batch:
+  \begin{enumerate}
+    \item Start with current surrogate; propose $\confI{1} = \argmax \acq(\conf)$
+    \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with\\
+        \begin{itemize}
+            \item Kriging Believer: the posterior \emph{mean} $\surro(\confI{1})$
+            \item Constant Liar: a fixed value (e.g. $\fmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
+            \item MC Fantasizing: a sample from the posterior
+        \end{itemize}
+    \item Refit (cheaply) and propose $\confI{2} = \argmax \acq(\conf)$
+    \item Repeat until $q$ points are assembled
+  \end{enumerate}
+  \vspace{0.2cm}
+  \textbf{Effect:}\hspace{0.5em}the fantasy data lowers uncertainty around $\confI{1}$ $\leadsto$ next acquisition peak moves elsewhere $\leadsto$ diverse batch.
+\end{frame}
+
+
+\begin{frame}[t]{Heuristic 2: Local Penalization}
+  \begin{itemize}
+    \item After selecting $\confI{k}$, multiply the acquisition function by a \textbf{penalty} that decays with distance from $\confI{k}$:
+    $$\tilde{\acq}_{k+1}(\conf) = \acq(\conf) \cdot \prod_{j=1}^{k} \varphi\!\left(\|\conf - \confI{j}\|\right)$$
+    \item $\varphi$ typically a logistic / soft-step function around a Lipschitz-motivated radius
+    \item Picks the next point from areas the previous ones do not already cover
+    \item Cheap to compute, no refitting needed, easy to parallelize across $q$~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Thompson Sampling: Parallelism for Free}
+  \begin{itemize}
+    \item \textbf{Thompson sampling}: draw a sample path $\tilde{\cost}$ from the posterior of the surrogate, propose $\argmin_{\conf} \tilde{\cost}(\conf)$
+    \item Each new posterior sample gives a different proposal $\leadsto$ draw $q$ samples to get $q$ points
+    \item Batch is diverse \emph{by construction} -- no extra diversity mechanism needed
+    \item Especially clean with GP surrogates (via random Fourier features) and with RF surrogates (sample a tree / a leaf distribution)
+    \item Scales well with $q$; a go-to in large-batch / high-dim BO
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Synchronous vs.\ Asynchronous Batches}
+  \begin{columns}[onlytextwidth,T]
+      \column{.48\textwidth}
+      \textbf{Synchronous}
+      \begin{itemize}
+          \item Propose $q$ points, wait for all $q$ outcomes, refit, propose next batch
+          \item Simple bookkeeping
+          \item Idle workers if some $\cost$ runs take longer
+      \end{itemize}
+      \column{.48\textwidth}
+      \textbf{Asynchronous}
+      \begin{itemize}
+          \item Whenever a worker finishes, refit with the new observation and propose \emph{one} new point
+          \item Workers never idle
+          \item Each proposal uses only the partial batch information -- Kriging Believer / fantasizing help
+      \end{itemize}
+  \end{columns}
+  \vspace{0.3cm}
+  Async is preferred when evaluation times vary a lot (typical for HPO: some configs train fast, some slow).
+\end{frame}
+
+
+\begin{frame}[t]{Practical Considerations}
+  \begin{itemize}
+    \item \textbf{Choice of $q$:} match your parallel compute, but watch the ``sample-efficiency tax''
+        \begin{itemize}
+            \item Sequential BO needs fewer evaluations to reach a target
+            \item Batch BO needs more evaluations but fewer wall-clock rounds
+        \end{itemize}
+    \item \textbf{Surrogate choice:}
+        \begin{itemize}
+            \item GP with autodiff-friendly acquisition (BoTorch) $\leadsto$ joint $q$EI is practical
+            \item RF surrogate $\leadsto$ Thompson sampling or Kriging Believer is more natural
+        \end{itemize}
+    \item \textbf{Diversity sanity check:} monitor pairwise distances within batches; near-duplicates are a warning sign
+    \item \textbf{Noisy / multi-fidelity:} combines naturally with batching but inflates the design space further
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Summary}
+  \begin{enumerate}
+    \item Parallel BO proposes a batch of $q$ points per iteration to exploit parallel compute
+    \item Naive top-$q$ of $\acq$ gives near-duplicates; need joint or sequential diversification
+    \item \textbf{$q$-acquisition functions} (e.g., $q$EI) are principled but computationally heavy
+    \item \textbf{Kriging Believer / fantasizing} and \textbf{local penalization} are cheap, effective heuristics
+    \item \textbf{Thompson sampling} gives diverse batches for free -- a strong default
+    \item Async batches avoid idle workers when $\cost$ runtimes vary
+  \end{enumerate}
+\end{frame}
+
+
+\end{document}

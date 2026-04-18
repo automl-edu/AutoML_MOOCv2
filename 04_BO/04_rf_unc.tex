@@ -1,0 +1,158 @@
+%! TeX program = lualatex
+\documentclass[main]{subfiles}
+
+\begin{document}
+
+\title[AutoML: BO]{Random Forest Uncertainty for BO}
+\subtitle{Estimating Posterior Variance Without a GP}
+\author[Bernd Bischl]{Bernd Bischl}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+    \maketitle
+
+
+\begin{frame}[t]{Why Use a Random Forest as Surrogate?}
+  \begin{itemize}
+    \item GPs struggle when $\pcs$ is
+        \begin{itemize}
+            \item \textbf{high-dimensional} (e.g., $d > 20$)
+            \item \textbf{mixed / hierarchical} (categoricals, conditional HPs, pipeline structure)
+            \item \textbf{large-$n$} ($n^3$ scaling becomes prohibitive)
+        \end{itemize}
+    \item Random forests handle all three naturally:
+        \begin{itemize}
+            \item Tree splits work on categorical and conditional features without a kernel
+            \item Training complexity $\mathcal{O}(B \cdot n \log n)$ -- scales much better
+            \item Robust: fewer numerical issues than GP Cholesky solves
+        \end{itemize}
+    \item Downside: RFs are not Bayesian $\leadsto$ we must \emph{construct} an uncertainty estimate instead of reading it off the posterior
+  \end{itemize}
+  \vspace{0.2cm}
+  \footnotesize \textbf{SMAC} (used in auto-sklearn, Auto-WEKA) is the classic example -- BO with RF surrogate.
+\end{frame}
+
+
+\begin{frame}[t]{Sources of Randomness in a Random Forest}
+  To build an RF we inject randomness at three stages:
+  \begin{itemize}
+    \item \textbf{Bagging:} each tree $b$ trained on a bootstrap sample of $\Dt$
+    \item \textbf{Feature subsampling:} at each split, only $m \le d$ features are considered
+    \item \textbf{Random split locations} (\emph{extratrees}): cut point chosen uniformly at random inside the feature's range
+  \end{itemize}
+  \vspace{0.2cm}
+  \textbf{Key idea for BO:}\hspace{0.5em}the spread of per-tree predictions across the ensemble reflects \emph{epistemic uncertainty} at $\conf$ -- high spread where data is scarce or the target is harder to model.
+\end{frame}
+
+
+\begin{frame}[t]{Mean and Variance via Law of Total Variance}
+  \small
+  Let $\surro_b(\conf)$ and $\sh_b^2(\conf)$ be the mean and within-leaf variance of tree $b$ (mean/variance of the training labels $\cost_i$ whose covariates land in the same leaf as $\conf$).
+  \vspace{0.2cm}
+
+  The forest's mean is simply
+  $\surro(\conf) = \frac{1}{B} \sum_{b=1}^{B} \surro_b(\conf)$.
+
+  \vspace{0.2cm}
+
+  By the law of total variance, treating the RF as a mixture of $B$ models:
+  $$
+  \sh^2(\conf) \;=\; \underbrace{\frac{1}{B} \sum_{b=1}^{B} \sh_b^2(\conf)}_{\text{within-tree (aleatoric) variance}}
+    \;+\; \underbrace{\frac{1}{B} \sum_{b=1}^{B} \surro_b(\conf)^2 - \surro(\conf)^2}_{\text{between-tree (epistemic) variance}}
+  $$
+
+  \vspace{0.1cm}
+  Used in SMAC and most RF-based BO implementations. Cheap, no refitting needed.
+\end{frame}
+
+
+\begin{frame}[t]{Jackknife-based Variance Estimators}
+  \begin{itemize}
+    \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager, Hastie, Efron 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
+        $$\widehat{\sh}^2_{IJ}(\conf) = \sum_{i=1}^{n} \Big(\operatorname{Cov}_b\!\left(N_{ib},\, \surro_b(\conf)\right)\Big)^2$$
+        where $N_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
+    \item Bias-corrected variant removes systematic bias in finite forests
+    \item Captures uncertainty that the law-of-total-variance estimator misses (esp.\ for small $B$)
+    \item More expensive than the basic mean-of-variances, but tractable
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Quantile Regression Forests}
+  \begin{itemize}
+    \item \textbf{Quantile Regression Forests}~\liturl{Meinshausen 2006}{https://jmlr.org/papers/v7/meinshausen06a.html}: instead of per-leaf means, keep the entire \emph{empirical distribution} of the training labels falling into each leaf
+    \item For test $\conf$, aggregate per-tree leaf labels (weighted) to approximate $F(y \mid \conf)$
+    \item From this CDF we get
+        \begin{itemize}
+            \item predictive \textbf{quantiles} -- useful for LCB with $\tau\!=\!$ quantile level
+            \item predictive \textbf{mean} and \textbf{variance} via empirical moments
+            \item \emph{non-Gaussian} predictive distributions -- e.g., skewed where data is asymmetric
+        \end{itemize}
+    \item Natural fit with acquisition functions that only need quantiles or samples (Thompson sampling, $q$EI via Monte Carlo)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Smoothing Tricks}
+  RF predictions are piecewise constant $\leadsto$ acquisition-function landscape is also piecewise constant:
+  \begin{itemize}
+    \item Kills gradient-based AF optimization
+    \item Can make exploration criteria plateau / tie in many points
+  \end{itemize}
+  \vspace{0.2cm}
+  Common workarounds:
+  \begin{itemize}
+    \item \textbf{Extra-Trees}: random split locations $\leadsto$ ``smoother'' mean
+    \item \textbf{Kernel smoothing}: replace per-leaf mean with a locally-weighted average
+    \item \textbf{Increase $B$}: more trees average out step-wise structure
+    \item \textbf{Use a different AF optimizer}: random search / EA, since gradients don't help anyway
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Calibration and Pitfalls}
+  \begin{itemize}
+    \item RF variance is often \textbf{poorly calibrated} compared to a properly-fit GP:
+        \begin{itemize}
+            \item Tends to \emph{underestimate} uncertainty in extrapolation zones (no data outside the training support)
+            \item Tends to \emph{overestimate} uncertainty near the training data (tree randomness doesn't vanish with data density)
+        \end{itemize}
+    \item RFs give no real posterior predictive distribution -- no Bayesian guarantees for EI / PI
+    \item In practice BO with RF still works well; it is the go-to choice in \textbf{SMAC}
+    \item If calibration matters (theory-grounded AFs, multi-fidelity models): check with held-out residuals and re-scale variance
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{When to Pick RF Over GP in BO}
+  \begin{itemize}
+    \item Use an \textbf{RF surrogate} when:
+        \begin{itemize}
+            \item $\pcs$ contains categoricals / conditionals / large integer ranges
+            \item Number of observations $n$ is large (thousands) and growing
+            \item $\cost$ itself is cheap enough that many BO iterations are expected
+        \end{itemize}
+    \item Use a \textbf{GP surrogate} when:
+        \begin{itemize}
+            \item $\pcs$ is numeric and low-to-medium dimensional
+            \item Budget is small ($\cost$ very expensive); calibrated uncertainty matters
+            \item You can spend effort on kernel choice and hyperparameter tuning
+        \end{itemize}
+    \item Hybrid: small $n$ $\to$ GP, switch to RF once data grows (some toolboxes do this automatically)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Summary}
+  \begin{enumerate}
+    \item RFs give BO a scalable, robust surrogate that handles mixed and hierarchical spaces out of the box
+    \item Variance estimate via law of total variance (within-tree + between-tree) is the default; jackknife / IJ gives a theoretically sound alternative
+    \item Quantile Regression Forests unlock non-Gaussian predictive distributions
+    \item RF AF landscapes are step-wise $\leadsto$ use gradient-free optimizers or smoothing tricks (extratrees)
+    \item Uncertainty is not truly Bayesian and can be miscalibrated, but RF + EI (SMAC) is a proven recipe in AutoML
+  \end{enumerate}
+\end{frame}
+
+
+\end{document}

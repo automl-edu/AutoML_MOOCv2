@@ -22,3 +22,6 @@ auf den ganzen grafiken ist x/y auf den achsen, sollte lambda / c sein
 put new thoughts in items on indvididual lines
 
 bilder jumpen, in lecture servie nachsehen
+
+
+meine eigenen BO macros ausdünnen, bzw die tab erweitern
