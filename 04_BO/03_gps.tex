@@ -28,41 +28,223 @@
 \end{frame}
 
 
-\begin{frame}{Gaussian Process}
-    \small
-    Posterior predictive distribution for test point $\conf \in \pcs$ under zero mean:
-    $$Y(\conf) \mid \conf, \Dt \sim \normal\left(\surro(\conf), \sh^2(\conf)\right)$$
-    with
-    $$\surro(\conf) = k(\conf)^\top \bm{K}^{-1} \yv, \quad \sh^2(\conf) = k(\conf, \conf) - k(\conf)^\top \bm{K}^{-1} k(\conf)$$
-    \begin{center}
-        \includegraphics[width=.4\textwidth]{images/bayesian_loop_sm_normal.png}
-    \end{center}
-    \footnotesize Note: $\conf$ here denotes the test input. $k(\conf) := (k(\conf, \confI{1}), \ldots, k(\conf, \confI{t}))^\top$, $\yv := (\ysi[1], \ldots, \ysi[t])^\top$. Kernel/Gram matrix $\bm{K} := (k(\confI{i}, \confI{j}))_{i,j}$ for $i, j \in \{1, \ldots, t\}$.
+\begin{frame}[t]{GP Intuition}
+  \small
+  \begin{itemize}
+    \item Generic regression model on inputs $\x \in \Xspace$ and outputs $y \in \R$\\
+    % (later we plug in $\x = \conf$ and $y = \cost(\conf)$)
+    \item A GP is a \textbf{distribution over functions} $f: \Xspace \to \R$:\\
+    For \emph{any} finite set of inputs $\{\xI{1}, \ldots, \xI{t}\}$, the vector of function values 
+    $(f(\xI{1}), \ldots, f(\xI{t}))$ is \textbf{jointly Gaussian}
+    \item Fully characterized by a \textbf{mean function} $m(\x)$ and a \textbf{kernel} $k(\x, \x')$ 
+    that encodes how correlated the outputs of nearby points are
+    \item Theory of GPs comes from stochastic processes, usage on concrete data
+    boils down to simple linear algebra on the multivariate Gaussian
+  %   \item Observing data $\dataset = \langle \xI{i}, \yI{i} \rangle_{i=1}^t$ gives a \textbf{posterior} over functions that
+  %       \begin{itemize}
+  %           \item passes (near) every observed point
+  %           \item is uncertain far away from data
+  %       \end{itemize}
+  \end{itemize}
+  % \vspace{0.2cm}
+  \begin{center}
+    \includegraphics[width=.2\textwidth]{images/bayesian_loop_sm_normal.png}
+  \end{center}
 \end{frame}
 
 
-\begin{frame}{Gaussian Process}
+\begin{frame}[t]{The GP Model}
+  \small
+  \begin{itemize}
+    \item \textbf{Prior over functions:} we place a GP prior on the unknown function,
+      $$f \sim \mathcal{GP}\!\left(m(\x),\; k(\x,\x')\right)$$
+      assume zero prior mean $m(\x) \equiv 0$ (easy to relax, see later)
+    \item \textbf{Observation model:} each output is a noisy read-out of $f$ at input $\xI{i}$,
+      $$\yI{i} = f(\xI{i}) + \eps_i, \qquad \eps_i \overset{\text{i.i.d.}}{\sim} \normal(0, \sigma_\eps^2)$$
+    \item \textbf{Two regimes:}
+      \begin{itemize}
+        \item $\sigma_\eps^2 = 0$: \textbf{interpolation} -- posterior passes exactly through each $(\xI{i}, \yI{i})$
+        \item $\sigma_\eps^2 > 0$: \textbf{regression} -- posterior smooths through noisy observations; uncertainty never shrinks to $0$ at training points
+      \end{itemize}
+    \item Computationally: the noise just adds $\sigma_\eps^2 \bm{I}$ to the Gram matrix ($\bm{K} \to \bm{K} + \sigma_\eps^2 \bm{I}$)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Posterior Predictive}
+  \footnotesize
+  \begin{itemize}
+  \item For a test input $\x$ and observed data $\dataset$, the posterior predictive is Gaussian:
+  $$Y(\x) \mid \x, \dataset \sim \normal\!\left(\hat\mean(\x),\, \sh^2(\x)\right)$$
+  with closed-form posterior mean and variance:
+  $$\hat\mean(\x) = k_*^\top (\bm{K} + \sigma_\eps^2 \bm{I})^{-1} \yv, \qquad
+    \sh^2(\x) = k_{**} - k_*^\top (\bm{K} + \sigma_\eps^2 \bm{I})^{-1} k_*$$
+  Set $\sigma_\eps^2 = 0$ to recover the noise-free interpolating case.
+  \item Notation:
+  \begin{itemize}
+    \item $k_* := \big(k(\x, \xI{1}), \ldots, k(\x, \xI{t})\big)^\top$ -- kernel between test $\x$ and training inputs
+    \item $k_{**} := k(\x, \x)$ -- kernel self-similarity at the test input
+    \item $\yv := (\yI{1}, \ldots, \yI{t})^\top$ -- vector of observed outputs
+    \item $\bm{K} := \big(k(\xI{i}, \xI{j})\big)_{i,j=1}^t$ -- Gram / kernel matrix of training inputs
+  \end{itemize}
+  \item \textbf{Note on prior mean $m(\x)$:} we assume $m(\x) \equiv 0$, so it drops out of the formulas.
+  For non-zero $m$, simply replace $\yv$ by $\yv - m(\bm{X})$ and add $m(\x)$ back to $\hat\mean(\x)$. \\
+  In practice people usually center the outputs and use zero mean.
+  \item \textbf{Prediction cost:} with a cached Cholesky factor of $\bm{K}+\sigma_\eps^2\bm{I}$, each test point costs $\mathcal{O}(t)$ for the mean and $\mathcal{O}(t^2)$ for the variance.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[t]{Where Do the Formulas Come From?}
+  \small
+  Training outputs $\yv$ and test value $Y(\x) = f(\x) + \eps$ are jointly Gaussian:
+  $$
+  \begin{pmatrix} \yv \\ Y(\x) \end{pmatrix}
+  \sim \normal\!\left(\bm{0},\;
+  \begin{pmatrix} \bm{K} + \sigma_\eps^2 \bm{I} & k_* \\ k_*^\top & k_{**} + \sigma_\eps^2 \end{pmatrix}\right)
+  $$
+  Apply the standard \textbf{conditioning rule} for a multivariate Gaussian (treat $\widetilde{\bm K} := \bm{K} + \sigma_\eps^2 \bm{I}$):
+  $$
+  Y(\x) \mid \yv \;\sim\; \normal\!\left(\underbrace{k_*^\top \widetilde{\bm K}^{-1} \yv}_{\hat\mean(\x)},\;\, \underbrace{k_{**} - k_*^\top \widetilde{\bm K}^{-1} k_*}_{\sh^2(\x)}\right)
+  $$
+  \vspace{0.05cm}
+  \begin{itemize}
+    \item $\hat\mean(\x)$ is a linear combination of training outputs, weights from $\widetilde{\bm K}^{-1} k_*$
+    \item $\sh^2(\x)$ is the prior variance $k_{**}$ reduced by what the data tells us about $Y(\x)$
+    \item With $\sigma_\eps^2 = 0$: exact interpolation; $\sh^2(\xI{i}) = 0$ at training points
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[t]{Kernel: RBF (Squared Exponential)}
+\begin{columns}[onlytextwidth,T]
+    \column{.55\textwidth}
     \small
-    Example kernel functions:
+    $$k(\x, \x') = \exp\!\left(-\frac{d(\x, \x')^2}{2 l^2}\right)$$
+    \vspace{0.1cm}
     \begin{itemize}
-        \item Radial basis function kernel (aka Gauss kernel):
-        $$k(\conf, \conf') = \exp\!\left(-\frac{d(\conf, \conf')^2}{2 l^2}\right)$$
-        \begin{itemize}
-            \item $l$ length scale; $d(\cdot, \cdot)$ Euclidean distance
-            \item Infinitely differentiable -- very ``smooth''
-        \end{itemize}
-        \item Matérn kernels:
-        $$k(\conf, \conf') = \frac{1}{\Gamma(\nu)\, 2^{\nu-1}}\left(\frac{\sqrt{2\nu}}{l} d(\conf, \conf')\right)^\nu K_\nu\!\left(\frac{\sqrt{2\nu}}{l} d(\conf, \conf')\right)$$
-        \begin{itemize}
-            \item $l$ length scale; $K_\nu(\cdot)$ modified Bessel function; $\Gamma(\cdot)$ Gamma function
-            \item For $\nu = 3/2$ once differentiable, for $\nu = 5/2$ twice differentiable
-            \item Popular choice as a kernel function when using a GP as SM
-        \end{itemize}
+        \item $l$: \textbf{length scale} -- the larger $l$, the longer the range of correlation
+        \item $d(\cdot,\cdot)$: Euclidean distance
+        \item Infinitely differentiable $\leadsto$ sample paths are \emph{very smooth}
+        \item Often too smooth for realistic response surfaces
     \end{itemize}
+    \column{.45\textwidth}
+    \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=5cm, height=4cm,
+        xlabel={$d(\x,\x')$}, ylabel={$k$},
+        xmin=0, xmax=3, ymin=0, ymax=1.05,
+        domain=0:3, samples=80,
+        legend style={font=\scriptsize, at={(1.02,1)}, anchor=north west, draw=none, fill=none},
+        tick label style={font=\scriptsize},
+        label style={font=\scriptsize},
+        axis lines=left,
+      ]
+        \addplot[blue, thick]           {exp(-x^2/(2*0.3^2))}; \addlegendentry{$l=0.3$}
+        \addplot[green!60!black, thick] {exp(-x^2/(2*0.7^2))}; \addlegendentry{$l=0.7$}
+        \addplot[red, thick]            {exp(-x^2/(2*1.5^2))}; \addlegendentry{$l=1.5$}
+      \end{axis}
+    \end{tikzpicture}\\[0.1cm]
+    \scriptsize Correlation vs.\ distance for three length scales.
+    \end{center}
+\end{columns}
 \end{frame}
 
 
-\begin{frame}{Gaussian Process}
+\begin{frame}[t]{Kernel: Matérn Family}
+\begin{columns}[onlytextwidth,T]
+    \column{.55\textwidth}
+    \small
+    $$k(\x, \x') = \frac{1}{\Gamma(\nu)\, 2^{\nu-1}}\left(\tfrac{\sqrt{2\nu}}{l} d\right)^{\!\nu} K_\nu\!\left(\tfrac{\sqrt{2\nu}}{l} d\right)$$
+    with $d = d(\x,\x')$, $K_\nu$: modified Bessel function.
+    \vspace{0.1cm}
+    \begin{itemize}
+        \item $\nu$ controls \textbf{smoothness}: sample paths are $\lceil\nu\rceil - 1$ times differentiable
+        \item $\nu = 3/2$: once differentiable -- ``wiggly''
+        \item $\nu = 5/2$: twice differentiable -- \textbf{default for BO}
+        \item $\nu \to \infty$: recovers the RBF kernel (infinitely smooth)
+    \end{itemize}
+    \column{.45\textwidth}
+    \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=5cm, height=4cm,
+        xlabel={$d(\x,\x')$}, ylabel={$k$},
+        xmin=0, xmax=3, ymin=0, ymax=1.05,
+        domain=0.0001:3, samples=120,
+        legend style={font=\scriptsize, at={(1.02,1)}, anchor=north west, draw=none, fill=none},
+        tick label style={font=\scriptsize},
+        label style={font=\scriptsize},
+        axis lines=left,
+      ]
+        % Matern 1/2 (exponential): exp(-d/l)
+        \addplot[orange, thick]
+          {exp(-x/1)}; \addlegendentry{$\nu=1/2$}
+        % Matern 3/2: (1 + sqrt(3) d/l) * exp(-sqrt(3) d/l)
+        \addplot[green!60!black, thick]
+          {(1 + sqrt(3)*x/1) * exp(-sqrt(3)*x/1)}; \addlegendentry{$\nu=3/2$}
+        % Matern 5/2: (1 + sqrt(5)d/l + 5d^2/(3l^2)) * exp(-sqrt(5)d/l)
+        \addplot[blue, thick]
+          {(1 + sqrt(5)*x/1 + 5*x^2/(3*1^2)) * exp(-sqrt(5)*x/1)}; \addlegendentry{$\nu=5/2$}
+        % RBF with l=1
+        \addplot[red, thick, dashed]
+          {exp(-x^2/2)}; \addlegendentry{RBF}
+      \end{axis}
+    \end{tikzpicture}\\[0.1cm]
+    \scriptsize Matérn kernels at $l=1$; higher $\nu$ $\to$ smoother.
+    \end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Learning Kernel Hyperparameters}
+  \small
+  Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\eps$, \ldots).\\[0.2cm]
+  Standard approach: \textbf{Type-II maximum likelihood} -- maximize the \emph{log marginal likelihood} of the observed data:
+  $$
+  \log p(\yv \mid \bm{\theta}) = -\tfrac{1}{2} \yv^\top \bm{K}_{\bm{\theta}}^{-1} \yv
+    \;-\; \tfrac{1}{2} \log |\bm{K}_{\bm{\theta}}|
+    \;-\; \tfrac{t}{2} \log 2\pi
+  $$
+  \begin{itemize}
+    \item First term rewards explaining the data
+    \item Second term penalizes model complexity (Occam's razor, built-in)
+    \item Optimize numerically with L-BFGS-B (multi-start to avoid local optima)
+  \end{itemize}
+  \vspace{0.1cm}
+  Alternatives: cross-validation on held-out residuals, or fully Bayesian treatment via MCMC / HMC over $\bm{\theta}$.
+  \vspace{0.1cm}
+
+  \textbf{Training cost:} each marginal-likelihood evaluation needs a Cholesky of the $t \times t$ Gram matrix, costing $\mathcal{O}(t^3)$ time and $\mathcal{O}(t^2)$ memory -- the main bottleneck for large $t$.
+\end{frame}
+
+
+
+
+\begin{frame}[t]{Mixed and Hierarchical Search Spaces}
+  Vanilla GPs only accept numeric inputs. AutoML search spaces are messier.
+  \vspace{0.15cm}
+  \begin{itemize}
+    \item \textbf{Integer HPs:} treat as continuous during GP fit and acquisition,\\
+    round to the nearest integer before evaluation\\[-0.1cm]
+    \item \textbf{Categorical HPs:}
+        \begin{itemize}
+            \item One-hot encoding + continuous kernel (simple, but distorts distances)
+            \item \emph{Hamming / overlap kernel}: $k_{\text{cat}}(c, c') = \mathds{1}[c = c']$ (or a per-level scale)
+            \item Combine with continuous kernel as a \textbf{product}: $k(\x, \x') = k_{\text{num}}(\x_{\text{num}}, \x'_{\text{num}}) \cdot k_{\text{cat}}(\x_{\text{cat}}, \x'_{\text{cat}})$
+        \end{itemize}
+    \item \textbf{Conditional / hierarchical HPs}
+        \begin{itemize}
+            \item Simple fix: \emph{imputation} -- fill inactive HPs with a default / sentinel value
+            \item Structured kernels that ignore inactive dimensions (tree-of-kernels)
+            \item In practice, \textbf{random forests} might handle this more naturally
+        \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Summary - GP Pros and Cons}
     \textbf{Pros:}
     \begin{itemize}
         \item Smooth, local, powerful estimator, also for small data
@@ -76,14 +258,6 @@
         \item Not that robust; numerical problems can occur
         \item Can be sensitive to the choice of kernel and hyperparameters
     \end{itemize}
-\end{frame}
-
-\begin{frame}{Summary}
-\begin{enumerate}
-    \item A good BO surrogate provides accurate, uncertainty-aware predictions and handles mixed input types if needed
-    \item Gaussian processes are the default choice: well-calibrated uncertainty, but limited scalability and robustness
-    \item Random forests scale better and handle mixed/hierarchical spaces, at the cost of weaker uncertainty estimates
-\end{enumerate}
 \end{frame}
 
 \end{document}

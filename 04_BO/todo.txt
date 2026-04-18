@@ -25,3 +25,13 @@ bilder jumpen, in lecture servie nachsehen
 
 
 meine eigenen BO macros ausdünnen, bzw die tab erweitern
+
+D = D_hist hat eine andere notation, auch mit angle brackets
+
+some slides on hierchical spaces
+
+use \acq
+
+title und subtitle überall prüfen
+
+mehr lit quellen einbauen

@@ -80,7 +80,7 @@ Many optimization problems in AutoML share three features:
         \begin{itemize}
             \item Every configuration is sampled independently of previous results
             \item Does not exploit structure in objective
-            \item Budget wasted on obviously unpromising regions
+            \item Budget wasted on obv. unpromising regions
         \end{itemize}
         \item Scaling poor in higher-dim. search spaces           
         \item For expensive objectives we want an optimizer that \textbf{learns from its own evaluations} and follows promising local directions
@@ -139,7 +139,7 @@ Many optimization problems in AutoML share three features:
 \end{itemize}
 \vspace{0.3cm}
 \begin{center}
-\textbf{Sequential, model-based, sample-efficient} -- designed for exactly the setting where each evaluation is precious.
+\textbf{Sequential, model-based, sample-efficient} -- designed for exactly the setting where each evaluation is valuable.
 \end{center}
 \end{frame}
 
@@ -171,7 +171,7 @@ The same ``expensive, noisy, black-box'' setting appears in many other parts of 
     \column{.33\textwidth}
     \begin{center}
         \includegraphics[width=.9\textwidth,height=2cm,keepaspectratio]{images/cookie.jpg}\\[0.2cm]
-        \textbf{Recipe / Product Design}\\
+        \textbf{Cookies}\\
         \footnotesize Find ingredient ratios that maximize a taste / quality rating~\liturl{Kochanski et al. 2017}{https://research.google.com/pubs/archive/46507.pdf}
     \end{center}
     \column{.33\textwidth}

@@ -9,7 +9,7 @@
 % (1-3 lines) to avoid overlap.
 \newcommand{\looppic}[1]{%
   \begin{tikzpicture}[remember picture, overlay]
-    \node[anchor=south] at ([yshift=0.3cm]current page.south)
+    \node[anchor=south] at ([yshift=1.0cm]current page.south)
       {\includegraphics[width=.5\paperwidth,height=.45\paperheight,keepaspectratio]{#1}};
   \end{tikzpicture}%
 }
@@ -33,9 +33,9 @@
     \item We do not know the analytical structure of $\cost: \pcs \to \R$;\\
      it is only available as a black-box we can \emph{query} at points $\conf \in \pcs$
     \item For now, we assume evaluations are noise-free
-    \item \textbf{Idea:} Use the archive $\Dt = \{(\confI{i}, \cost(\confI{i}))\}_{i = 1, \ldots, t}$ to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
+    \item \textbf{Idea:} Use the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bocount}$ to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
   \end{itemize}
-  \looppic{images/loop_1.png}
+  % \looppic{images/loop_1.png}
 \end{frame}
 
 
@@ -159,7 +159,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Propose}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Propose}
   \begin{itemize}
     \item Instead of the expensive $\cost$, we optimize the cheap surrogate $\surro$
     \item Obtained minimum is \textbf{proposed} as new point (red) for evaluation
@@ -168,7 +168,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Evaluate}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Evaluate}
   \begin{itemize}
     \item We evaluate the newly proposed point
   \end{itemize}
@@ -176,7 +176,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Update}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Update}
   \begin{itemize}
     \item After evaluation, we \textbf{adjust} the model on the expanded dataset
     \item Use complete refitting or a (cheaper) online update
@@ -185,7 +185,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Propose}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Propose}
   \begin{itemize}
     \item Optimize surrogate again
   \end{itemize}
@@ -193,7 +193,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Evaluate}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Evaluate}
   \begin{itemize}
     \item \ldots and evaluate proposed point
   \end{itemize}
@@ -201,7 +201,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Iterate: Fit}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Iterate: Fit}
   \begin{itemize}
     \item We repeat: (i) \textbf{fit} the model\ldots
   \end{itemize}
@@ -209,7 +209,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Iterate: Propose}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Iterate: Propose}
   \begin{itemize}
     \item (ii) \textbf{propose} a new point\ldots
   \end{itemize}
@@ -217,7 +217,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Surrogate Modeling -- Iterate: Evaluate}
+\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Iterate: Evaluate}
   \begin{itemize}
     \item (iii) \textbf{evaluate} that point -- the algorithm has converged
   \end{itemize}
@@ -242,10 +242,10 @@
 
 \begin{frame}{Summary - The Basic BO Loop}
     \begin{enumerate}
-        \item Create initial design  
-        \item \textbf{Fit} surrogate model $\surro$ on previous evaluations $\Dts$
-        \item \textbf{Propose} a new point by optimizing the surrogate: $\confI{t+1} := \argmin_{\conf \in \pcs} \surro(\conf)$
-        \item \textbf{Evaluate} $\confI{t+1}$ and \textbf{update} the archive: $\Dt[t+1] = \Dt \cup \{(\confI{t+1}, \cost(\confI{t+1}))\}$
+        \item Create \textbf{initial design}
+        \item \textbf{Fit} surrogate model $\surro$ on the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bocount}$
+        \item \textbf{Propose} new point $\confI{t+1}$ by optimizing acquisition function $a(\conf)$
+        \item \textbf{Evaluate} $\confI{t+1}$ and \textbf{update} the archive:\\ $\hist \leftarrow \hist \cup \langle \confI{t+1}, \cost(\confI{t+1}) \rangle$
         \item Repeat from step 2. until budget is exhausted
     \end{enumerate}
     \vspace{0.3cm}

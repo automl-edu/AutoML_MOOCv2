@@ -37,7 +37,7 @@
 \begin{frame}[t]{Sources of Randomness in a Random Forest}
   To build an RF we inject randomness at three stages:
   \begin{itemize}
-    \item \textbf{Bagging:} each tree $b$ trained on a bootstrap sample of $\Dt$
+    \item \textbf{Bagging:} each tree $b$ trained on a bootstrap sample of $\hist$
     \item \textbf{Feature subsampling:} at each split, only $m \le d$ features are considered
     \item \textbf{Random split locations} (\emph{extratrees}): cut point chosen uniformly at random inside the feature's range
   \end{itemize}
