@@ -30,7 +30,7 @@
 \begin{frame}[t]{Optimization via Surrogate Modeling}
   \begin{itemize}
     \item Want to solve $$\conf^\ast \in \argmin_{\conf \in \pcs} \cost(\conf)$$
-    \item We do not know the analytical structure of $\cost: \pcs \to \R$;\\
+    \item We do not know the analytical structure of $\cost: \pcs \to \realnum$;\\
      it is only available as a black-box we can \emph{query} at points $\conf \in \pcs$
     \item For now, we assume evaluations are noise-free
     \item \textbf{Idea:} Use the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bocount}$ to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
@@ -106,10 +106,10 @@
     \begin{itemize}
     \item Specific LHS design selected via extra criterion, e.g.\ \textbf{maximin}
     \item Min.\ pairwise distance for any metric $\rho$\\
-     $2q = \min_{\conf \neq \conf' \in \D} \rho(\conf, \conf')$
+     $2q = \min_{\conf \neq \conf' \in \dataset} \rho(\conf, \conf')$
     \item $q$ = \textbf{packing radius}: radius of largest ball around each point s.t. no 2 balls overlap
-    \item Goal: find $\D$ that maximizes $2q$, keeping design points as far apart as possible:
-    $$\max_{\D} \min_{\conf \neq \conf' \in \D} \rho(\conf, \conf')$$
+    \item Goal: find $\dataset$ that maximizes $2q$, keeping design points as far apart as possible:
+    $$\max_{\dataset} \min_{\conf \neq \conf' \in \dataset} \rho(\conf, \conf')$$
     \end{itemize}
     \column{.3\textwidth}
     \begin{center}
@@ -153,7 +153,7 @@
 
 \begin{frame}[t]{Surrogate Modeling -- Fit}
   \begin{itemize}
-    \item \textbf{Fit} a \textbf{regression model} $\surro: \pcs \to \R$ (blue)
+    \item \textbf{Fit} a \textbf{regression model} $\surro: \pcs \to \realnum$ (blue)
     \item Extract maximum information from design points and learn $\cost$
     \item If we can evaluate $\cost$ without noise, we fit an interpolator
   \end{itemize}

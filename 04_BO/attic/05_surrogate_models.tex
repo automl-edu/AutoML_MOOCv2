@@ -36,7 +36,7 @@
 \begin{frame}{Gaussian Process}
     \small
     Posterior predictive distribution for test point $\conf \in \pcs$ under zero mean:
-    $$Y(\conf) \mid \conf, \Dt \sim \normal\left(\surro(\conf), \sh^2(\conf)\right)$$
+    $$Y(\conf) \mid \conf, \dataset \sim \normal\left(\surro(\conf), \sh^2(\conf)\right)$$
     with
     $$\surro(\conf) = k(\conf)^\top \bm{K}^{-1} \yv, \quad \sh^2(\conf) = k(\conf, \conf) - k(\conf)^\top \bm{K}^{-1} k(\conf)$$
     \begin{center}

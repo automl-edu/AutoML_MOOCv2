@@ -31,9 +31,9 @@
 \begin{frame}[t]{GP Intuition}
   \small
   \begin{itemize}
-    \item Generic regression model on inputs $\x \in \Xspace$ and outputs $y \in \R$\\
+    \item Generic regression model on inputs $\x \in \Xspace$ and outputs $y \in \realnum$\\
     % (later we plug in $\x = \conf$ and $y = \cost(\conf)$)
-    \item A GP is a \textbf{distribution over functions} $f: \Xspace \to \R$:\\
+    \item A GP is a \textbf{distribution over functions} $f: \Xspace \to \realnum$:\\
     For \emph{any} finite set of inputs $\{\xI{1}, \ldots, \xI{t}\}$, the vector of function values 
     $(f(\xI{1}), \ldots, f(\xI{t}))$ is \textbf{jointly Gaussian}
     \item Fully characterized by a \textbf{mean function} $m(\x)$ and a \textbf{kernel} $k(\x, \x')$ 
@@ -60,13 +60,13 @@
       $$f \sim \mathcal{GP}\!\left(m(\x),\; k(\x,\x')\right)$$
       assume zero prior mean $m(\x) \equiv 0$ (easy to relax, see later)
     \item \textbf{Observation model:} each output is a noisy read-out of $f$ at input $\xI{i}$,
-      $$\yI{i} = f(\xI{i}) + \eps_i, \qquad \eps_i \overset{\text{i.i.d.}}{\sim} \normal(0, \sigma_\eps^2)$$
+      $$\yI{i} = f(\xI{i}) + \epsilon_i, \qquad \epsilon_i \overset{\text{i.i.d.}}{\sim} \normaldist(0, \sigma_\epsilon^2)$$
     \item \textbf{Two regimes:}
       \begin{itemize}
-        \item $\sigma_\eps^2 = 0$: \textbf{interpolation} -- posterior passes exactly through each $(\xI{i}, \yI{i})$
-        \item $\sigma_\eps^2 > 0$: \textbf{regression} -- posterior smooths through noisy observations; uncertainty never shrinks to $0$ at training points
+        \item $\sigma_\epsilon^2 = 0$: \textbf{interpolation} -- posterior passes exactly through each $(\xI{i}, \yI{i})$
+        \item $\sigma_\epsilon^2 > 0$: \textbf{regression} -- posterior smooths through noisy observations; uncertainty never shrinks to $0$ at training points
       \end{itemize}
-    \item Computationally: the noise just adds $\sigma_\eps^2 \bm{I}$ to the Gram matrix ($\bm{K} \to \bm{K} + \sigma_\eps^2 \bm{I}$)
+    \item Computationally: the noise just adds $\sigma_\epsilon^2 \bm{I}$ to the Gram matrix ($\bm{K} \to \bm{K} + \sigma_\epsilon^2 \bm{I}$)
   \end{itemize}
 \end{frame}
 
@@ -75,11 +75,11 @@
   \footnotesize
   \begin{itemize}
   \item For a test input $\x$ and observed data $\dataset$, the posterior predictive is Gaussian:
-  $$Y(\x) \mid \x, \dataset \sim \normal\!\left(\hat\mean(\x),\, \sh^2(\x)\right)$$
+  $$Y(\x) \mid \x, \dataset \sim \normaldist\!\left(\hat\mean(\x),\, \sh^2(\x)\right)$$
   with closed-form posterior mean and variance:
-  $$\hat\mean(\x) = k_*^\top (\bm{K} + \sigma_\eps^2 \bm{I})^{-1} \yv, \qquad
-    \sh^2(\x) = k_{**} - k_*^\top (\bm{K} + \sigma_\eps^2 \bm{I})^{-1} k_*$$
-  Set $\sigma_\eps^2 = 0$ to recover the noise-free interpolating case.
+  $$\hat\mean(\x) = k_*^\top (\bm{K} + \sigma_\epsilon^2 \bm{I})^{-1} \yv, \qquad
+    \sh^2(\x) = k_{**} - k_*^\top (\bm{K} + \sigma_\epsilon^2 \bm{I})^{-1} k_*$$
+  Set $\sigma_\epsilon^2 = 0$ to recover the noise-free interpolating case.
   \item Notation:
   \begin{itemize}
     \item $k_* := \big(k(\x, \xI{1}), \ldots, k(\x, \xI{t})\big)^\top$ -- kernel between test $\x$ and training inputs
@@ -90,28 +90,28 @@
   \item \textbf{Note on prior mean $m(\x)$:} we assume $m(\x) \equiv 0$, so it drops out of the formulas.
   For non-zero $m$, simply replace $\yv$ by $\yv - m(\bm{X})$ and add $m(\x)$ back to $\hat\mean(\x)$. \\
   In practice people usually center the outputs and use zero mean.
-  \item \textbf{Prediction cost:} with a cached Cholesky factor of $\bm{K}+\sigma_\eps^2\bm{I}$, each test point costs $\mathcal{O}(t)$ for the mean and $\mathcal{O}(t^2)$ for the variance.
+  \item \textbf{Prediction cost:} with a cached Cholesky factor of $\bm{K}+\sigma_\epsilon^2\bm{I}$, each test point costs $\mathcal{O}(t)$ for the mean and $\mathcal{O}(t^2)$ for the variance.
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}[t]{Where Do the Formulas Come From?}
   \small
-  Training outputs $\yv$ and test value $Y(\x) = f(\x) + \eps$ are jointly Gaussian:
+  Training outputs $\yv$ and test value $Y(\x) = f(\x) + \epsilon$ are jointly Gaussian:
   $$
   \begin{pmatrix} \yv \\ Y(\x) \end{pmatrix}
-  \sim \normal\!\left(\bm{0},\;
-  \begin{pmatrix} \bm{K} + \sigma_\eps^2 \bm{I} & k_* \\ k_*^\top & k_{**} + \sigma_\eps^2 \end{pmatrix}\right)
+  \sim \normaldist\!\left(\bm{0},\;
+  \begin{pmatrix} \bm{K} + \sigma_\epsilon^2 \bm{I} & k_* \\ k_*^\top & k_{**} + \sigma_\epsilon^2 \end{pmatrix}\right)
   $$
-  Apply the standard \textbf{conditioning rule} for a multivariate Gaussian (treat $\widetilde{\bm K} := \bm{K} + \sigma_\eps^2 \bm{I}$):
+  Apply the standard \textbf{conditioning rule} for a multivariate Gaussian (treat $\widetilde{\bm K} := \bm{K} + \sigma_\epsilon^2 \bm{I}$):
   $$
-  Y(\x) \mid \yv \;\sim\; \normal\!\left(\underbrace{k_*^\top \widetilde{\bm K}^{-1} \yv}_{\hat\mean(\x)},\;\, \underbrace{k_{**} - k_*^\top \widetilde{\bm K}^{-1} k_*}_{\sh^2(\x)}\right)
+  Y(\x) \mid \yv \;\sim\; \normaldist\!\left(\underbrace{k_*^\top \widetilde{\bm K}^{-1} \yv}_{\hat\mean(\x)},\;\, \underbrace{k_{**} - k_*^\top \widetilde{\bm K}^{-1} k_*}_{\sh^2(\x)}\right)
   $$
   \vspace{0.05cm}
   \begin{itemize}
     \item $\hat\mean(\x)$ is a linear combination of training outputs, weights from $\widetilde{\bm K}^{-1} k_*$
     \item $\sh^2(\x)$ is the prior variance $k_{**}$ reduced by what the data tells us about $Y(\x)$
-    \item With $\sigma_\eps^2 = 0$: exact interpolation; $\sh^2(\xI{i}) = 0$ at training points
+    \item With $\sigma_\epsilon^2 = 0$: exact interpolation; $\sh^2(\xI{i}) = 0$ at training points
   \end{itemize}
 \end{frame}
 
@@ -200,7 +200,7 @@
 
 \begin{frame}[t]{Learning Kernel Hyperparameters}
   \small
-  Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\eps$, \ldots).\\[0.2cm]
+  Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\epsilon$, \ldots).\\[0.2cm]
   Standard approach: \textbf{Type-II maximum likelihood} -- maximize the \emph{log marginal likelihood} of the observed data:
   $$
   \log p(\yv \mid \bm{\theta}) = -\tfrac{1}{2} \yv^\top \bm{K}_{\bm{\theta}}^{-1} \yv

@@ -50,7 +50,7 @@
     \item Extend the single-point acquisition function to a \emph{joint} criterion over a batch $\mathbf{C} = (\confI{1}, \ldots, \confI{q})$:
         $$\acq_q(\mathbf{C}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
     \item Example: $q$-Expected Improvement
-        $$\acq_{\text{qEI}}(\mathbf{C}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\fmin - Y(\confI{k}),\,0\right)\right]$$
+        $$\acq_{\text{qEI}}(\mathbf{C}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \emph{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
   \end{itemize}
@@ -79,7 +79,7 @@
     \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with\\
         \begin{itemize}
             \item Kriging Believer: the posterior \emph{mean} $\surro(\confI{1})$
-            \item Constant Liar: a fixed value (e.g. $\fmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
+            \item Constant Liar: a fixed value (e.g. $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
             \item MC Fantasizing: a sample from the posterior
         \end{itemize}
     \item Refit (cheaply) and propose $\confI{2} = \argmax \acq(\conf)$

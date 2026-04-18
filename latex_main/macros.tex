@@ -65,10 +65,14 @@
 \newcommand{\cost}[0]{c}
 \newcommand{\costI}[1]{c^{(#1)}}
 
+
+%---------------GP Macros------------------
 % Gaussian Process
 \newcommand{\gp}{\mathcal{G}}
 % Family of Objective Functions
 \newcommand{\objF}{F}
+\providecommand{\yv}{\bm{y}}                % bold vector y  (responses)
+
 
 %---------------BO Macros------------------
 
@@ -98,6 +102,10 @@
 \newcommand{\noise}{\nu}
 % BO loop next selected sample
 \newcommand{\bonextsample}{\confI{\bocount}}
+% surrogate standard error
+\newcommand{\sh}{\hat{\sigma}}      
+% current best observed cost
+\newcommand{\cmin}{\cost_{\min}} 
 
 % Single hyperparameter
 \newcommand{\hyperparam}{\lambda}
@@ -145,6 +153,9 @@
 \newcommand{\constraintf}{c}
 %Normal distribution
 \newcommand{\normaldist}{\mathcal{N}}
+% probability measure
+\newcommand{\PP}{\mathds{P}}   
+
 
 % \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\hist}[0]{\dataset_{\text{Hist}}}
