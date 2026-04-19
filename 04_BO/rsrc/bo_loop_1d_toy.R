@@ -27,7 +27,7 @@ instance = OptimInstanceSingleCrit$new(
 xdt = data.table(x = c(0.1, 0.3, 0.65, 1))
 instance$eval_batch(xdt)
 
-surrogate = srlrn(lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS"), archive = instance$archive)
+surrogate = my_gp_surrogate(instance$archive)
 acq_function = acqf("mean", surrogate = surrogate)
 
 # `grid` is a fine 1D evaluation grid used for plotting.

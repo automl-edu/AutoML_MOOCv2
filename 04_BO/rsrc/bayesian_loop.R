@@ -46,7 +46,7 @@ g = ggplot() +
 
 myggsave("bayesian_loop_ee", plot = g, width = 5, height = 4)
 
-surrogate = srlrn(lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS"), archive = instance$archive)
+surrogate = my_gp_surrogate(instance$archive)
 acq_function = acqf("ei", surrogate = surrogate)
 
 grid = generate_design_grid(instance$search_space, resolution = 1001L)$data

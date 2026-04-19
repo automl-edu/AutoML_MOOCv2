@@ -35,7 +35,7 @@ instance$eval_batch(xdt_old)
 grid = generate_design_grid(instance$search_space, resolution = 1001L)$data
 set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
-surrogate = srlrn(lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS", nugget = 1e-6), archive = instance$archive)
+surrogate = my_gp_surrogate(instance$archive)
 acq_function = acqf("pi", surrogate = surrogate)
 
 grid = generate_design_grid(instance$search_space, resolution = 1001L)$data

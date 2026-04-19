@@ -44,35 +44,39 @@
 \begin{frame}[t]{Joint / $q$-Acquisition Functions}
   \small
   \begin{itemize}
-    \item Extend acquisition to emph{joint} criterion over batch $\mathbf{C} = (\confI{1}, \ldots, \confI{q})$:
-        % $$\acq_q(\mathbf{C}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
+    \item Extend acquisition to emph{joint} criterion over batch $\mathbf{B} = (\confI{1}, \ldots, \confI{q})$:
+        % $$\acq_q(\mathbf{B}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
     \item Example: $q$-Expected Improvement
-        $$\acq_{\text{qEI}}(\mathbf{C}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
+        $$\acq_{\text{qEI}}(\mathbf{B}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \emph{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
-    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional; 
-    the standard trick (BoTorch) is to reparameterize MC samples with fixed base draws $\xi$ 
-    so $\acq_{\text{qEI}}$ becomes differentiable in $\mathbf{C}$ and can be optimized with Adam / L-BFGS. 
+    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional;
+    trick (BoTorch): draw MC base noise $\xi\!\sim\!\mathcal{N}(0,I)$ \emph{once} and reuse across steps
+    $\leadsto$ $\acq_{\text{qEI}}(\mathbf{B})$ is smooth + differentiable, optimized with Adam / L-BFGS.
     Feasible up to $q\!\le\!32$.
   \end{itemize}
 \end{frame}
 
 
 \begin{frame}[t]{Heuristic 1: Kriging Believer / Fantasizing}
+  \footnotesize
   Iteratively fill the batch:
-  \begin{enumerate}
+  \begin{enumerate}\setlength\itemsep{0pt}
     \item Start with current surrogate; propose $\confI{1} = \argmax \acq(\conf)$
-    \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with\\
-        \begin{itemize}
+    \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
+        \begin{itemize}\setlength\itemsep{0pt}
             \item Kriging Believer: the posterior \emph{mean} $\surro(\confI{1})$
-            \item Constant Liar: a fixed value (e.g. $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
+            \item Constant Liar: a fixed value (e.g.\ $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
             \item MC Fantasizing: a sample from the posterior
         \end{itemize}
-    \item Refit (cheaply) and propose $\confI{2} = \argmax \acq(\conf)$
-    \item Repeat until $q$ points are assembled
+    \item Refit and propose $\confI{2} = \argmax \acq(\conf)$; repeat until $q$ points assembled
   \end{enumerate}
-  \vspace{0.2cm}
-  \textbf{Effect:}\hspace{0.5em}the fantasy data lowers uncertainty around $\confI{1}$ $\leadsto$ next acquisition peak moves elsewhere $\leadsto$ diverse batch.
+  \textbf{Effect:} fantasy eval lowers post. unc. around $\confI{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
+  \begin{center}
+    \includegraphics[width=0.55\textwidth]{images/batch_bo_kriging_believer.pdf}\\
+    \footnotesize Kriging Believer on Branin-EI ($q=4$): yellow $\times$ = initial design, red = earlier picks,\\
+    green diamond = current pick. Each panel refits the GP with the prior picks fantasized at $\surro(\confI{k})$.
+  \end{center}
 \end{frame}
 
 

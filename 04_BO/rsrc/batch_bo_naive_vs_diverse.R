@@ -18,11 +18,7 @@ instance = OptimInstanceSingleCrit$new(objective = branin_obj_rfundt, terminator
 design = generate_design_lhs(instance$search_space, n = 8)$data
 instance$eval_batch(design)
 
-surrogate = srlrn(
-  lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS",
-      nugget.stability = 1e-8, control = list(trace = FALSE)),
-  archive = instance$archive
-)
+surrogate = my_gp_surrogate(instance$archive)
 acq = acqf("ei", surrogate = surrogate)
 acq$surrogate$update()
 acq$update()

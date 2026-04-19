@@ -42,3 +42,13 @@ branin_obj_rfundt = ObjectiveRFunDt$new(
   codomain = ps(y = p_dbl(tags = "minimize"))
 )
 
+
+#  Standard GP surrogate used throughout the 04_BO figure scripts
+my_gp_surrogate = function(archive) {
+  mlr3mbo::srlrn(
+    mlr3::lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS",
+              nugget.stability = 1e-8, control = list(trace = FALSE)),
+    archive = archive
+  )
+}
+

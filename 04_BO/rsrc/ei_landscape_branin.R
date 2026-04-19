@@ -17,11 +17,7 @@ ei_landscape = function(n_init, res = 60L) {
   design = generate_design_lhs(instance$search_space, n = n_init)$data
   instance$eval_batch(design)
 
-  surrogate = srlrn(
-    lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS",
-        nugget.stability = 1e-8, control = list(trace = FALSE)),
-    archive = instance$archive
-  )
+  surrogate = my_gp_surrogate(instance$archive)
   acq_function = acqf("ei", surrogate = surrogate)
   acq_function$surrogate$update()
   acq_function$update()
