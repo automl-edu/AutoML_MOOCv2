@@ -3,7 +3,7 @@
 
 \begin{document}
 
-\title[AutoML: BO]{Parallel / Batch Bayesian Optimization}
+\title[AutoML: BO]{Parallel Bayesian Optimization}
 \subtitle{Proposing Multiple Points at Once}
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
@@ -16,31 +16,27 @@
 \begin{frame}[t]{Why Parallel BO?}
   \begin{itemize}
     \item Modern compute budgets are \textbf{parallel}, not sequential:
-        \begin{itemize}
-            \item HPC clusters, multi-GPU nodes
-            \item Lab robots running multiple experiments in parallel
-            \item Crowdsourced evaluations
-        \end{itemize}
-    \item Sequential BO leaves most of this hardware idle
-    \item \textbf{Goal:} at each iteration propose a \textbf{batch} of $q > 1$ points to evaluate \emph{simultaneously}
-    \item Trade-off: more wall-clock speedup vs.\ fewer feedback rounds $\leadsto$ slower learning per evaluation
+    \item Often multiple cores / nodes on clusters available 
+    \item We can try to fully parallelize the underlying objective,
+      and in ML there are good chances this is possible
+    \item Still attractive to generate a \textbf{batch} of $q > 1$ points to evaluate \emph{simultaneously}
+    \item Trade-off: more wall-clock speedup vs.\ fewer feedback rounds / less optimally placed points
+    \item But remember: RS sometimes hard to beat
   \end{itemize}
 \end{frame}
 
 
 \begin{frame}[t]{The Core Challenge}
+  \small
   \begin{itemize}
     \item Acquisition function $\acq(\conf)$ is designed for \emph{one} candidate at a time
-    \item Naively proposing the top-$q$ maximizers of $\acq$ gives \textbf{near-duplicates}:
-        \begin{itemize}
-            \item They cluster around the current global peak of $\acq$
-            \item Wastes $q-1$ of the $q$ evaluations
-        \end{itemize}
+    \item Naively proposing the top-$q$ maximizers of $\acq$ gives \textbf{near-duplicates}: they cluster around the current global peak of $\acq$ $\leadsto$ wastes $q-1$ of the $q$ evaluations
     \item We need batch proposals that are simultaneously \textbf{informative} and \textbf{diverse}
   \end{itemize}
-  \vspace{0.2cm}
   \begin{center}
-  \textbf{Batch BO = how to pick $q$ points that together are most informative about $\cost$.}
+    \includegraphics[width=0.55\textwidth]{images/batch_bo_naive_vs_diverse.pdf}\\
+    \footnotesize EI on Branin after 8 initial evals (yellow); proposed batch ($q=8$, red). \\
+    Naive top-$q$ collapses onto one peak; a diverse batch spreads across several.
   \end{center}
 \end{frame}
 
@@ -48,13 +44,16 @@
 \begin{frame}[t]{Joint / $q$-Acquisition Functions}
   \small
   \begin{itemize}
-    \item Extend the single-point acquisition function to a \emph{joint} criterion over a batch $\mathbf{C} = (\confI{1}, \ldots, \confI{q})$:
-        $$\acq_q(\mathbf{C}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
+    \item Extend acquisition to emph{joint} criterion over batch $\mathbf{C} = (\confI{1}, \ldots, \confI{q})$:
+        % $$\acq_q(\mathbf{C}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
     \item Example: $q$-Expected Improvement
         $$\acq_{\text{qEI}}(\mathbf{C}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \emph{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
-    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional; the standard trick (BoTorch) is to reparameterize MC samples with fixed base draws $\xi$ so $\acq_{\text{qEI}}$ becomes differentiable in $\mathbf{C}$ and can be optimized with Adam / L-BFGS. Feasible up to $q\!\le\!32$; for larger $q$ decompose or fall back to heuristics
+    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional; 
+    the standard trick (BoTorch) is to reparameterize MC samples with fixed base draws $\xi$ 
+    so $\acq_{\text{qEI}}$ becomes differentiable in $\mathbf{C}$ and can be optimized with Adam / L-BFGS. 
+    Feasible up to $q\!\le\!32$.
   \end{itemize}
 \end{frame}
 
