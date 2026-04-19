@@ -1,11 +1,6 @@
-# ------------------------------------------------------------------------------
-# bayesian optimization
-
-# FIG: perform Bayesian Optimization using the Lower Confidence Bound (LCB).
-#     visualize how the surrogate model, confidence intervals, 
-#     and acquisition function evolve over iterations.
 # Used in: 04_BO/05_acqf.tex
-# ------------------------------------------------------------------------------
+#
+# BO loop on the 1D toy with Lower Confidence Bound (LCB) for lambda = 1, 5, 10
 
 library(bbotk)
 library(data.table)
@@ -34,9 +29,6 @@ set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
 surrogate = my_gp_surrogate(instance$archive)
 acq_function = acqf("cb", surrogate = surrogate)
-
-grid = generate_design_grid(instance$search_space, resolution = 1001L)$data
-set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
 prediction = update_surrogate_and_grid(surrogate, grid)
 

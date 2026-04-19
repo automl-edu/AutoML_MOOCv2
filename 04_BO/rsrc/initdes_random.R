@@ -1,7 +1,6 @@
 # Used in: 04_BO/01_big_picture.tex
-# 
+#
 # Visualize initial design: random
-# ------------------------------------------------------------------------------
 
 library(bbotk)
 library(data.table)

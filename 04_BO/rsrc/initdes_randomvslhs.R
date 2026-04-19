@@ -1,11 +1,9 @@
 # Used in: 04_BO/02_bo_basics.tex
-# 
+#
 # Visualize random vs LHS init designs
 
 library(bbotk)
 library(data.table)
-library(mlr3mbo)
-library(mlr3learners)
 library(ggplot2)
 library(ggExtra)
 library(lhs)

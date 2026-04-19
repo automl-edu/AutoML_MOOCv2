@@ -1,9 +1,6 @@
-# ------------------------------------------------------------------------------
-# bayesian optimization
-
-# FIG: perform Bayesian Optimization (BO) using Expected Improvement (EI).
 # Used in: 04_BO/03_gps.tex, 04_BO/05_acqf.tex, 04_BO/06_acqf_opt.tex
-# ------------------------------------------------------------------------------
+#
+# BO loop on the 1D toy with Expected Improvement (EI)
 
 library(bbotk)
 library(data.table)
@@ -44,9 +41,6 @@ myggsave("bayesian_loop_ee", plot = g, width = 5, height = 4)
 
 surrogate = my_gp_surrogate(instance$archive)
 acq_function = acqf("ei", surrogate = surrogate)
-
-grid = generate_design_grid(instance$search_space, resolution = 1001L)$data
-set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
 update_surrogate_and_grid(surrogate, grid)
 

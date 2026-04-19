@@ -1,6 +1,6 @@
 # Used in: 04_BO/06_acqf_opt.tex
-
-#  3D EI acquisition-function landscape on the Branin function.
+#
+# 3D EI acquisition-function landscape on the Branin function
 
 library(bbotk)
 library(data.table)

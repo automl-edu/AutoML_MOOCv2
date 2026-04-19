@@ -1,6 +1,6 @@
 # Used in: 04_BO/07_parallel_bo.tex
-
-#  top-q maximizers oof EI vs diverse batch
+#
+# Top-q maximizers of EI vs diverse batch
 
 library(bbotk)
 library(data.table)

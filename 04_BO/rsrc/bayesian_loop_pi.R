@@ -1,11 +1,6 @@
-# ------------------------------------------------------------------------------
-# bayesian optimization
-
-# FIG: perform Bayesian Optimization (BO) using the Probability of Improvement (PI) 
-#    iteratively select new points, and update the surrogate model 
-#    (Gaussian Process - Kriging).
 # Used in: 04_BO/05_acqf.tex, 04_BO/06_acqf_opt.tex
-# ------------------------------------------------------------------------------
+#
+# BO loop on the 1D toy with Probability of Improvement (PI)
 
 library(bbotk)
 library(data.table)
@@ -33,9 +28,6 @@ set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
 surrogate = my_gp_surrogate(instance$archive)
 acq_function = acqf("pi", surrogate = surrogate)
-
-grid = generate_design_grid(instance$search_space, resolution = 1001L)$data
-set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
 prediction = update_surrogate_and_grid(surrogate, grid)
 
