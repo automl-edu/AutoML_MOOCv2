@@ -45,7 +45,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_min), colour = "darkred") +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 cb = ggplot(aes(x = x, y = cb), data = grid) +
   geom_line(colour = "darkred") +
@@ -53,7 +53,7 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
   ylab(expression(paste("LCB, ", tau, " = 1"))) +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 g / cb
 myggsave("bayesian_loop_lcb_0", plot = g / cb, width = 5, height = 4)
@@ -75,7 +75,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_min), colour = "darkred") +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 cb = ggplot(aes(x = x, y = cb), data = grid) +
   geom_line(colour = "darkred") +
@@ -83,7 +83,7 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
   ylab(expression(paste("LCB, ", tau, " = 5"))) +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 g / cb
 myggsave("bayesian_loop_lcb_1", plot = g / cb, width = 5, height = 4)
@@ -105,7 +105,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_min), colour = "darkred") +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 cb = ggplot(aes(x = x, y = cb), data = grid) +
   geom_line(colour = "darkred") +
@@ -113,7 +113,7 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
   ylab(expression(paste("LCB, ", tau, " = 10"))) +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 g / cb
 myggsave("bayesian_loop_lcb_2", plot = g / cb, width = 5, height = 4)

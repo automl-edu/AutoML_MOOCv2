@@ -76,3 +76,9 @@ Slides and R figure scripts for the BO lecture.
 
 - `ggplot2` + `patchwork` for plots
 
+- Prefer `expression(lambda[1])` / `bquote(...)` for axis labels when the
+  plotting function supports expressions (ggplot2 does). Only when the function
+  does NOT accept expressions (e.g. base R `persp()`) fall back to literal
+  Unicode characters (`"λ₁"`, `"λ₂"`) directly in the source -- do NOT use
+  `\uXXXX` escape sequences, they are unreadable in the code.
+

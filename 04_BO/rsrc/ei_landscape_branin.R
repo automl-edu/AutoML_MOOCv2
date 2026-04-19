@@ -43,7 +43,8 @@ save_ei_persp = function(name, grid, width = 4, height = 3) {
   par(mar = c(0.4, 1.4, 0.3, 0.8))
   persp(x1, x2, z,
         theta = 20, phi = 20, expand = 0.55,
-        xlab = "x1", ylab = "x2", zlab = "EI",
+        # sadly, persp does not except expression so we use unicode here
+        xlab = "λ₁", ylab = "λ₂", zlab = "EI",
         ticktype = "detailed", nticks = 4,
         col = facet_col, border = "grey40", lwd = 0.2,
         cex.axis = 0.6, cex.lab = 0.8)

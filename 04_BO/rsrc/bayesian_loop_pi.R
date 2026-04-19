@@ -40,7 +40,7 @@ g = ggplot(aes(x = y, y = d), data = pi_normal) +
   geom_line(colour = "darkgrey") +
   geom_vline(xintercept = instance$archive$best()$y, colour = "#00A64F", linetype = 2) +
   labs(x = "Y(x)", y = "Density") +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 myggsave("bayesian_loop_pi_0", plot = g, width = 5, height = 4)
 
@@ -68,14 +68,14 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 pi = ggplot(aes(x = x, y = pi), data = grid) +
   geom_line(colour = "darkred") +
   geom_point(aes(x = x, y = pi), size = 3L, colour = "darkred", data = pi_argmax) +
   xlim(c(0, 1)) +
   ylab("PI") +
-  theme_minimal()
+  labs(x = expression(lambda)) + theme_minimal()
 
 myggsave("bayesian_loop_pi_1", plot = g / pi, width = 5, height = 4)
 
@@ -99,14 +99,14 @@ for (i in 2:9) {
     geom_point(aes(x = x, y = y), size = 3L, colour = "grey", data = old_pi_argmax) +
     xlim(c(0, 1)) +
     ylim(c(-2, 2.2)) +
-    theme_minimal()
+    labs(x = expression(lambda)) + theme_minimal()
   
   pi = ggplot(aes(x = x, y = pi), data = grid) +
     geom_line(colour = "darkred") +
     geom_point(aes(x = x, y = pi), size = 3L, colour = "darkred", data = pi_argmax) +
     xlim(c(0, 1)) +
     ylab("PI") +
-    theme_minimal()
+    labs(x = expression(lambda)) + theme_minimal()
  
   myggsave(sprintf("bayesian_loop_pi_%i", i), plot = g / pi, width = 5, height = 4)
 
