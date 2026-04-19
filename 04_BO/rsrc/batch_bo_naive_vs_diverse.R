@@ -52,27 +52,17 @@ greedy_diverse = function(grid, q, r) {
 }
 diverse = greedy_diverse(grid, q = q, r = 2.5)
 
-# ------------------------------------------------------------------------------
-# Plot.
-
+# Draw the EI landscape with a proposed batch overlaid as red circles.
+# We jitter the batch points because the naive top-q picks land on adjacent
+# grid cells -- without jitter they'd stack into a single blob and the "8 points
+# all here" story is invisible. `annotate_cluster = TRUE` adds an arrow + label
+# pointing at the cluster centroid, used only on the naive panel.
 plot_ei = function(batch, subtitle, annotate_cluster = FALSE) {
-  p = ggplot(grid, aes(x = x1, y = x2)) +
-    geom_raster(aes(fill = ei)) +
-    geom_contour(aes(z = ei), colour = "white", alpha = 0.4, linewidth = 0.3, bins = 8) +
-    geom_point(aes(x = x1, y = x2), data = instance$archive$data,
-               shape = 4, colour = "#ffcc00", size = 3, stroke = 1.5) +
+  p = acqf_base_plot(grid, instance$archive$data) +
     geom_jitter(aes(x = x1, y = x2), data = batch,
                 shape = 21, colour = "black", fill = "#e41a1c", size = 3.6,
                 alpha = 0.8, width = 0.25, height = 0.25) +
-    scale_fill_viridis_c(option = "mako", direction = -1, name = "EI") +
-    coord_cartesian(xlim = c(-5, 10), ylim = c(0, 15), expand = FALSE) +
-    labs(subtitle = subtitle, x = expression(lambda[1]), y = expression(lambda[2])) +
-    theme_minimal(base_size = 10) +
-    theme(
-      legend.position = "none",
-      panel.grid = element_blank(),
-      plot.subtitle = element_text(face = "bold")
-    )
+    labs(subtitle = subtitle, x = expression(lambda[1]), y = expression(lambda[2]))
   if (annotate_cluster) {
     cx = mean(batch$x1); cy = mean(batch$x2)
     p = p +

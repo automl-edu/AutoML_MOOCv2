@@ -72,3 +72,33 @@ update_surrogate_and_grid = function(surrogate, grid) {
   prediction
 }
 
+
+# Base landscape plot for 2D acquisition/surrogate visualizations:
+# mako raster + white contours of `value` + yellow-x markers for the design
+# points. Callers add their own point geoms (batch picks, annotations, ...)
+# and labels on top.
+#
+# `grid`   data.table with columns x1, x2, <value>
+# `design` data.frame with columns x1, x2 (evaluated design points)
+# `value`  name of the column in `grid` to render (e.g. "ei", "pi", "ucb",
+#          "y_hat"); default "ei"
+# `xlim`, `ylim`  plot limits; default to the Branin domain used across 04_BO
+acqf_base_plot = function(grid, design, value = "ei",
+                          xlim = c(-5, 10), ylim = c(0, 15)) {
+  v = ggplot2::sym(value)
+  ggplot2::ggplot(grid, ggplot2::aes(x = x1, y = x2)) +
+    ggplot2::geom_raster(ggplot2::aes(fill = !!v)) +
+    ggplot2::geom_contour(ggplot2::aes(z = !!v), colour = "white", alpha = 0.4,
+                          linewidth = 0.3, bins = 8) +
+    ggplot2::geom_point(ggplot2::aes(x = x1, y = x2), data = design,
+                        shape = 4, colour = "#ffcc00", size = 3, stroke = 1.3) +
+    ggplot2::scale_fill_viridis_c(option = "mako", direction = -1) +
+    ggplot2::coord_cartesian(xlim = xlim, ylim = ylim, expand = FALSE) +
+    ggplot2::theme_minimal(base_size = 10) +
+    ggplot2::theme(
+      legend.position = "none",
+      panel.grid = ggplot2::element_blank(),
+      plot.subtitle = ggplot2::element_text(face = "bold")
+    )
+}
+

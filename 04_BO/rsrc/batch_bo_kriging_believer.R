@@ -57,12 +57,7 @@ for (k in seq_len(q)) {
 
 # ------------------------------------------------------------------------------
 plot_iter = function(panel_dt, earlier, current, k) {
-  p = ggplot(panel_dt, aes(x = x1, y = x2)) +
-    geom_raster(aes(fill = ei)) +
-    geom_contour(aes(z = ei), colour = "white", alpha = 0.35,
-                 linewidth = 0.3, bins = 8) +
-    geom_point(aes(x = x1, y = x2), data = design_plot,
-               shape = 4, colour = "#ffcc00", size = 2.5, stroke = 1.2)
+  p = acqf_base_plot(panel_dt, design_plot)
   if (nrow(earlier) > 0) {
     p = p + geom_point(aes(x = x1, y = x2), data = earlier,
                        shape = 21, colour = "black", fill = "#e41a1c",
@@ -72,16 +67,8 @@ plot_iter = function(panel_dt, earlier, current, k) {
     geom_point(aes(x = x1, y = x2), data = current,
                shape = 23, colour = "black", fill = "#4daf4a",
                size = 4.2, stroke = 1.2) +
-    scale_fill_viridis_c(option = "mako", direction = -1, name = "EI") +
-    coord_cartesian(xlim = c(-5, 10), ylim = c(0, 15), expand = FALSE) +
     labs(subtitle = sprintf("iter %d", k),
-         x = expression(lambda[1]), y = expression(lambda[2])) +
-    theme_minimal(base_size = 10) +
-    theme(
-      legend.position = "none",
-      panel.grid = element_blank(),
-      plot.subtitle = element_text(face = "bold")
-    )
+         x = expression(lambda[1]), y = expression(lambda[2]))
 }
 
 plts = lapply(seq_len(q), function(k) {
