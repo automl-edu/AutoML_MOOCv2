@@ -27,7 +27,8 @@ Slides and R figure scripts for the BO lecture.
 ## Text Formatting
 - Avoid font size changes unless really necessary.
 - One sentence / thought per line (roughly), consider manual LBs after comma or semicolon; no "hanging" words
-- Use special markup or special latex cmds VERY VERY rarely. Normal text, formulas, maybe SOMETIMES textbf for VERY important stuff
+- Use "emphasized" markup in text sparingly, only for few words in slide and when really important;
+  use `\textbf` then not `\emph`
 - Quote text using backticks and apostrophes ``` ``text'' ``` syntax to produce "text", rather than `"text"`. Use of `\enquote{}` from `csquotes` is not required in an English locale.
 
 ## Math
