@@ -67,11 +67,15 @@
 
 
 %---------------GP Macros------------------
-% Gaussian Process
-\newcommand{\gp}{\mathcal{G}}
+% Gaussian Process symbol
+\newcommand{\gp}{\mathcal{GP}}
 % Family of Objective Functions
 \newcommand{\objF}{F}
 \providecommand{\yv}{\bm{y}}                % bold vector y  (responses)
+% GP observation noise variance
+\newcommand{\noisevar}{\sigma_\epsilon^2}
+% Indicator function
+\newcommand{\ind}{\mathds{1}}
 
 
 %---------------BO Macros------------------
@@ -105,7 +109,11 @@
 % surrogate standard error
 \newcommand{\sh}{\hat{\sigma}}      
 % current best observed cost
-\newcommand{\cmin}{\cost_{\min}} 
+\newcommand{\cmin}{\cost_{\min}}
+% Batch of q candidate configurations (parallel / batch BO)
+\newcommand{\batchconf}{\mathbf{B}}
+% q-Expected Improvement (batch acquisition)
+\newcommand{\qEI}{\acq_{\text{qEI}}}
 
 % Single hyperparameter
 \newcommand{\hyperparam}{\lambda}

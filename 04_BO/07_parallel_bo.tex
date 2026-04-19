@@ -44,15 +44,15 @@
 \begin{frame}[t]{Joint / $q$-Acquisition Functions}
   \small
   \begin{itemize}
-    \item Extend acquisition to emph{joint} criterion over batch $\mathbf{B} = (\confI{1}, \ldots, \confI{q})$:
-        % $$\acq_q(\mathbf{B}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
+    \item Extend acquisition to emph{joint} criterion over batch $\batchconf = (\confI{1}, \ldots, \confI{q})$:
+        % $$\acq_q(\batchconf) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
     \item Example: $q$-Expected Improvement
-        $$\acq_{\text{qEI}}(\mathbf{B}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
+        $$\qEI(\batchconf) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \textbf{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
     \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional;
     trick (BoTorch): draw MC base noise $\xi\!\sim\!\mathcal{N}(0,I)$ \textbf{once} and reuse across steps
-    $\leadsto$ $\acq_{\text{qEI}}(\mathbf{B})$ is smooth + differentiable, optimized with Adam / L-BFGS.
+    $\leadsto$ $\qEI(\batchconf)$ is smooth + differentiable, optimized with Adam / L-BFGS.
     Feasible up to $q\!\le\!32$.
   \end{itemize}
 \end{frame}
@@ -83,7 +83,7 @@
 \begin{frame}[t]{Heuristic 2: Local Penalization}
   \begin{itemize}
     \item After selecting $\confI{k}$, multiply the acquisition function by a \textbf{penalty} that decays with distance from $\confI{k}$:
-    $$\tilde{\acq}_{k+1}(\conf) = \acq(\conf) \cdot \prod_{j=1}^{k} \varphi\!\left(\|\conf - \confI{j}\|\right)$$
+    $$\tilde{\acq}_{k+1}(\conf) = \acq(\conf) \cdot \prod_{j=1}^k \varphi\!\left(\|\conf - \confI{j}\|\right)$$
     \item $\varphi$ typically a logistic / soft-step function around a Lipschitz-motivated radius
     \item Picks the next point from areas the previous ones do not already cover
     \item Cheap to compute, no refitting needed, easy to parallelize across $q$~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html}

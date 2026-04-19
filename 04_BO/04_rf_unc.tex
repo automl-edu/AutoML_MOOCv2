@@ -52,14 +52,14 @@
   \vspace{0.2cm}
 
   The forest's mean is simply
-  $\surro(\conf) = \frac{1}{B} \sum_{b=1}^{B} \surro_b(\conf)$.
+  $\surro(\conf) = \frac{1}{B} \sum_{b=1}^B \surro_b(\conf)$.
 
   \vspace{0.2cm}
 
   By the law of total variance, treating the RF as a mixture of $B$ models:
   $$
-  \sh^2(\conf) \;=\; \underbrace{\frac{1}{B} \sum_{b=1}^{B} \sh_b^2(\conf)}_{\text{within-tree (aleatoric) variance}}
-    \;+\; \underbrace{\frac{1}{B} \sum_{b=1}^{B} \surro_b(\conf)^2 - \surro(\conf)^2}_{\text{between-tree (epistemic) variance}}
+  \sh^2(\conf) \;=\; \underbrace{\frac{1}{B} \sum_{b=1}^B \sh_b^2(\conf)}_{\text{within-tree (aleatoric) variance}}
+    \;+\; \underbrace{\frac{1}{B} \sum_{b=1}^B \surro_b(\conf)^2 - \surro(\conf)^2}_{\text{between-tree (epistemic) variance}}
   $$
 
   \vspace{0.1cm}
@@ -70,7 +70,7 @@
 \begin{frame}[t]{Jackknife-based Variance Estimators}
   \begin{itemize}
     \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager, Hastie, Efron 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
-        $$\widehat{\sh}^2_{IJ}(\conf) = \sum_{i=1}^{n} \Big(\operatorname{Cov}_b\!\left(N_{ib},\, \surro_b(\conf)\right)\Big)^2$$
+        $$\widehat{\sh}^2_{IJ}(\conf) = \sum_{i=1}^n \Big(\operatorname{Cov}_b\!\left(N_{ib},\, \surro_b(\conf)\right)\Big)^2$$
         where $N_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
     \item Bias-corrected variant removes systematic bias in finite forests
     \item Captures uncertainty that the law-of-total-variance estimator misses (esp.\ for small $B$)

@@ -34,7 +34,7 @@
      it is only available as a black-box we can \textbf{query} at points $\conf \in \pcs$
     \item For now, we assume evaluations are noise-free
     \item \textbf{Idea:} Use the archive of past evaluations
-    $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bobudget}$ 
+    $\hist = \datasetHPOdef$
     to learn as much as possible about $\cost$, and plan subsequent evaluations \textbf{intelligently}
   \end{itemize}
   % \looppic{images/bo_loop_1d_toy_1.pdf}
@@ -247,7 +247,7 @@
 \begin{frame}{Summary - The Basic BO Loop}
     \begin{enumerate}
         \item Create \textbf{initial design}
-        \item \textbf{Fit} surrogate model $\surro$ on the archive $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bobudget}$
+        \item \textbf{Fit} surrogate model $\surro$ on the archive $\hist = \datasetHPOdef$
         \item \textbf{Propose} new point $\confI{t+1}$ by optimizing acquisition function $\acq(\conf)$
         \item \textbf{Evaluate} $\confI{t+1}$ and \textbf{update} the archive:\\ $\hist \leftarrow \hist \cup \langle \confI{t+1}, \cost(\confI{t+1}) \rangle$
         \item Repeat from step 2. until budget is exhausted

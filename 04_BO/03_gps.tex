@@ -57,16 +57,16 @@
   \small
   \begin{itemize}
     \item \textbf{Prior over functions:} we place a GP prior on the unknown function,
-      $$f \sim \mathcal{GP}\!\left(m(\x),\; k(\x,\x')\right)$$
+      $$f \sim \gp(m(\x),\; k(\x,\x'))$$
       assume zero prior mean $m(\x) \equiv 0$ (easy to relax, see later)
     \item \textbf{Observation model:} each output is a noisy read-out of $f$ at input $\xI{i}$,
-      $$\yI{i} = f(\xI{i}) + \epsilon_i, \qquad \epsilon_i \overset{\text{i.i.d.}}{\sim} \normaldist(0, \sigma_\epsilon^2)$$
+      $$\yI{i} = f(\xI{i}) + \epsilon_i, \qquad \epsilon_i \overset{\text{i.i.d.}}{\sim} \normaldist(0, \noisevar)$$
     \item \textbf{Two regimes:}
       \begin{itemize}
-        \item $\sigma_\epsilon^2 = 0$: \textbf{interpolation} -- posterior passes exactly through each $(\xI{i}, \yI{i})$
-        \item $\sigma_\epsilon^2 > 0$: \textbf{regression} -- posterior smooths through noisy observations; uncertainty never shrinks to $0$ at training points
+        \item $\noisevar = 0$: \textbf{interpolation} -- posterior passes exactly through each $(\xI{i}, \yI{i})$
+        \item $\noisevar > 0$: \textbf{regression} -- posterior smooths through noisy observations; uncertainty never shrinks to $0$ at training points
       \end{itemize}
-    \item Computationally: the noise just adds $\sigma_\epsilon^2 \bm{I}$ to the Gram matrix ($\bm{K} \to \bm{K} + \sigma_\epsilon^2 \bm{I}$)
+    \item Computationally: the noise just adds $\noisevar \bm{I}$ to the Gram matrix ($\bm{K} \to \bm{K} + \noisevar \bm{I}$)
   \end{itemize}
 \end{frame}
 
@@ -75,22 +75,22 @@
   \footnotesize
   \begin{itemize}
   \item For a test input $\x$ and observed data $\dataset$, the posterior predictive is Gaussian:
-  $$Y(\x) \mid \x, \dataset \sim \normaldist\!\left(\hat\mean(\x),\, \sh^2(\x)\right)$$
+  $$Y(\x) \mid \x, \dataset \sim \normaldist(\hat\mean(\x),\, \sh^2(\x))$$
   with closed-form posterior mean and variance:
-  $$\hat\mean(\x) = k_*^\top (\bm{K} + \sigma_\epsilon^2 \bm{I})^{-1} \yv, \qquad
-    \sh^2(\x) = k_{**} - k_*^\top (\bm{K} + \sigma_\epsilon^2 \bm{I})^{-1} k_*$$
-  Set $\sigma_\epsilon^2 = 0$ to recover the noise-free interpolating case.
+  $$\hat\mean(\x) = k_*^T (\bm{K} + \noisevar \bm{I})^{-1} \yv, \qquad
+    \sh^2(\x) = k_{**} - k_*^T (\bm{K} + \noisevar \bm{I})^{-1} k_*$$
+  Set $\noisevar = 0$ to recover the noise-free interpolating case.
   \item Notation:
   \begin{itemize}
-    \item $k_* := \big(k(\x, \xI{1}), \ldots, k(\x, \xI{t})\big)^\top$ -- kernel between test $\x$ and training inputs
+    \item $k_* := \big(k(\x, \xI{1}), \ldots, k(\x, \xI{t})\big)^T$ -- kernel between test $\x$ and training inputs
     \item $k_{**} := k(\x, \x)$ -- kernel self-similarity at the test input
-    \item $\yv := (\yI{1}, \ldots, \yI{t})^\top$ -- vector of observed outputs
+    \item $\yv := (\yI{1}, \ldots, \yI{t})^T$ -- vector of observed outputs
     \item $\bm{K} := \big(k(\xI{i}, \xI{j})\big)_{i,j=1}^t$ -- Gram / kernel matrix of training inputs
   \end{itemize}
   \item \textbf{Note on prior mean $m(\x)$:} we assume $m(\x) \equiv 0$, so it drops out of the formulas.
   For non-zero $m$, simply replace $\yv$ by $\yv - m(\bm{X})$ and add $m(\x)$ back to $\hat\mean(\x)$. \\
   In practice people usually center the outputs and use zero mean.
-  \item \textbf{Prediction cost:} with a cached Cholesky factor of $\bm{K}+\sigma_\epsilon^2\bm{I}$, each test point costs $\mathcal{O}(t)$ for the mean and $\mathcal{O}(t^2)$ for the variance.
+  \item \textbf{Prediction cost:} with a cached Cholesky factor of $\bm{K}+\noisevar\bm{I}$, each test point costs $\mathcal{O}(t)$ for the mean and $\mathcal{O}(t^2)$ for the variance.
 \end{itemize}
 \end{frame}
 
@@ -101,17 +101,17 @@
   $$
   \begin{pmatrix} \yv \\ Y(\x) \end{pmatrix}
   \sim \normaldist\!\left(\bm{0},\;
-  \begin{pmatrix} \bm{K} + \sigma_\epsilon^2 \bm{I} & k_* \\ k_*^\top & k_{**} + \sigma_\epsilon^2 \end{pmatrix}\right)
+  \begin{pmatrix} \bm{K} + \noisevar \bm{I} & k_* \\ k_*^T & k_{**} + \noisevar \end{pmatrix}\right)
   $$
-  Apply the standard \textbf{conditioning rule} for a multivariate Gaussian (treat $\widetilde{\bm K} := \bm{K} + \sigma_\epsilon^2 \bm{I}$):
+  Apply the standard \textbf{conditioning rule} for a multivariate Gaussian (treat $\widetilde{\bm K} := \bm{K} + \noisevar \bm{I}$):
   $$
-  Y(\x) \mid \yv \;\sim\; \normaldist\!\left(\underbrace{k_*^\top \widetilde{\bm K}^{-1} \yv}_{\hat\mean(\x)},\;\, \underbrace{k_{**} - k_*^\top \widetilde{\bm K}^{-1} k_*}_{\sh^2(\x)}\right)
+  Y(\x) \mid \yv \;\sim\; \normaldist\!\left(\underbrace{k_*^T \widetilde{\bm K}^{-1} \yv}_{\hat\mean(\x)},\;\, \underbrace{k_{**} - k_*^T \widetilde{\bm K}^{-1} k_*}_{\sh^2(\x)}\right)
   $$
   \vspace{0.05cm}
   \begin{itemize}
     \item $\hat\mean(\x)$ is a linear combination of training outputs, weights from $\widetilde{\bm K}^{-1} k_*$
     \item $\sh^2(\x)$ is the prior variance $k_{**}$ reduced by what the data tells us about $Y(\x)$
-    \item With $\sigma_\epsilon^2 = 0$: exact interpolation; $\sh^2(\xI{i}) = 0$ at training points
+    \item With $\noisevar = 0$: exact interpolation; $\sh^2(\xI{i}) = 0$ at training points
   \end{itemize}
 \end{frame}
 
@@ -203,7 +203,7 @@
   Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\epsilon$, \ldots).\\[0.2cm]
   Standard approach: \textbf{Type-II maximum likelihood} -- maximize the \textbf{log marginal likelihood} of the observed data:
   $$
-  \log p(\yv \mid \bm{\theta}) = -\tfrac{1}{2} \yv^\top \bm{K}_{\bm{\theta}}^{-1} \yv
+  \log p(\yv \mid \bm{\theta}) = -\tfrac{1}{2} \yv^T \bm{K}_{\bm{\theta}}^{-1} \yv
     \;-\; \tfrac{1}{2} \log |\bm{K}_{\bm{\theta}}|
     \;-\; \tfrac{t}{2} \log 2\pi
   $$
@@ -231,7 +231,7 @@
     \item \textbf{Categorical HPs:}
         \begin{itemize}
             \item One-hot encoding + continuous kernel (simple, but distorts distances)
-            \item \textbf{Hamming / overlap kernel}: $k_{\text{cat}}(c, c') = \mathds{1}[c = c']$ (or a per-level scale)
+            \item \textbf{Hamming / overlap kernel}: $k_{\text{cat}}(c, c') = \ind[c = c']$ (or a per-level scale)
             \item Combine with continuous kernel as a \textbf{product}: $k(\x, \x') = k_{\text{num}}(\x_{\text{num}}, \x'_{\text{num}}) \cdot k_{\text{cat}}(\x_{\text{cat}}, \x'_{\text{cat}})$
         \end{itemize}
     \item \textbf{Conditional / hierarchical HPs}

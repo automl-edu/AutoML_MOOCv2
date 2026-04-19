@@ -61,7 +61,7 @@
 \begin{itemize}
 \item \textbf{Random search}
 \begin{itemize}
-\item Some people do this due to simplicity and the "we do not have to optimize perfectly" point
+\item Some people do this due to simplicity and the ``we do not have to optimize perfectly'' point
 \item Likely not a good idea in higher dimensions
 \end{itemize}
 \item \textbf{Multi-Start local search:}
@@ -94,8 +94,8 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   \item But: once $\sigma$ contracts around a basin, the search is effectively \textbf{local} -- a single run can miss better modes elsewhere
   \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
   \begin{itemize}
-  \item \textbf{IPOP-CMA-ES} (Auger \& Hansen, 2005) -- doubles $\lambda$ on every restart to widen exploration
-  \item \textbf{BIPOP-CMA-ES} (Hansen, 2009) -- interleaves IPOP-like restarts with small-$\lambda$, randomised-$\sigma$ restarts; winner of multiple BBOB benchmarks
+  \item \textbf{IPOP-CMA-ES}~\liturl{Auger \& Hansen 2005}{https://ieeexplore.ieee.org/document/1554902} -- doubles $\lambda$ on every restart to widen exploration
+  \item \textbf{BIPOP-CMA-ES}~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} -- interleaves IPOP-like restarts with small-$\lambda$, randomised-$\sigma$ restarts; winner of multiple BBOB benchmarks
   \end{itemize}
   \end{itemize}
   \end{itemize}
@@ -108,7 +108,7 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   \begin{itemize}
     \item AutoML spaces mix continuous, integer, categorical, and \textbf{conditional} HPs
     \item No gradients and no smoothness across categorical cuts $\leadsto$ L-BFGS / DIRECT / CMA-ES don't apply out-of-the-box
-    \item \textbf{SMAC's approach:} interleaved random search + \textbf{iterated local search} on $\acq$ (Hutter et al., LION 2011)
+    \item \textbf{SMAC's approach:} interleaved random search + \textbf{iterated local search} on $\acq$~\liturl{Hutter et al. 2011}{https://link.springer.com/chapter/10.1007/978-3-642-25566-3_40}
   \end{itemize}
   \vspace{0.15cm}
   \textbf{One-exchange local search from each start point:}
