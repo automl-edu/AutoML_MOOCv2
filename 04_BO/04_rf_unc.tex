@@ -27,7 +27,7 @@
             \item Training complexity $\mathcal{O}(B \cdot n \log n)$ -- scales much better
             \item Robust: fewer numerical issues than GP Cholesky solves
         \end{itemize}
-    \item Downside: RFs are not Bayesian $\leadsto$ we must \emph{construct} an uncertainty estimate instead of reading it off the posterior
+    \item Downside: RFs are not Bayesian $\leadsto$ we must \textbf{construct} an uncertainty estimate instead of reading it off the posterior
   \end{itemize}
   \vspace{0.2cm}
   \footnotesize \textbf{SMAC} (used in auto-sklearn, Auto-WEKA) is the classic example -- BO with RF surrogate.
@@ -39,10 +39,10 @@
   \begin{itemize}
     \item \textbf{Bagging:} each tree $b$ trained on a bootstrap sample of $\hist$
     \item \textbf{Feature subsampling:} at each split, only $m \le d$ features are considered
-    \item \textbf{Random split locations} (\emph{extratrees}): cut point chosen uniformly at random inside the feature's range
+    \item \textbf{Random split locations} (\textbf{extratrees}): cut point chosen uniformly at random inside the feature's range
   \end{itemize}
   \vspace{0.2cm}
-  \textbf{Key idea for BO:}\hspace{0.5em}the spread of per-tree predictions across the ensemble reflects \emph{epistemic uncertainty} at $\conf$ -- high spread where data is scarce or the target is harder to model.
+  \textbf{Key idea for BO:}\hspace{0.5em}the spread of per-tree predictions across the ensemble reflects \textbf{epistemic uncertainty} at $\conf$ -- high spread where data is scarce or the target is harder to model.
 \end{frame}
 
 
@@ -81,13 +81,13 @@
 
 \begin{frame}[t]{Quantile Regression Forests}
   \begin{itemize}
-    \item \textbf{Quantile Regression Forests}~\liturl{Meinshausen 2006}{https://jmlr.org/papers/v7/meinshausen06a.html}: instead of per-leaf means, keep the entire \emph{empirical distribution} of the training labels falling into each leaf
+    \item \textbf{Quantile Regression Forests}~\liturl{Meinshausen 2006}{https://jmlr.org/papers/v7/meinshausen06a.html}: instead of per-leaf means, keep the entire \textbf{empirical distribution} of the training labels falling into each leaf
     \item For test $\conf$, aggregate per-tree leaf labels (weighted) to approximate $F(y \mid \conf)$
     \item From this CDF we get
         \begin{itemize}
             \item predictive \textbf{quantiles} -- useful for LCB with $\tau\!=\!$ quantile level
             \item predictive \textbf{mean} and \textbf{variance} via empirical moments
-            \item \emph{non-Gaussian} predictive distributions -- e.g., skewed where data is asymmetric
+            \item \textbf{non-Gaussian} predictive distributions -- e.g., skewed where data is asymmetric
         \end{itemize}
     \item Natural fit with acquisition functions that only need quantiles or samples (Thompson sampling, $q$EI via Monte Carlo)
   \end{itemize}
@@ -115,8 +115,8 @@
   \begin{itemize}
     \item RF variance is often \textbf{poorly calibrated} compared to a properly-fit GP:
         \begin{itemize}
-            \item Tends to \emph{underestimate} uncertainty in extrapolation zones (no data outside the training support)
-            \item Tends to \emph{overestimate} uncertainty near the training data (tree randomness doesn't vanish with data density)
+            \item Tends to \textbf{underestimate} uncertainty in extrapolation zones (no data outside the training support)
+            \item Tends to \textbf{overestimate} uncertainty near the training data (tree randomness doesn't vanish with data density)
         \end{itemize}
     \item RFs give no real posterior predictive distribution -- no Bayesian guarantees for EI / PI
     \item In practice BO with RF still works well; it is the go-to choice in \textbf{SMAC}

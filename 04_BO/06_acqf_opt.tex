@@ -83,7 +83,7 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   % \begin{itemize}
   % \item Deterministic global optimizer for box-constrained problems
   % \item Recursively partitions the box into hyperrectangles; evaluates $\acq$ at each center
-  % \item Per iteration: mark ``potentially optimal'' rectangles -- those that could hold a better point under \emph{some} Lipschitz constant -- and trisect them along their longest side
+  % \item Per iteration: mark ``potentially optimal'' rectangles -- those that could hold a better point under \textbf{some} Lipschitz constant -- and trisect them along their longest side
   % \end{itemize}
   \item \textbf{CMA-ES -- Covariance Matrix Adaptation Evolution Strategy}
   \begin{itemize}
@@ -91,7 +91,7 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   \item Each generation: sample $\lambda$ candidates from $\mathcal{N}(\bm{m}, \sigma^2 \bm{C})$, rank by $\acq$, update mean $\bm{m}$, step size $\sigma$, and covariance $\bm{C}$ from the best $\mu$
   \item $\bm{C}$ learns the local curvature\\
   $\leadsto$ robust on non-convex, ill-conditioned $\acq$; handles medium $d$ well
-  \item But: once $\sigma$ contracts around a basin, the search is effectively \emph{local} -- a single run can miss better modes elsewhere
+  \item But: once $\sigma$ contracts around a basin, the search is effectively \textbf{local} -- a single run can miss better modes elsewhere
   \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
   \begin{itemize}
   \item \textbf{IPOP-CMA-ES} (Auger \& Hansen, 2005) -- doubles $\lambda$ on every restart to widen exploration
@@ -106,19 +106,19 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
 \begin{frame}[t]{Mixed / Hierarchical Search Spaces}
   \small
   \begin{itemize}
-    \item AutoML spaces mix continuous, integer, categorical, and \emph{conditional} HPs
+    \item AutoML spaces mix continuous, integer, categorical, and \textbf{conditional} HPs
     \item No gradients and no smoothness across categorical cuts $\leadsto$ L-BFGS / DIRECT / CMA-ES don't apply out-of-the-box
-    \item \textbf{SMAC's approach:} interleaved random search + \emph{iterated local search} on $\acq$ (Hutter et al., LION 2011)
+    \item \textbf{SMAC's approach:} interleaved random search + \textbf{iterated local search} on $\acq$ (Hutter et al., LION 2011)
   \end{itemize}
   \vspace{0.15cm}
   \textbf{One-exchange local search from each start point:}
   \begin{enumerate}\setlength\itemsep{0pt}
     \item Start from the current incumbent (plus the top-$k$ archive entries)
-    \item Generate neighbours by changing \emph{exactly one} HP:
+    \item Generate neighbours by changing \textbf{exactly one} HP:
       \begin{itemize}\setlength\itemsep{0pt}
         \item Categorical: try each other level
         \item Numeric / integer: small (Gaussian) perturbation around the current value
-        \item Conditional HPs: only mutate children of \emph{active} parents
+        \item Conditional HPs: only mutate children of \textbf{active} parents
       \end{itemize}
     \item Move to the best-improving neighbour; stop when no neighbour improves $\acq$
   \end{enumerate}
@@ -135,7 +135,7 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   \small
   \textbf{Key takeaways:}
   \begin{itemize}\setlength\itemsep{0pt}
-    \item BO's inner loop is itself an optimization problem -- but over the \emph{cheap} surrogate; we don't need to solve it perfectly
+    \item BO's inner loop is itself an optimization problem -- but over the \textbf{cheap} surrogate; we don't need to solve it perfectly
     \item $\acq$ is non-convex, multi-modal, and gets rugged with more data
     \item Numeric $\pcs$: multi-start L-BFGS-B (w/ GP gradients), DIRECT, or CMA-ES (+ IPOP/BIPOP restarts)
     \item Mixed / hierarchical $\pcs$: SMAC-style iterated local search interleaved with random search
@@ -151,7 +151,7 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   \textbf{When inner optimization matters most (invest CPU):}
   \begin{itemize}\setlength\itemsep{0pt}
     \item Expensive $\cost$ (minutes-to-hours per eval), late in the BO run (AF peaks narrow), noisy / multi-objective $\acq$
-    \item When \emph{not} to over-engineer: cheap $\cost$ with many BO iterations; low-$d$, smooth surrogate ($\sim\!5$ L-BFGS-B restarts suffice)
+    \item When \textbf{not} to over-engineer: cheap $\cost$ with many BO iterations; low-$d$, smooth surrogate ($\sim\!5$ L-BFGS-B restarts suffice)
   \end{itemize}
 \end{frame}
 

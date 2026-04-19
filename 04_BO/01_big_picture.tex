@@ -118,7 +118,7 @@ Many optimization problems in AutoML share three features:
   \end{tikzpicture}
   \end{center}
   \begin{itemize}
-      \item Let $\conf$ encode \emph{all} pipeline choices, not just HPs of a single learner
+      \item Let $\conf$ encode \textbf{all} pipeline choices, not just HPs of a single learner
       \item $\cost(\conf)$ is the resampled performance of complete pipeline
       \item Search space $\pcs$ becomes more \textbf{hierarchical / conditional} and higher-dimensional --
       efficiency even more crucial
@@ -193,8 +193,8 @@ BO did not originate in ML -- grew out of \textbf{Design and Analysis of Compute
 \vspace{0.2cm}
 \begin{itemize}
     \item Classical engineering setting: a single run of a physics / CFD / finite-element simulator can take hours or days
-    \item Idea: treat the simulator as an unknown function, fit a \emph{Gaussian process} (aka Kriging) to a small design, and use it as a cheap proxy
-    \item \textbf{EGO} (Efficient Global Optimization,~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147}) pairs a GP with \emph{Expected Improvement} -- the direct ancestor of today's BO
+    \item Idea: treat the simulator as an unknown function, fit a \textbf{Gaussian process} (aka Kriging) to a small design, and use it as a cheap proxy
+    \item \textbf{EGO} (Efficient Global Optimization,~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147}) pairs a GP with \textbf{Expected Improvement} -- the direct ancestor of today's BO
 \end{itemize}
 \vspace{0.2cm}
 Typical applications: aerodynamic shape, car crash / airfoil simulations, reservoir / groundwater models, climate / weather code calibration, chip / circuit design.

@@ -19,7 +19,7 @@
     \item Often multiple cores / nodes on clusters available 
     \item We can try to fully parallelize the underlying objective,
       and in ML there are good chances this is possible
-    \item Still attractive to generate a \textbf{batch} of $q > 1$ points to evaluate \emph{simultaneously}
+    \item Still attractive to generate a \textbf{batch} of $q > 1$ points to evaluate \textbf{simultaneously}
     \item Trade-off: more wall-clock speedup vs.\ fewer feedback rounds / less optimally placed points
     \item But remember: RS sometimes hard to beat
   \end{itemize}
@@ -29,7 +29,7 @@
 \begin{frame}[t]{The Core Challenge}
   \small
   \begin{itemize}
-    \item Acquisition function $\acq(\conf)$ is designed for \emph{one} candidate at a time
+    \item Acquisition function $\acq(\conf)$ is designed for \textbf{one} candidate at a time
     \item Naively proposing the top-$q$ maximizers of $\acq$ gives \textbf{near-duplicates}: they cluster around the current global peak of $\acq$ $\leadsto$ wastes $q-1$ of the $q$ evaluations
     \item We need batch proposals that are simultaneously \textbf{informative} and \textbf{diverse}
   \end{itemize}
@@ -48,10 +48,10 @@
         % $$\acq_q(\mathbf{B}) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
     \item Example: $q$-Expected Improvement
         $$\acq_{\text{qEI}}(\mathbf{B}) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
-    \item Reward the \emph{best} outcome in the batch -- naturally encourages diversity
+    \item Reward the \textbf{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
     \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional;
-    trick (BoTorch): draw MC base noise $\xi\!\sim\!\mathcal{N}(0,I)$ \emph{once} and reuse across steps
+    trick (BoTorch): draw MC base noise $\xi\!\sim\!\mathcal{N}(0,I)$ \textbf{once} and reuse across steps
     $\leadsto$ $\acq_{\text{qEI}}(\mathbf{B})$ is smooth + differentiable, optimized with Adam / L-BFGS.
     Feasible up to $q\!\le\!32$.
   \end{itemize}
@@ -65,7 +65,7 @@
     \item Start with current surrogate; propose $\confI{1} = \argmax \acq(\conf)$
     \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
         \begin{itemize}\setlength\itemsep{0pt}
-            \item Kriging Believer: the posterior \emph{mean} $\surro(\confI{1})$
+            \item Kriging Believer: the posterior \textbf{mean} $\surro(\confI{1})$
             \item Constant Liar: a fixed value (e.g.\ $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
             \item MC Fantasizing: a sample from the posterior
         \end{itemize}
@@ -95,7 +95,7 @@
   \begin{itemize}
     \item \textbf{Thompson sampling}: draw a sample path $\tilde{\cost}$ from the posterior of the surrogate, propose $\argmin_{\conf} \tilde{\cost}(\conf)$
     \item Each new posterior sample gives a different proposal $\leadsto$ draw $q$ samples to get $q$ points
-    \item Batch is diverse \emph{by construction} -- no extra diversity mechanism needed
+    \item Batch is diverse \textbf{by construction} -- no extra diversity mechanism needed
     \item Especially clean with GP surrogates (via random Fourier features) and with RF surrogates (sample a tree / a leaf distribution)
     \item Scales well with $q$; a go-to in large-batch / high-dim BO
   \end{itemize}
@@ -109,7 +109,7 @@
       \textbf{Synchronous batch BO}
       \begin{itemize}\setlength\itemsep{0pt}
           \item Propose a batch of $q$ points, dispatch to $q$ workers
-          \item Wait for \emph{all} $q$ outcomes, refit surrogate, propose next batch
+          \item Wait for \textbf{all} $q$ outcomes, refit surrogate, propose next batch
           \item Simple bookkeeping; one refit per round
           \item Slowest config determines round length $\leadsto$ idle workers on skewed runtimes
       \end{itemize}
@@ -117,13 +117,13 @@
       \textbf{Asynchronous (ADBO)}
       \begin{itemize}\setlength\itemsep{0pt}
           \item Keep $q$ workers busy at all times; react per-completion, not per-batch
-          \item On each finish: update surrogate with the \emph{one} new observation and propose \emph{one} new point
+          \item On each finish: update surrogate with the \textbf{one} new observation and propose \textbf{one} new point
       \end{itemize}
   \end{columns}
   \vspace{0.2cm}
   \textbf{How ADBO avoids duplicates despite picking one point at a time:}
   \begin{itemize}\setlength\itemsep{0pt}
-    \item At proposal time there are $q\!-\!1$ configs still running (\emph{pending / in-flight})
+    \item At proposal time there are $q\!-\!1$ configs still running (\textbf{pending / in-flight})
     \item Treat them as observed by \textbf{fantasizing} their outcomes -- Kriging Believer (posterior mean), Constant Liar, or MC samples
     \item Fantasies inflate posterior certainty around pending points $\leadsto$ next $\argmax \acq$ moves elsewhere, so the proposal is diverse w.r.t.\ currently running work
     \item Once a real evaluation returns, its fantasy is replaced by the true value and the surrogate is refit

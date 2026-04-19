@@ -34,7 +34,7 @@
     \item Generic regression model on inputs $\x \in \Xspace$ and outputs $y \in \realnum$\\
     % (later we plug in $\x = \conf$ and $y = \cost(\conf)$)
     \item A GP is a \textbf{distribution over functions} $f: \Xspace \to \realnum$:\\
-    For \emph{any} finite set of inputs $\{\xI{1}, \ldots, \xI{t}\}$, the vector of function values 
+    For \textbf{any} finite set of inputs $\{\xI{1}, \ldots, \xI{t}\}$, the vector of function values 
     $(f(\xI{1}), \ldots, f(\xI{t}))$ is \textbf{jointly Gaussian}
     \item Fully characterized by a \textbf{mean function} $m(\x)$ and a \textbf{kernel} $k(\x, \x')$ 
     that encodes how correlated the outputs of nearby points are
@@ -126,7 +126,7 @@
     \begin{itemize}
         \item $l$: \textbf{length scale} -- the larger $l$, the longer the range of correlation
         \item $d(\cdot,\cdot)$: Euclidean distance
-        \item Infinitely differentiable $\leadsto$ sample paths are \emph{very smooth}
+        \item Infinitely differentiable $\leadsto$ sample paths are \textbf{very smooth}
         \item Often too smooth for realistic response surfaces
     \end{itemize}
     \column{.45\textwidth}
@@ -201,7 +201,7 @@
 \begin{frame}[t]{Learning Kernel Hyperparameters}
   \small
   Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\epsilon$, \ldots).\\[0.2cm]
-  Standard approach: \textbf{Type-II maximum likelihood} -- maximize the \emph{log marginal likelihood} of the observed data:
+  Standard approach: \textbf{Type-II maximum likelihood} -- maximize the \textbf{log marginal likelihood} of the observed data:
   $$
   \log p(\yv \mid \bm{\theta}) = -\tfrac{1}{2} \yv^\top \bm{K}_{\bm{\theta}}^{-1} \yv
     \;-\; \tfrac{1}{2} \log |\bm{K}_{\bm{\theta}}|
@@ -231,12 +231,12 @@
     \item \textbf{Categorical HPs:}
         \begin{itemize}
             \item One-hot encoding + continuous kernel (simple, but distorts distances)
-            \item \emph{Hamming / overlap kernel}: $k_{\text{cat}}(c, c') = \mathds{1}[c = c']$ (or a per-level scale)
+            \item \textbf{Hamming / overlap kernel}: $k_{\text{cat}}(c, c') = \mathds{1}[c = c']$ (or a per-level scale)
             \item Combine with continuous kernel as a \textbf{product}: $k(\x, \x') = k_{\text{num}}(\x_{\text{num}}, \x'_{\text{num}}) \cdot k_{\text{cat}}(\x_{\text{cat}}, \x'_{\text{cat}})$
         \end{itemize}
     \item \textbf{Conditional / hierarchical HPs}
         \begin{itemize}
-            \item Simple fix: \emph{imputation} -- fill inactive HPs with a default / sentinel value
+            \item Simple fix: \textbf{imputation} -- fill inactive HPs with a default / sentinel value
             \item Structured kernels that ignore inactive dimensions (tree-of-kernels)
             \item In practice, \textbf{random forests} might handle this more naturally
         \end{itemize}

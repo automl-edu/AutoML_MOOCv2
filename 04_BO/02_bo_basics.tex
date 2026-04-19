@@ -31,11 +31,11 @@
   \begin{itemize}
     \item Want to solve $$\conf^\ast \in \argmin_{\conf \in \pcs} \cost(\conf)$$
     \item We do not know the analytical structure of $\cost: \pcs \to \realnum$;\\
-     it is only available as a black-box we can \emph{query} at points $\conf \in \pcs$
+     it is only available as a black-box we can \textbf{query} at points $\conf \in \pcs$
     \item For now, we assume evaluations are noise-free
     \item \textbf{Idea:} Use the archive of past evaluations
     $\hist = \langle \confI{i}, \cost(\confI{i}) \rangle_{i=1}^{\bobudget}$ 
-    to learn as much as possible about $\cost$, and plan subsequent evaluations \emph{intelligently}
+    to learn as much as possible about $\cost$, and plan subsequent evaluations \textbf{intelligently}
   \end{itemize}
   % \looppic{images/bo_loop_1d_toy_1.pdf}
 \end{frame}
@@ -98,7 +98,7 @@
 %         $$\confI{k}_j \sim \operatorname{Uniform}\!\left(I_j^{(\pi_j(k))}\right) \quad \text{(or use the bin midpoint)}$$
 %     \end{enumerate}
 %     \vspace{0.2cm}
-%     \textbf{Effect:}\hspace{1em}every 1D projection has \emph{exactly one} point per interval $\leadsto$ good marginal coverage.\\[0.2cm]
+%     \textbf{Effect:}\hspace{1em}every 1D projection has \textbf{exactly one} point per interval $\leadsto$ good marginal coverage.\\[0.2cm]
 %     \textbf{Note:}\hspace{1em}the permutations $\pi_j$ are the only freedom -- different permutations give very different 2D spreads. Maximin picks a good one (next slide).
 % \end{frame}
 
@@ -236,7 +236,7 @@
       \includegraphics[width=\textwidth]{images/bo_loop_1d_toy_11.pdf}
       \column{.48\textwidth}
       \begin{itemize}
-          \item Optimizing $\surro$ directly uses the \emph{mean prediction} as proposal rule
+          \item Optimizing $\surro$ directly uses the \textbf{mean prediction} as proposal rule
           \item That is pure \textbf{exploitation}, no \textbf{exploration}
           \item Smarter proposal rules -- \textbf{acquisition functions} -- also reward visiting uncertain regions
       \end{itemize}
@@ -253,7 +253,7 @@
         \item Repeat from step 2. until budget is exhausted
     \end{enumerate}
     \vspace{0.3cm}
-    Core design choices: the \emph{initial design}, the \emph{surrogate model}, and the \emph{rule} used to propose the next point.
+    Core design choices: the \textbf{initial design}, the \textbf{surrogate model}, and the \textbf{rule} used to propose the next point.
 \end{frame}
 
 
@@ -262,7 +262,7 @@
 % \begin{enumerate}
 %     \item BO starts with a space-filling \textbf{initial design}; size $\approx 4d$ works as a rule of thumb
 %     \item A cheap \textbf{surrogate} $\surro$ is fit to the evaluations to approximate $\cost$
-%     \item The basic loop iterates: \emph{fit, propose, evaluate, update}
+%     \item The basic loop iterates: \textbf{fit, propose, evaluate, update}
 %     \item Using only $\surro$'s mean prediction leads to strong exploitation but weak exploration
 % \end{enumerate}
 % \end{frame}
