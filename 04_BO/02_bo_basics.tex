@@ -14,8 +14,8 @@
   \end{tikzpicture}%
 }
 
-\title[AutoML: BO]{Basic BO Loop and Surrogate Modeling}
-\subtitle{Initial Design, Surrogate Modeling, and Iterative Loop}
+\title[AutoML: BO]{The Bayesian Optimization Loop}
+\subtitle{Initial Design, Surrogate Fit, and Sequential Proposal}
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
 
@@ -252,8 +252,11 @@
         \item \textbf{Evaluate} $\confI{t+1}$ and \textbf{update} the archive:\\ $\hist \leftarrow \hist \cup \langle \confI{t+1}, \cost(\confI{t+1}) \rangle$
         \item Repeat from step 2. until budget is exhausted
     \end{enumerate}
-    \vspace{0.3cm}
+    \vspace{0.2cm}
     Core design choices: the \textbf{initial design}, the \textbf{surrogate model}, and the \textbf{rule} used to propose the next point.
+    \vspace{0.2cm}
+
+    \textbf{Further reading:} \liturl{Forrester, S\'obester, Keane 2008}{https://onlinelibrary.wiley.com/doi/book/10.1002/9780470770801} -- classic surrogate-modelling textbook with full LHS / maximin / BO treatment.
 \end{frame}
 
 
