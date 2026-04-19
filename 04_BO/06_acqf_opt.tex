@@ -16,11 +16,11 @@
 \begin{frame}[t]{Acquisition Function Properties}
   \small
   \begin{itemize}
-    \item In each BO loop, we exchange the optimization of $\cost(\conf)$ to the acquisition optimization
+    \item In each BO loop, we exchange the optimization of $\cost(\conf)$ for the acquisition optimization
     of $\acq(\conf)$
     \item The 2 optimization problems have many similarities, but also differences
     \item The $\pcs$ search space structure is the same
-    \item The objective structure $\acq(\conf)$ is somehow changed by the type of ACQF but likely 
+    \item The objective structure $\acq(\conf)$ is somehow shaped by the type of ACQF but likely 
     complicated and multi-modal
     \item But the problem now becomes cheap
     \item NB: We do not have to solve this problem perfectly, as the surrogate is only a coarse approximation
@@ -67,9 +67,8 @@
 \item \textbf{Multi-Start local search:}
 \begin{itemize}
 \item Sample multiple start points
-\item Run multiple gradient-based local optimizer from each (L-BFGS-B if $\pcs$ is box-constrained)
-\item Depending on what we do exactly, we might have analytic gradients available for $\acq(\conf)$,
-e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow this 
+\item Run multiple gradient-based local optimizers from each (L-BFGS-B if $\pcs$ is box-constrained)
+\item Analytic $\nabla \acq$ is available for GPs with numeric inputs, standard kernels, and standard ACQFs
 \item Works better with GPs than RFs, and if we have gradients
 \end{itemize}
 \end{itemize}
@@ -95,7 +94,7 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
   \begin{itemize}
   \item \textbf{IPOP-CMA-ES}~\liturl{Auger \& Hansen 2005}{https://ieeexplore.ieee.org/document/1554902} -- doubles $\lambda$ on every restart to widen exploration
-  \item \textbf{BIPOP-CMA-ES}~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} -- interleaves IPOP-like restarts with small-$\lambda$, randomised-$\sigma$ restarts; winner of multiple BBOB benchmarks
+  \item \textbf{BIPOP-CMA-ES}~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} -- interleaves IPOP-like restarts with small-$\lambda$, randomized-$\sigma$ restarts; winner of multiple BBOB benchmarks
   \end{itemize}
   \end{itemize}
   \end{itemize}
@@ -137,7 +136,7 @@ e.g. GPs only with numeric inputs, with usual kernels and standard ACQFs allow t
   \begin{itemize}\setlength\itemsep{0pt}
     \item BO's inner loop is itself an optimization problem -- but over the \textbf{cheap} surrogate; we don't need to solve it perfectly
     \item $\acq$ is non-convex, multi-modal, and gets rugged with more data
-    \item Numeric $\pcs$: multi-start L-BFGS-B (w/ GP gradients), DIRECT, or CMA-ES (+ IPOP/BIPOP restarts)
+    \item Numeric $\pcs$: multi-start L-BFGS-B (w/ GP gradients) or CMA-ES (+ IPOP/BIPOP restarts)
     \item Mixed / hierarchical $\pcs$: SMAC-style iterated local search interleaved with random search
   \end{itemize}
   \vspace{0.1cm}

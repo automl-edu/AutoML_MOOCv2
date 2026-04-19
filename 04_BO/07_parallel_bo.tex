@@ -44,7 +44,7 @@
 \begin{frame}[t]{Joint / $q$-Acquisition Functions}
   \small
   \begin{itemize}
-    \item Extend acquisition to emph{joint} criterion over batch $\batchconf = (\confI{1}, \ldots, \confI{q})$:
+    \item Extend acquisition to \emph{joint} criterion over batch $\batchconf = (\confI{1}, \ldots, \confI{q})$:
         % $$\acq_q(\batchconf) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
     \item Example: $q$-Expected Improvement
         $$\qEI(\batchconf) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$

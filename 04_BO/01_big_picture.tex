@@ -71,26 +71,17 @@ Many optimization problems in AutoML share three features:
 \end{frame}
 
 
-\begin{frame}{Why Not Just Grid or Random Search?}
-\begin{columns}[onlytextwidth]
-    \column{.6\textwidth}
-    \begin{itemize}
-        \item Simple, parallelizable
-        \item But: they are \textbf{non-adaptive}
-        \begin{itemize}
-            \item Every configuration is sampled independently of previous results
-            \item Does not exploit structure in objective
-            \item Budget wasted on obv. unpromising regions
-        \end{itemize}
-        \item Scaling poor in higher-dim. search spaces           
-        \item For expensive objectives we want an optimizer that \textbf{learns from its own evaluations} and follows promising local directions
-    \end{itemize}
-    \column{.4\textwidth}
-    \begin{center}
-        \includegraphics[width=\textwidth]{images/initdes_random.pdf}\\
-        \footnotesize Random search on a 2D landscape.
-    \end{center}
-\end{columns}
+\begin{frame}[t]{Why Not Just Grid or Random Search?}
+  \begin{itemize}
+    \item Simple, parallelizable, but \textbf{non-adaptive}: every config is sampled independently of previous results $\leadsto$ no exploitation of structure, budget wasted on obviously unpromising regions
+    \item Scales poorly in higher-dim.\ search spaces
+    \item Expensive objectives demand an optimizer that \textbf{learns from its own evaluations} and follows promising local directions
+  \end{itemize}
+  \vspace{0.1cm}
+  \begin{center}
+    \includegraphics[width=\textwidth]{images/bo_vs_rs_branin.pdf}\\
+    \footnotesize 2D Branin, 30 evals each. Yellow $\star$ = global minima. Left: RS scatters uniformly; middle: BO with EI (6 LHS + 24 adaptive iters) concentrates around all three minima; right: best-so-far cost, BO reaches $<\!1$ within 20 evals while RS plateaus near 1.5.
+  \end{center}
 \end{frame}
 
 \begin{frame}{ML Pipelines Can Also Be Configured}
@@ -189,7 +180,7 @@ The same ``expensive, noisy, black-box'' setting appears in many other parts of 
 
 
 \begin{frame}{Historical Roots: DACE and Expensive Simulations}
-BO did not originate in ML -- grew out of \textbf{Design and Analysis of Computer Experiments} (DACE) community~\liturl{Sacks et al. 1989}{https://projecteuclid.org/journals/statistical-science/volume-4/issue-4/Design-and-Analysis-of-Computer-Experiments/10.1214/ss/1177012413.full}.
+BO did not originate in ML -- it grew out of the \textbf{Design and Analysis of Computer Experiments} (DACE) community~\liturl{Sacks et al. 1989}{https://projecteuclid.org/journals/statistical-science/volume-4/issue-4/Design-and-Analysis-of-Computer-Experiments/10.1214/ss/1177012413.full}.
 \vspace{0.2cm}
 \begin{itemize}
     \item Classical engineering setting: a single run of a physics / CFD / finite-element simulator can take hours or days

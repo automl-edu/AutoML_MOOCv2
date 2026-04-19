@@ -42,7 +42,7 @@
     \item \textbf{Random split locations} (\textbf{extratrees}): cut point chosen uniformly at random inside the feature's range
   \end{itemize}
   \vspace{0.2cm}
-  \textbf{Key idea for BO:}\hspace{0.5em}the spread of per-tree predictions across the ensemble reflects \textbf{epistemic uncertainty} at $\conf$ -- high spread where data is scarce or the target is harder to model.
+  \textbf{Key idea for BO:} the spread of per-tree predictions across the ensemble reflects \textbf{epistemic uncertainty} at $\conf$ -- high spread where data is scarce or the target is harder to model.
 \end{frame}
 
 
@@ -70,7 +70,7 @@
 \begin{frame}[t]{Jackknife-based Variance Estimators}
   \begin{itemize}
     \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager, Hastie, Efron 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
-        $$\widehat{\sh}^2_{IJ}(\conf) = \sum_{i=1}^n \Big(\operatorname{Cov}_b\!\left(N_{ib},\, \surro_b(\conf)\right)\Big)^2$$
+        $$\widehat{\sh}^2_{IJ}(\conf) = \sum_{i=1}^n \Big(\operatorname{Cov}_b(N_{ib}, \surro_b(\conf))\Big)^2$$
         where $N_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
     \item Bias-corrected variant removes systematic bias in finite forests
     \item Captures uncertainty that the law-of-total-variance estimator misses (esp.\ for small $B$)

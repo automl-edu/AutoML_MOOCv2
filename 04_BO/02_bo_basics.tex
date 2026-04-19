@@ -153,7 +153,7 @@
 
 
 
-\begin{frame}[t]{Surrogate Modeling -- Fit}
+\begin{frame}[t]{BO Iter 1: Fit}
   \begin{itemize}
     \item \textbf{Fit} a \textbf{regression model} $\surro: \pcs \to \realnum$ (blue)
     \item Extract maximum information from design points and learn $\cost$
@@ -163,7 +163,7 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Propose}
+\begin{frame}[t,noframenumbering]{BO Iter 1: Propose}
   \begin{itemize}
     \item Instead of the expensive $\cost$, we optimize the cheap surrogate $\surro$
     \item Obtained minimum is \textbf{proposed} as new point (red) for evaluation
@@ -172,7 +172,7 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Evaluate}
+\begin{frame}[t,noframenumbering]{BO Iter 1: Evaluate}
   \begin{itemize}
     \item We evaluate the newly proposed point
   \end{itemize}
@@ -180,7 +180,7 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Update}
+\begin{frame}[t,noframenumbering]{BO Iter 1: Update}
   \begin{itemize}
     \item After evaluation, we \textbf{adjust} the model on the expanded dataset
     \item Use complete refitting or a (cheaper) online update
@@ -189,7 +189,7 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Propose}
+\begin{frame}[t,noframenumbering]{BO Iter 2: Propose}
   \begin{itemize}
     \item Optimize surrogate again
   \end{itemize}
@@ -197,7 +197,7 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Evaluate}
+\begin{frame}[t,noframenumbering]{BO Iter 2: Evaluate}
   \begin{itemize}
     \item \ldots and evaluate proposed point
   \end{itemize}
@@ -205,7 +205,7 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Iterate: Fit}
+\begin{frame}[t,noframenumbering]{BO Iter 3: Fit}
   \begin{itemize}
     \item We repeat: (i) \textbf{fit} the model\ldots
   \end{itemize}
@@ -213,7 +213,7 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Iterate: Propose}
+\begin{frame}[t,noframenumbering]{BO Iter 3: Propose}
   \begin{itemize}
     \item (ii) \textbf{propose} a new point\ldots
   \end{itemize}
@@ -221,9 +221,9 @@
 \end{frame}
 
 
-\begin{frame}[t,noframenumbering]{Surrogate Modeling -- Iterate: Evaluate}
+\begin{frame}[t,noframenumbering]{BO Iter 3: Evaluate}
   \begin{itemize}
-    \item (iii) \textbf{evaluate} that point -- the algorithm has converged
+    \item (iii) \textbf{evaluate} that point -- the algorithm has ``converged''
   \end{itemize}
   \looppic{images/bo_loop_1d_toy_10.pdf}
 \end{frame}
