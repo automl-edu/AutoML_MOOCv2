@@ -140,7 +140,8 @@ ei = ggplot(aes(x = x, y = ei), data = grid) +
   ylab("EI") +
   labs(x = expression(lambda)) + theme_minimal()
 
-myggsave("bayesian_loop_1", plot = g / ei, width = 5, height = 4)
+myggsave("bayesian_loop_1_obj", plot = g,  width = 5, height = 2)
+myggsave("bayesian_loop_1_acq", plot = ei, width = 5, height = 2)
 
 old_ei_argmax = ei_argmax
 
@@ -171,7 +172,8 @@ for (i in 2:6) {
     ylab("EI") +
     labs(x = expression(lambda)) + theme_minimal()
   
-  myggsave(sprintf("bayesian_loop_%i", i), plot = g / ei, width = 5, height = 4)
+  myggsave(sprintf("bayesian_loop_%i_obj", i), plot = g,  width = 5, height = 2)
+  myggsave(sprintf("bayesian_loop_%i_acq", i), plot = ei, width = 5, height = 2)
 
   old_ei_argmax = ei_argmax
   

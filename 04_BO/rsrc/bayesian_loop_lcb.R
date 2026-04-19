@@ -55,8 +55,8 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   ylab(expression(paste("LCB, ", tau, " = 1"))) +
   labs(x = expression(lambda)) + theme_minimal()
 
-g / cb
-myggsave("bayesian_loop_lcb_0", plot = g / cb, width = 5, height = 4)
+myggsave("bayesian_loop_lcb_0_obj", plot = g,  width = 5, height = 2)
+myggsave("bayesian_loop_lcb_0_acq", plot = cb, width = 5, height = 2)
 
 set(grid, j = "y_min", value = prediction$mean - 5 * prediction$se)
 set(grid, j = "y_max", value = prediction$mean + 5 * prediction$se)
@@ -85,8 +85,8 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   ylab(expression(paste("LCB, ", tau, " = 5"))) +
   labs(x = expression(lambda)) + theme_minimal()
 
-g / cb
-myggsave("bayesian_loop_lcb_1", plot = g / cb, width = 5, height = 4)
+myggsave("bayesian_loop_lcb_1_obj", plot = g,  width = 5, height = 2)
+myggsave("bayesian_loop_lcb_1_acq", plot = cb, width = 5, height = 2)
 
 set(grid, j = "y_min", value = prediction$mean - 10 * prediction$se)
 set(grid, j = "y_max", value = prediction$mean + 10 * prediction$se)
@@ -115,6 +115,6 @@ cb = ggplot(aes(x = x, y = cb), data = grid) +
   ylab(expression(paste("LCB, ", tau, " = 10"))) +
   labs(x = expression(lambda)) + theme_minimal()
 
-g / cb
-myggsave("bayesian_loop_lcb_2", plot = g / cb, width = 5, height = 4)
+myggsave("bayesian_loop_lcb_2_obj", plot = g,  width = 5, height = 2)
+myggsave("bayesian_loop_lcb_2_acq", plot = cb, width = 5, height = 2)
 

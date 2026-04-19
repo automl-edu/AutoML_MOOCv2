@@ -77,7 +77,8 @@ pi = ggplot(aes(x = x, y = pi), data = grid) +
   ylab("PI") +
   labs(x = expression(lambda)) + theme_minimal()
 
-myggsave("bayesian_loop_pi_1", plot = g / pi, width = 5, height = 4)
+myggsave("bayesian_loop_pi_1_obj", plot = g,  width = 5, height = 2)
+myggsave("bayesian_loop_pi_1_acq", plot = pi, width = 5, height = 2)
 
 old_pi_argmax = pi_argmax
 
@@ -108,7 +109,8 @@ for (i in 2:9) {
     ylab("PI") +
     labs(x = expression(lambda)) + theme_minimal()
  
-  myggsave(sprintf("bayesian_loop_pi_%i", i), plot = g / pi, width = 5, height = 4)
+  myggsave(sprintf("bayesian_loop_pi_%i_obj", i), plot = g,  width = 5, height = 2)
+  myggsave(sprintf("bayesian_loop_pi_%i_acq", i), plot = pi, width = 5, height = 2)
 
   old_pi_argmax = pi_argmax
   
