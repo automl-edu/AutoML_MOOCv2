@@ -25,25 +25,18 @@ xdt_lhs = generate_design_lhs(domain, n = 10L)$data
 xdt_lhs[, method := "lhs"]
 xdt = rbind(xdt_random, xdt_lhs)
 
-g = ggplot(aes(x = x1, y = x2), data = xdt[method == "random"]) +
-  geom_point(size = 3L) +
-  geom_vline(xintercept = qs, linetype = 2) +
-  geom_hline(yintercept = qs, linetype = 2) +
-  labs(title = "Random Design", x = expression(lambda[1]), y = expression(lambda[2])) +
-  theme_minimal()
+# simple 2d plot of init des, with lines for cells
+plot_design = function(data, title, file) {
+  g = ggplot(aes(x = x1, y = x2), data = data) +
+    geom_point(size = 3L) +
+    geom_vline(xintercept = qs, linetype = 2) +
+    geom_hline(yintercept = qs, linetype = 2) +
+    labs(title = title, x = expression(lambda[1]), y = expression(lambda[2])) +
+    theme_minimal()
+  g = ggMarginal(g, type = "histogram", bins = 11)
+  myggsave(file, plot = g, width = 5, height = 4)
+}
 
-g = ggMarginal(g, type = "histogram", bins = 11)
-
-myggsave("initdes_randomvslhs_random", plot = g, width = 5, height = 4)
-
-g = ggplot(aes(x = x1, y = x2), data = xdt[method == "lhs"]) +
-  geom_point(size = 3L) +
-  geom_vline(xintercept = qs, linetype = 2) +
-  geom_hline(yintercept = qs, linetype = 2) +
-  labs(title = "LHS", x = expression(lambda[1]), y = expression(lambda[2])) +
-  theme_minimal()
-
-g = ggMarginal(g, type = "histogram", bins = 11)
-
-myggsave("initdes_randomvslhs_lhs", plot = g, width = 5, height = 4)
+plot_design(xdt[method == "random"], "Random Design", "initdes_randomvslhs_random")
+plot_design(xdt[method == "lhs"],    "LHS",            "initdes_randomvslhs_lhs")
 

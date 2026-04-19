@@ -19,11 +19,7 @@ set.seed(123)
 
 # ------------------------------------------------------------------------------
 
-objective = ObjectiveRFunDt$new(
- fun = function(xdt) data.table(y = 2 * xdt$x * sin(14 * xdt$x)),
- domain = ps(x = p_dbl(lower = 0, upper = 1)),
- codomain = ps(y = p_dbl(tags = "minimize"))
-)
+objective = toy1d_obj_rfundt
 instance = OptimInstanceSingleCrit$new(
   objective = objective,
   terminator = trm("none")
@@ -42,11 +38,7 @@ acq_function = acqf("cb", surrogate = surrogate)
 grid = generate_design_grid(instance$search_space, resolution = 1001L)$data
 set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
-acq_function$surrogate$update()
-prediction = surrogate$predict(grid)
-set(grid, j = "y_hat", value = prediction$mean)
-set(grid, j = "y_min", value = prediction$mean - prediction$se)
-set(grid, j = "y_max", value = prediction$mean + prediction$se)
+prediction = update_surrogate_and_grid(surrogate, grid)
 
 acq_function$update()
 set(grid, j = "cb", value = acq_function$eval_dt(grid[, "x"])$acq_cb)

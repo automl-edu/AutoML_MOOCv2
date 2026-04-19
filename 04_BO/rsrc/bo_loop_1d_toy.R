@@ -13,11 +13,7 @@ set.seed(123)
 
 # ------------------------------------------------------------------------------
 
-objective = ObjectiveRFunDt$new(
- fun = function(xdt) data.table(y = 2 * xdt$x * sin(14 * xdt$x)),
- domain = ps(x = p_dbl(lower = 0, upper = 1)),
- codomain = ps(y = p_dbl(tags = "minimize"))
-)
+objective = toy1d_obj_rfundt
 instance = OptimInstanceSingleCrit$new(
   objective = objective,
   terminator = trm("none")

@@ -42,6 +42,13 @@ branin_obj_rfundt = ObjectiveRFunDt$new(
   codomain = ps(y = p_dbl(tags = "minimize"))
 )
 
+# 1D toy objective used across 1D BO loop figures: 2 * x * sin(14 * x) on [0, 1]
+toy1d_obj_rfundt = ObjectiveRFunDt$new(
+  fun = function(xdt) data.table(y = 2 * xdt$x * sin(14 * xdt$x)),
+  domain = ps(x = p_dbl(lower = 0, upper = 1)),
+  codomain = ps(y = p_dbl(tags = "minimize"))
+)
+
 
 #  Standard GP surrogate used throughout the 04_BO figure scripts
 my_gp_surrogate = function(archive) {
@@ -50,5 +57,18 @@ my_gp_surrogate = function(archive) {
               nugget.stability = 1e-8, control = list(trace = FALSE)),
     archive = archive
   )
+}
+
+
+# Refit surrogate and write posterior mean + one-sigma band onto `grid`.
+# add cols: y_hat, y_min (mean - se), y_max (mean + se).
+# returns the prediction object (mean, se) for callers that need the raw values
+update_surrogate_and_grid = function(surrogate, grid) {
+  surrogate$update()
+  prediction = surrogate$predict(grid)
+  data.table::set(grid, j = "y_hat", value = prediction$mean)
+  data.table::set(grid, j = "y_min", value = prediction$mean - prediction$se)
+  data.table::set(grid, j = "y_max", value = prediction$mean + prediction$se)
+  prediction
 }
 

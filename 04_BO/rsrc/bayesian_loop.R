@@ -17,11 +17,7 @@ set.seed(123)
 
 # ------------------------------------------------------------------------------
 
-objective = ObjectiveRFunDt$new(
- fun = function(xdt) data.table(y = 2 * xdt$x * sin(14 * xdt$x)),
- domain = ps(x = p_dbl(lower = 0, upper = 1)),
- codomain = ps(y = p_dbl(tags = "minimize"))
-)
+objective = toy1d_obj_rfundt
 instance = OptimInstanceSingleCrit$new(
   objective = objective,
   terminator = trm("none")
@@ -52,11 +48,7 @@ acq_function = acqf("ei", surrogate = surrogate)
 grid = generate_design_grid(instance$search_space, resolution = 1001L)$data
 set(grid, j = "y", value = objective$eval_dt(grid)$y)
 
-acq_function$surrogate$update()
-prediction = surrogate$predict(grid)
-set(grid, j = "y_hat", value = prediction$mean)
-set(grid, j = "y_min", value = prediction$mean - prediction$se)
-set(grid, j = "y_max", value = prediction$mean + prediction$se)
+update_surrogate_and_grid(surrogate, grid)
 
 acq_function$update()
 set(grid, j = "ei", value = acq_function$eval_dt(grid[, "x"])$acq_ei)
@@ -132,11 +124,7 @@ instance$archive$clear()
 xdt = data.table(x = c(0.100, 0.300, 0.370, 0.650, 1.000))
 instance$eval_batch(xdt)
 
-acq_function$surrogate$update()
-prediction = surrogate$predict(grid)
-set(grid, j = "y_hat", value = prediction$mean)
-set(grid, j = "y_min", value = prediction$mean - prediction$se)
-set(grid, j = "y_max", value = prediction$mean + prediction$se)
+update_surrogate_and_grid(surrogate, grid)
 
 acq_function$update()
 set(grid, j = "ei", value = acq_function$eval_dt(grid[, "x"])$acq_ei)
@@ -165,11 +153,7 @@ old_ei_argmax = ei_argmax
 instance$eval_batch(ei_argmax[, "x", with = FALSE])
 
 for (i in 2:6) {
-  acq_function$surrogate$update()
-  prediction = surrogate$predict(grid)
-  set(grid, j = "y_hat", value = prediction$mean)
-  set(grid, j = "y_min", value = prediction$mean - prediction$se)
-  set(grid, j = "y_max", value = prediction$mean + prediction$se)
+  update_surrogate_and_grid(surrogate, grid)
   
   acq_function$update()
   set(grid, j = "ei", value = acq_function$eval_dt(grid[, "x"])$acq_ei)
