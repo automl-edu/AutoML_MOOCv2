@@ -1,8 +1,6 @@
 branch mergen
 quiz questions machen
 
-title und subtitle überall prüfen
-
 in den bayes_loop pics die bilder die untereinander sind (wie bei LCB) einzeln speichern, damit man sie auch nebeneinander tun kann
 
 eigentlich brauchen wir noch ein paar slides zu noisy

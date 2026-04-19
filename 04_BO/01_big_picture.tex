@@ -72,6 +72,7 @@ Many optimization problems in AutoML share three features:
 
 
 \begin{frame}[t]{Why Not Just Grid or Random Search?}
+  \small
   \begin{itemize}
     \item Simple, parallelizable, but \textbf{non-adaptive}: every config is sampled independently of previous results $\leadsto$ no exploitation of structure, budget wasted on obviously unpromising regions
     \item Scales poorly in higher-dim.\ search spaces
@@ -80,7 +81,7 @@ Many optimization problems in AutoML share three features:
   \vspace{0.1cm}
   \begin{center}
     \includegraphics[width=0.6\textwidth]{images/bo_vs_rs_branin.pdf}\\
-    \footnotesize 2D Branin, 30 evals each. Yellow $\star$ = global minima. Left: RS scatters uniformly; middle: BO with EI (6 LHS + 24 adaptive iters) concentrates around all three minima; right: best-so-far cost, BO reaches $<\!1$ within 20 evals while RS plateaus near 1.5.
+    \footnotesize Yellow $\star$ = global minima. Left: RS scatters uniformly, BO concentrates around minima
   \end{center}
 \end{frame}
 
@@ -137,7 +138,7 @@ Many optimization problems in AutoML share three features:
 
 \begin{frame}{BO as an AutoML Backbone}
 \begin{itemize}
-    \item BO is the \textbf{backbone} of many modern AutoML systems (e.g., SMAC, Spearmint, BoTorch, Optuna)
+    \item BO is the \textbf{backbone} of many modern AutoML systems (e.g., SMAC, Spearmint, BoTorch, Optuna)~\liturl{Snoek et al. 2012}{https://arxiv.org/abs/1206.2944}
     \item It is typically much more \textbf{sample-efficient} than random or evolutionary search on HPO benchmarks
     \item It provides a principled way to handle
     \begin{itemize}
@@ -204,7 +205,10 @@ Typical applications: aerodynamic shape, car crash / airfoil simulations, reserv
 \textbf{Further reading:}
 \begin{itemize}
     \item \liturl{Bischl et al. 2023}{https://onlinelibrary.wiley.com/doi/full/10.1002/widm.1484} -- HPO survey
+    \item \liturl{Hutter, Kotthoff, Vanschoren 2019}{https://www.automl.org/book/} -- AutoML book (free online)
     \item \liturl{Garnett 2023}{https://bayesoptbook.com/} -- BO textbook (free online)
+    \item \liturl{Shahriari et al. 2016}{https://ieeexplore.ieee.org/document/7352306} -- BO review ``Taking the Human Out of the Loop''
+    \item \liturl{Frazier 2018}{https://arxiv.org/abs/1807.02811} -- short BO tutorial
 \end{itemize}
 \end{frame}
 

@@ -17,7 +17,7 @@
   \begin{itemize}
     \item GPs struggle when $\pcs$ is
         \begin{itemize}
-            \item \textbf{high-dimensional} (e.g., $d > 20$)
+            \item \textbf{high-dimensional} (e.g., $\pcsdim > 20$)
             \item \textbf{mixed / hierarchical} (categoricals, conditional HPs, pipeline structure)
             \item \textbf{large-$n$} ($n^3$ scaling becomes prohibitive)
         \end{itemize}
@@ -38,7 +38,7 @@
   To build an RF we inject randomness at three stages:
   \begin{itemize}
     \item \textbf{Bagging:} each tree $b$ trained on a bootstrap sample of $\hist$
-    \item \textbf{Feature subsampling:} at each split, only $m \le d$ features are considered
+    \item \textbf{Feature subsampling:} at each split, only $m \le \pcsdim$ features are considered
     \item \textbf{Random split locations} (\textbf{extratrees}): cut point chosen uniformly at random inside the feature's range
   \end{itemize}
   \vspace{0.2cm}

@@ -46,11 +46,11 @@
   \begin{itemize}
     \item Extend acquisition to \emph{joint} criterion over batch $\batchconf = (\confI{1}, \ldots, \confI{q})$:
         % $$\acq_q(\batchconf) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
-    \item Example: $q$-Expected Improvement
+    \item Example: $q$-Expected Improvement~\liturl{Wang et al. 2020}{https://arxiv.org/abs/1602.05149}
         $$\qEI(\batchconf) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \textbf{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
-    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!d$-dimensional;
+    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!\pcsdim$-dimensional;
     trick (BoTorch): draw MC base noise $\xi\!\sim\!\mathcal{N}(0,I)$ \textbf{once} and reuse across steps
     $\leadsto$ $\qEI(\batchconf)$ is smooth + differentiable, optimized with Adam / L-BFGS.
     Feasible up to $q\!\le\!32$.
@@ -58,7 +58,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Heuristic 1: Kriging Believer / Fantasizing}
+\begin{frame}[t]{Heuristic 1: Kriging Believer / Fantasizing~\liturl{Ginsbourger et al. 2010}{https://link.springer.com/chapter/10.1007/978-3-642-10701-6_6}}
   \footnotesize
   Iteratively fill the batch:
   \begin{enumerate}\setlength\itemsep{0pt}
@@ -114,7 +114,7 @@
           \item Slowest config determines round length $\leadsto$ idle workers on skewed runtimes
       \end{itemize}
       \column{.48\textwidth}
-      \textbf{Asynchronous (ADBO)}
+      \textbf{Asynchronous (ADBO}~\liturl{Egele et al. 2023}{https://arxiv.org/abs/2207.00479}\textbf{)}
       \begin{itemize}\setlength\itemsep{0pt}
           \item Keep $q$ workers busy at all times; react per-completion, not per-batch
           \item On each finish: update surrogate with the \textbf{one} new observation and propose \textbf{one} new point

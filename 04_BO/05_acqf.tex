@@ -86,6 +86,7 @@
     \item Minimize $\acq_{\text{LCB}}(\conf) = \surro(\conf) - \tau \sh(\conf)$
     \item $\tau > 0$ controls the ``mean vs.\ uncertainty'' trade-off
     \item Very simple, does not rely on distributional assumptions
+    \item Regret bounds for GP-UCB / LCB~\liturl{Srinivas et al. 2010}{https://arxiv.org/abs/0912.3995}
   \end{itemize}
   % \column{.38\textwidth}
   \includegraphics[width=0.5\textwidth]{images/bayesian_loop_lcb_0.png}
@@ -120,6 +121,7 @@
     $$\acq_{\text{EI}}(\conf) = \E(\max\{\cmin - Y(\conf), 0\})$$
     \item We take the \textbf{expectation} in the tail, instead of the probability as in PI
     \item Improvement is always assumed $\geq 0$
+    \item Originally introduced by~\liturl{Mo\v{c}kus 1975}{https://link.springer.com/chapter/10.1007/978-3-662-38527-2_55}; popularized for expensive simulators by~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147} (EGO)
   \end{itemize}
   \vfill
   \begin{columns}[onlytextwidth]
@@ -163,7 +165,7 @@
     \item 3 basic ACQFs: PI, LCB, EI
     \item EI is most standard; LCB also works well in practice
     \item Under some mild conditions: BO with a GP as SM and EI is a \textbf{global optimizer}, i.e.\ convergence to the \textbf{global} optimum is guaranteed given unlimited budget~\liturl{Bull 2011}{https://www.jmlr.org/papers/volume12/bull11a/bull11a.pdf}
-    \item Other acquisition functions: Entropy Search, Predictive Entropy Search, Max-value Entropy Search, Knowledge Gradient, Thompson Sampling, \ldots
+    \item Other acquisition functions: Entropy Search, Predictive Entropy Search~\liturl{Hern\'andez-Lobato et al. 2014}{https://arxiv.org/abs/1406.2541}, Max-value Entropy Search, Knowledge Gradient, Thompson Sampling, \ldots
   \end{itemize}
 \end{frame}
 
