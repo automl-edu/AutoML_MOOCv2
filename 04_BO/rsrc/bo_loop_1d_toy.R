@@ -60,30 +60,30 @@ loop_plot = function(grid,
                      show_surrogate = FALSE,
                      xlim           = c(0, 1),
                      ylim           = c(-2, 2.2)) {
-  g = ggplot2::ggplot(ggplot2::aes(x = x, y = y), data = grid)
+  g = ggplot(aes(x = x, y = y), data = grid)
   if (show_truth) {
-    g = g + ggplot2::geom_line()
+    g = g + geom_line()
   }
   if (show_surrogate) {
-    g = g + ggplot2::geom_line(
-      ggplot2::aes(x = x, y = y_hat), colour = "steelblue", linetype = 2
+    g = g + geom_line(
+      aes(x = x, y = y_hat), colour = "steelblue", linetype = 2
     )
   }
   if (!is.null(design)) {
-    g = g + ggplot2::geom_point(
-      ggplot2::aes(x = x, y = y), size = 3L, colour = "black", data = design
+    g = g + geom_point(
+      aes(x = x, y = y), size = 3L, colour = "black", data = design
     )
   }
   if (!is.null(proposal)) {
-    g = g + ggplot2::geom_point(
-      ggplot2::aes(x = x, y = y_hat), size = 3L, colour = "darkred", data = proposal
+    g = g + geom_point(
+      aes(x = x, y = y_hat), size = 3L, colour = "darkred", data = proposal
     )
   }
   g +
-    ggplot2::xlim(xlim) +
-    ggplot2::ylim(ylim) +
-    ggplot2::labs(x = expression(lambda), y = expression(c)) +
-    ggplot2::theme_minimal()
+    xlim(xlim) +
+    ylim(ylim) +
+    labs(x = expression(lambda), y = expression(c)) +
+    theme_minimal()
 }
 
 

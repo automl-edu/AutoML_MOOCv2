@@ -1,36 +1,13 @@
-
-
-
-
-
 branch mergen
 quiz questions machen
 
-R code umziehen
-
 01: in manchen plots steht x1 auf den axen sollte aber lambda sein.
-
-
-use "terse" style and remove filler words, especially if this saves a nearly empty line
-
-use abe
-
-use punctuation sparingly
-
 auf den ganzen grafiken ist x/y auf den achsen, sollte lambda / c sein
-
-put new thoughts in items on indvididual lines
 
 bilder jumpen, in lecture servie nachsehen
 
-
-meine eigenen BO macros ausdünnen, bzw die tab erweitern
-
-D = D_hist hat eine andere notation, auch mit angle brackets
-
 some slides on hierchical spaces
-
-use \acq
+--> in RF
 
 title und subtitle überall prüfen
 
@@ -43,38 +20,19 @@ eigentlich brauchen wir noch ein paar slides zu noisy
 wir sollten wirklich einen schönen plot haben wo man sehen kann das BO besser ist als RS. und in 2d / 3d
 das sollte wohl auch schon auf der "why not GS / RS folie sein"
 
-der lhs 2q plot scheint irgendwie falsch zu sein? mit dem overlap?
-
-
 die pipelines grafik könnte schöner sein
 
 books: garnett and forrester
 bischl für HPO
 
-
 plot GPs better in 2D, more beautifully
-
-
 
 issue: symbol for search space dim is missing
 
-
 bobudget und bocount werden falsch verwendet
 
-we should try to visulaie the EI landscape in 2D
-
-
 mention logtrafo for acqfO
-
-add CMAES
-
-
-tell claude: always use   \begin{columns}[onlytextwidth,T]
-
 
 use latex autoformater and dont indent
 
 compare slides with mlr3mbo paper
-
-
-claude: always ue liturl

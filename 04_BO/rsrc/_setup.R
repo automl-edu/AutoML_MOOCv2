@@ -16,12 +16,12 @@
 #   height  in inches (default 4)
 #   ...     any other argument passed on to ggplot2::ggsave
 myggsave = function(name, plot, width = 5, height = 4, ...) {
-  ggplot2::ggsave(
+  ggsave(
     filename = file.path("images", paste0(name, ".pdf")),
     plot     = plot,
     width    = width,
     height   = height,
-    device   = grDevices::cairo_pdf,
+    device   = cairo_pdf,
     ...
   )
 }
@@ -52,9 +52,9 @@ toy1d_obj_rfundt = ObjectiveRFunDt$new(
 
 #  Standard GP surrogate used throughout the 04_BO figure scripts
 my_gp_surrogate = function(archive) {
-  mlr3mbo::srlrn(
-    mlr3::lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS",
-              nugget.stability = 1e-8, control = list(trace = FALSE)),
+  srlrn(
+    lrn("regr.km", covtype = "matern5_2", optim.method = "BFGS",
+        nugget.stability = 1e-8, control = list(trace = FALSE)),
     archive = archive
   )
 }
@@ -66,9 +66,9 @@ my_gp_surrogate = function(archive) {
 update_surrogate_and_grid = function(surrogate, grid) {
   surrogate$update()
   prediction = surrogate$predict(grid)
-  data.table::set(grid, j = "y_hat", value = prediction$mean)
-  data.table::set(grid, j = "y_min", value = prediction$mean - prediction$se)
-  data.table::set(grid, j = "y_max", value = prediction$mean + prediction$se)
+  set(grid, j = "y_hat", value = prediction$mean)
+  set(grid, j = "y_min", value = prediction$mean - prediction$se)
+  set(grid, j = "y_max", value = prediction$mean + prediction$se)
   prediction
 }
 
@@ -85,20 +85,19 @@ update_surrogate_and_grid = function(surrogate, grid) {
 # `xlim`, `ylim`  plot limits; default to the Branin domain used across 04_BO
 acqf_base_plot = function(grid, design, value = "ei",
                           xlim = c(-5, 10), ylim = c(0, 15)) {
-  v = ggplot2::sym(value)
-  ggplot2::ggplot(grid, ggplot2::aes(x = x1, y = x2)) +
-    ggplot2::geom_raster(ggplot2::aes(fill = !!v)) +
-    ggplot2::geom_contour(ggplot2::aes(z = !!v), colour = "white", alpha = 0.4,
-                          linewidth = 0.3, bins = 8) +
-    ggplot2::geom_point(ggplot2::aes(x = x1, y = x2), data = design,
-                        shape = 4, colour = "#ffcc00", size = 3, stroke = 1.3) +
-    ggplot2::scale_fill_viridis_c(option = "mako", direction = -1) +
-    ggplot2::coord_cartesian(xlim = xlim, ylim = ylim, expand = FALSE) +
-    ggplot2::theme_minimal(base_size = 10) +
-    ggplot2::theme(
+  ggplot(grid, aes(x = x1, y = x2)) +
+    geom_raster(aes(fill = .data[[value]])) +
+    geom_contour(aes(z = .data[[value]]), colour = "white", alpha = 0.4,
+                 linewidth = 0.3, bins = 8) +
+    geom_point(aes(x = x1, y = x2), data = design,
+               shape = 4, colour = "#ffcc00", size = 3, stroke = 1.3) +
+    scale_fill_viridis_c(option = "mako", direction = -1) +
+    coord_cartesian(xlim = xlim, ylim = ylim, expand = FALSE) +
+    theme_minimal(base_size = 10) +
+    theme(
       legend.position = "none",
-      panel.grid = ggplot2::element_blank(),
-      plot.subtitle = ggplot2::element_text(face = "bold")
+      panel.grid = element_blank(),
+      plot.subtitle = element_text(face = "bold")
     )
 }
 
