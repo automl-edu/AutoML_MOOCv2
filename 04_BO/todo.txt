@@ -10,3 +10,30 @@ bobudget und bocount werden falsch verwendet
 use latex autoformater and dont indent
 
 compare slides with mlr3mbo paper
+
+------------------------
+
+Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    
+  stealing:                                                                                                        
+                                                                                                                   
+  1. LogEI vs log(EI) clean-up — 05_acqf.tex / 06_acqf_opt.tex                                                     
+  The paper explicitly separates two things that look identical in the slides:                                     
+  - LogEI (Hutter 2009): expected improvement on the original scale when the surrogate is trained on               
+  log-transformed $y$ → closed form with log-normal moments.                                                       
+  - log(EI) (Ament 2023): the logarithm of EI, used purely for numerical stability.                                
+  06_acqf_opt.tex currently only references Ament. A tiny remark contrasting the two would remove a common         
+  confusion.                                                                                                       
+                                                                                                                   
+  2. "What actually matters" empirical defaults slide — new slide between 06_acqf_opt and 07_parallel              
+  Their coordinate-descent study gives very teachable effect sizes:                                                
+  - log output transform: +0.2 RSNS (huge)                                                                         
+  - CMA-ES vs L-BFGS-B / RS on numeric: +0.2                                                                       
+  - LS vs RS on mixed: +0.2                                                                                        
+  - 500 trees vs 10 trees in RF for mixed BO: +0.15 (directly against SMAC's default!)                             
+  - LHS vs random init, init size 5% vs 25%: ~0                                                                    
+  Concrete numbers on "what the community believes matters vs. what actually moves the needle" make a memorable    
+  slide.                                                                                                           
+                                                                                                                                                                                                                               
+                                                                                                                   
+  My top pick is #2 — that empirical-ablation table is exactly the kind of content the slides don't yet have and   
+  that the paper uniquely contributes.        
