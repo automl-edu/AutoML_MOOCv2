@@ -16,5 +16,30 @@
     "**/*.toc": true,
     "**/*.vrb": true,
     "**/*.log": true
+  },
+
+  // LaTeX Workshop: build + format
+  "latex-workshop.latex.recipe.default": "latexmk (lualatex)",
+  "latex-workshop.formatting.latex": "latexindent",
+  "latex-workshop.formatting.latexindent.args": [
+    "-c", "%DIR%/",
+    "-l", "%WORKSPACE_FOLDER%/.latexindent.yaml",
+    "-m"
+  ],
+  "[latex]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "James-Yu.latex-workshop"
+  },
+
+  // Spell check: pair with .cspell/project-words.txt (see CLAUDE.md)
+  "cSpell.language": "en-US",
+  "cSpell.words": [],
+  "cSpell.customDictionaries": {
+    "project-words": {
+      "name": "project-words",
+      "path": "${workspaceFolder}/.cspell/project-words.txt",
+      "addWords": true,
+      "scope": "workspace"
+    }
   }
 }

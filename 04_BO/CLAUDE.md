@@ -42,7 +42,7 @@ Slides and R figure scripts for the BO lecture.
 - Do not use `eqnarray` and remove it where you see it. It has been deprecated for years and `align` or `$$ ... $$` is usually preferred.
 - Do not use English orthography (`.`, `,`) in math formulas
 - Avoid "manual whitespace control" in formulas as much as possible, keep them simply;
-  don't use "," often, maybe some wellplaces q(q)uad sometimes
+  don't use "," often, maybe some well-placed q(q)uad sometimes
   
 - Do not use `{ }` around single-character elements unless required; 
   to display $e^x$, use `e^x` rather than `e^{x}`

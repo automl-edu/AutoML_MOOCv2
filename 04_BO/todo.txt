@@ -1,19 +1,11 @@
 branch mergen
 quiz questions machen
 
-in den bayes_loop pics die bilder die untereinander sind (wie bei LCB) einzeln speichern, damit man sie auch nebeneinander tun kann
-
-eigentlich brauchen wir noch ein paar slides zu noisy
-
 die pipelines grafik könnte schöner sein
 
 plot GPs better in 2D, more beautifully
 
-issue: symbol for search space dim is missing
-
 bobudget und bocount werden falsch verwendet
-
-mention logtrafo for acqfO
 
 use latex autoformater and dont indent
 

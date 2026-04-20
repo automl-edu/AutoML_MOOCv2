@@ -116,6 +116,33 @@
 \end{frame}
 
 
+\begin{frame}[t]{GP Posterior on 2D Branin}
+  \small
+  GP (Matérn-5/2) fit on 12 LHS points of the 2D Branin cost surface:
+  \begin{columns}[onlytextwidth,T]
+    \column{.33\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{images/gp_branin_true.pdf}\\
+      \footnotesize True $\cost(\conf)$
+    \end{center}
+    \column{.33\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{images/gp_branin_mean.pdf}\\
+      \footnotesize Posterior mean $\hat\mean(\conf)$ with training points
+    \end{center}
+    \column{.33\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{images/gp_branin_sd.pdf}\\
+      \footnotesize Posterior std $\sh(\conf)$
+    \end{center}
+  \end{columns}
+  \vspace{0.1cm}
+  \begin{itemize}\setlength\itemsep{0pt}
+    \item $\hat\mean$ interpolates the observations and smoothly extrapolates between them
+    \item $\sh$ dips to $0$ at training points and grows with distance from the design -- the GP ``knows what it doesn't know''
+  \end{itemize}
+\end{frame}
+
 
 \begin{frame}[t]{Kernel: RBF (Squared Exponential)}
 \begin{columns}[onlytextwidth,T]
