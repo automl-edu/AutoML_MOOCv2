@@ -1,0 +1,228 @@
+\documentclass[main]{subfiles}
+
+\title[AutoML: Dynamic Configuratino]{Chapter 11 -- Quiz}
+\subtitle{Multiple Choice Questions}
+\author[André Biedenkapp]{André Biedenkapp}
+\date{}
+
+\titlebackground*{images/AutoML_LearningToLearn2}
+
+\newcommand{\correct}[1]{\textcolor{ForestGreen}{\textbf{#1} \checkmark}}
+\newcommand{\wrong}[1]{#1}
+
+\begin{document}
+
+    \maketitle
+
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q0 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{DAC is a black-box optimization approach.}
+
+\begin{itemize}
+    \item \wrong{(A) \; True.}
+    \item \correct{(B) \; False.}
+\end{itemize}
+
+\end{frame}
+%-------------------------------------------------
+%----------------------------------------------------------------------
+\begin{frame}{Q1 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Static configuration is guaranteed to outperform DAC for small budgets.}
+
+\begin{itemize}
+    \item \wrong{(A) \; True.}
+    \item \correct{(B) \; False.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q2 \hfill \small\normalfont\textit{(single correct answers)}}
+
+\textbf{DAC can be solved by optimization}
+
+\begin{itemize}
+    \item \correct{(A) \; True.}
+    \item \wrong{(B) \; False.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q3 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{DAC can \textbf{not} be solved with RL.}
+
+\begin{itemize}
+    \item \wrong{(A) \; True.}
+    \item \correct{(B) \; False.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q4 \hfill \small\normalfont\textit{(single correct answers)}}
+
+\textbf{Learning curve extrapolation for HPO is a DAC problem}
+
+\begin{itemize}
+    \item \wrong{(A) \; True.}
+    \item \correct{(B) \; False.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q5 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Iterative optimization heuristics ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \wrong{(A) \; use the black-box view.}
+    \item \correct{(B) \; propose a (set of) solution candiate(s) in each iteration.}
+    \item \correct{(C) \; aim at improving the solution quality in each iteration.}
+    \item \wrong{(D) \; only take the final solution quality into account.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q6 \hfill \small\normalfont\textit{(multiple correct answer)}}
+
+\textbf{Population-based training (PBT) ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \wrong{(A) \; changes only a single hyperparamter in each iteration.}
+    \item \correct{(B) \; drops the worst performing configurations in each iteration.}
+    \item \correct{(C) \; inherits weights from well performing networks.}
+    \item \wrong{(D) \; uses mutation to improve the performance of poorly performing configs.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q7 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Which PBT variants are capable of jointly tuning hyperparameters and architectures? ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \wrong{(A) \; PBT.}
+    \item \wrong{(B) \; Population-based Bandits (PB2).}
+    \item \correct{(C) \; Bayesian-Generational PBT.}
+    \item \wrong{(D) \; Meta-PB2.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q8 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{To combine Bayesian Optimization (BO) and Population-based Training (PBT), we could ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; use an asynchronous parallel BO.}
+    \item \correct{(B) \; use BO with a nonstationary model.}
+    \item \wrong{(C) \; predict how well a configuration performed in the past.}
+    \item \correct{(D) \; try to predict how well a configuration will do in the future.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q9 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Bayesian generational PBT ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; samples novel architectures in every iteration.}
+    \item \wrong{(B) \; copies weights across dissimilar architectures and makes use of isomorphisms.}
+    \item \correct{(C) \; transfers knowledge across generations via distillation.}
+    \item \wrong{(D) \; purely cares about architectural hyperparameters.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q10 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Dynamic Algorithm Configuration ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; can theoretically give exponential improvements over static HPO.}
+    \item \correct{(B) \; is too expensive for many real-world applications.}
+    \item \correct{(C) \; can produce policies that can solve heterogeneous problem instances.}
+    \item \wrong{(D) \; should only ever be used for single hyperparameters.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q11 \hfill \small\normalfont\textit{(single correct answers)}}
+
+\textbf{Is it possible to learn dynamic configuration schedules online, i.e. not in a dedicated offline learning phase?}
+
+\begin{itemize}
+    \item \correct{(A) \; True.}
+    \item \wrong{(B) \; False.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q12 \hfill \small\normalfont\textit{(single correct answers)}}
+
+\textbf{RL can learn general policies only if the policy is explicitly aware of the environment context?}
+
+\begin{itemize}
+    \item \wrong{(A) \; True.}
+    \item \correct{(B) \; False.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q13 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Dynamic configuration can be achieved via ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; Heuristics.}
+    \item \correct{(B) \; Black-Box Optimization.}
+    \item \correct{(C) \; Evolution.}
+    \item \correct{(D) \; RL.}
+\end{itemize}
+
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Q14 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Informative context features ... \textit{(Select all that apply)}}
+
+\begin{itemize}
+    \item \correct{(A) \; are often domain and problem specific.}
+    \item \wrong{(B) \; are computed for every configuration step.}
+    \item \correct{(C) \; characterize the problem.}
+    \item \wrong{(D) \; change during the run of a target algorithm.}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+\end{document}

@@ -1,0 +1,200 @@
+\documentclass[main]{subfiles}
+
+\title[AutoML: Introduction]{Chapter 3 -- Quiz}
+\subtitle{Multiple Choice Questions}
+\author[Lars Kotthoff]{Lars Kotthoff}
+\date{}
+
+\titlebackground*{images/AutoML_HPO_2_2}
+
+\newcommand{\correct}[1]{\textcolor{ForestGreen}{\textbf{#1} \checkmark}}
+\newcommand{\wrong}[1]{#1}
+
+\begin{document}
+
+    \maketitle
+
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+\begin{frame}{Q1 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What does HPO stand for?}
+
+\begin{itemize}
+    \item \wrong{(A) \; HyperParameter Obfuscation}
+    \item \wrong{(B) \; Handy Parameter Optimization}
+    \item \correct{(C) \; HyperParameter Optimization}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q2 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{What hyperparameters might you want to optimize?}
+
+\begin{itemize}
+    \item \correct{(A) \; Number of trees in a random forest.}
+    \item \wrong{(B) \; Random seed.}
+    \item \correct{(C) \; Number of layers in a neural network.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q3 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{HPO is\ldots{}}
+
+\begin{itemize}
+    \item \wrong{(A) \; unnecessary in practice.}
+    \item \correct{(B) \; often beneficial and can yield substantial performance improvements.}
+    \item \wrong{(C) \; most of the time not worth the effort.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q4 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is a good way to set up a configuration space?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Use only default values.}
+    \item \wrong{(B) \; Use largest possible range for every possible hyperparameter.}
+    \item \correct{(C) \; Carefully select suitable hyperparameters and sensible ranges.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q5 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{How can different learners be handled in a configuration space?}
+
+\begin{itemize}
+    \item \correct{(A) \; They are just another categorical hyperparameter with dependencies.}
+    \item \wrong{(B) \; You have to use multiple disjoint configuration spaces.}
+    \item \wrong{(C) \; They cannot be handled at all.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q6 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{What are types of hyperparameters?}
+
+\begin{itemize}
+    \item \correct{(A) \; Integer.}
+    \item \correct{(B) \; Categorical.}
+    \item \correct{(C) \; Continuous numerical.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q7 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Grid search will always find the best hyperparameter configuration.}
+
+\begin{itemize}
+    \item \wrong{(A) \; Yes.}
+    \item \correct{(B) \; Depends on the discretization of the grid for continuous hyperparameters.}
+    \item \wrong{(C) \; No.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q8 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Random search often yields good results in practice.}
+
+\begin{itemize}
+    \item \correct{(A) \; Yes.}
+    \item \wrong{(B) \; Only for HPO problems with many hyperparameters.}
+    \item \wrong{(C) \; No.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q9 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Both grid search and random search can search irrelevant areas of the configuration space.}
+
+\begin{itemize}
+    \item \correct{(A) \; Yes.}
+    \item \wrong{(B) \; Grid search does, but random search doesn't.}
+    \item \wrong{(C) \; No.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q10 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Local search\ldots{}}
+
+\begin{itemize}
+    \item \wrong{(A) \; always finds the optimal hyperparameter configuration.}
+    \item \correct{(B) \; can get stuck in local optima, but restarts help.}
+    \item \wrong{(C) \; is less efficient than grid search.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q11 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is an ``adaptive'' search?}
+
+\begin{itemize}
+    \item \correct{(A) \; A search that considers the result of previous evaluations when proposing evaluations.}
+    \item \wrong{(B) \; A search that adapts itself to complex configuration spaces.}
+    \item \wrong{(C) \; A search that can be adapted to multiple problems.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q12 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{What are the main limitations of ablation analysis?}
+
+\begin{itemize}
+    \item \wrong{(A) \; It is not compatible with random search.}
+    \item \correct{(B) \; It can only compare two hyperparameter configurations.}
+    \item \correct{(C) \; It does not consider interactions between hyperparameters.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q13 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{How do evolutionary algorithms change hyperparameter configurations?}
+
+\begin{itemize}
+    \item \correct{(A) \; Randomly.}
+    \item \correct{(B) \; By combining two hyperparameter configurations with good performance.}
+    \item \wrong{(C) \; By combining three or more hyperparameter configurations with good performance.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q14 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Evolutionary algorithms escape local optima by\ldots{}}
+
+\begin{itemize}
+    \item \correct{(A) \; mutating hyperparameter values.}
+    \item \wrong{(B) \; random restarts.}
+    \item \wrong{(C) \; They cannot escape local optima.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Q15 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is the main limitation of evolutionary algorithms?}
+
+\begin{itemize}
+    \item \wrong{(A) \; They cannot handle complex dependencies between hyperparameters.}
+    \item \correct{(B) \; They are not straightforward to use in practice.}
+    \item \wrong{(C) \; They cannot escape local optima.}
+\end{itemize}
+
+\end{frame}
+
+\end{document}
