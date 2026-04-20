@@ -85,38 +85,70 @@ Many optimization problems in AutoML share three features:
   \end{center}
 \end{frame}
 
+% helper for option boxes with a small italic HP sub-label
+\newcommand{\optlbl}[2]{\shortstack{#1\\[-1pt]{\tiny\itshape\color{black!60}#2}}}
+
 \begin{frame}{ML Pipelines Can Also Be Configured}
   \begin{center}
   \begin{tikzpicture}[
-      node distance=0.6cm and 0.25cm,
-      box/.style={draw, rounded corners, fill=blue!10, minimum width=1.8cm,
-          minimum height=0.75cm, align=center, font=\small},
-      hp/.style={font=\scriptsize\itshape, text=black!65, align=center},
-      arr/.style={->, >=latex, thick}
+      node distance = 0.18cm and 0.6cm,
+      every node/.style = {font=\scriptsize},
+      stage/.style  = {draw=blue!55!black, line width=0.5pt, rounded corners,
+          fill=blue!12, text=blue!25!black,
+          minimum width=1.95cm, minimum height=0.6cm, align=center,
+          font=\small\bfseries},
+      opt/.style    = {draw=black!40, line width=0.4pt, rounded corners=2pt,
+          fill=gray!6, minimum width=1.9cm, minimum height=0.62cm,
+          align=center, font=\scriptsize, inner sep=2pt},
+      optsel/.style = {draw=mygreen!55!black, line width=0.9pt, rounded corners=2pt,
+          fill=mygreen!22, minimum width=1.9cm, minimum height=0.62cm,
+          align=center, font=\scriptsize\bfseries, inner sep=2pt},
+      arr/.style    = {->, >=latex, thick, black!55},
+      arrsel/.style = {->, >=latex, line width=1.1pt, mygreen!55!black}
   ]
-  \node[box] (data) {Data};
-  \node[box, right=of data] (imp) {Imputation};
-  \node[box, right=of imp] (scale) {Scaling /\\Encoding};
-  \node[box, right=of scale] (fs) {Feature\\Selection};
-  \node[box, right=of fs] (learn) {Learner};
-  \draw[arr] (data) -- (imp);
-  \draw[arr] (imp) -- (scale);
-  \draw[arr] (scale) -- (fs);
-  \draw[arr] (fs) -- (learn);
-  \node[hp, below=0.1cm of imp, text width=1.8cm] {mean\\median\\kNN};
-  \node[hp, below=0.1cm of scale, text width=1.8cm] {std\\minmax\\none};
-  \node[hp, below=0.1cm of fs, text width=1.8cm] {PCA\\filter\\none};
-  \node[hp, below=0.1cm of learn, text width=1.8cm] {RF / SVM /\\XGBoost\\+ their HPs};
-  \end{tikzpicture}
+  \node[stage] (s1) {Imputation};
+  \node[stage, right=2.1cm of s1] (s2) {Scaling};
+  \node[stage, right=2.1cm of s2] (s3) {Feat.\ Sel.};
+  \node[stage, right=2.1cm of s3] (s4) {Learner};
+
+  \node[opt,    below=of s1]  (s1a) {mean};
+  \node[optsel, below=of s1a] (s1b) {median};
+  \node[opt,    below=of s1b] (s1c) {\optlbl{kNN}{$k$}};
+
+  \node[optsel, below=of s2]  (s2a) {std};
+  \node[opt,    below=of s2a] (s2b) {minmax};
+  \node[opt,    below=of s2b] (s2c) {none};
+
+  \node[opt,    below=of s3]  (s3a) {\optlbl{PCA}{$n$ comps}};
+  \node[opt,    below=of s3a] (s3b) {\optlbl{filter}{$n$ feats}};
+  \node[optsel, below=of s3b] (s3c) {none};
+
+  \node[opt,    below=of s4]  (s4a) {\optlbl{RF}{mtry, ntrees}};
+  \node[optsel, below=of s4a] (s4b) {\optlbl{SVM}{$C,\gamma$}};
+  \node[opt,    below=of s4b] (s4c) {\optlbl{XGB}{$\eta$, depth, \ldots}};
+
+  \foreach \s/\a/\b/\c in {s1/s1a/s1b/s1c, s2/s2a/s2b/s2c,
+                            s3/s3a/s3b/s3c, s4/s4a/s4b/s4c} {
+    \draw[arr] (\s.south) -- (\a.north);
+    \draw[arr] (\s.south) -- (\b.north);
+    \draw[arr] (\s.south) -- (\c.north);
+  }
+  \draw[arr] (s1.east) -- (s2.west);
+  \draw[arr] (s2.east) -- (s3.west);
+  \draw[arr] (s3.east) -- (s4.west);
+
+  \draw[arrsel] (s1b.east) to[bend right=10] (s2a.west);
+  \draw[arrsel] (s2a.east) to[bend right=10] (s3c.west);
+  \draw[arrsel] (s3c.east) to[bend right=10] (s4b.west);
+  \end{tikzpicture}\\[0.1cm]
+  {\footnotesize Each stage picks a categorical alternative; green path = one configuration $\conf$; \textit{italic} = extra numeric HPs attached to that branch.}
   \end{center}
   \begin{itemize}
       \item Let $\conf$ encode \textbf{all} pipeline choices, not just HPs of a single learner
-      \item $\cost(\conf)$ is the resampled performance of complete pipeline
-      \item Search space $\pcs$ becomes more \textbf{hierarchical / conditional} and higher-dimensional --
-      efficiency even more crucial
-
+      \item $\cost(\conf)$ is resampled performance of the complete pipeline
+      \item Search space $\pcs$ becomes \textbf{hierarchical / conditional} and higher-dim
   \end{itemize}
-  \end{frame}
+\end{frame}
 
 
 \begin{frame}{The Core Idea of Bayesian Optimization}
