@@ -103,7 +103,7 @@
 
 
 \begin{frame}[t]{Synchronous vs.\ Asynchronous Batches}
-  \small
+  \footnotesize
   \begin{columns}[onlytextwidth,T]
       \column{.48\textwidth}
       \textbf{Synchronous batch BO}
@@ -123,13 +123,10 @@
   \vspace{0.2cm}
   \textbf{How ADBO avoids duplicates despite picking one point at a time:}
   \begin{itemize}\setlength\itemsep{0pt}
-    \item At proposal time there are $q\!-\!1$ configs still running (\textbf{pending / in-flight})
-    \item Treat them as observed by \textbf{fantasizing} their outcomes -- Kriging Believer (posterior mean), Constant Liar, or MC samples
-    \item Fantasies inflate posterior certainty around pending points $\leadsto$ next $\argmax \acq$ moves elsewhere, so the proposal is diverse w.r.t.\ currently running work
-    \item Once a real evaluation returns, its fantasy is replaced by the true value and the surrogate is refit
+    \item Treat the $q\!-\!1$ \textbf{pending / in-flight} configs as observed by \textbf{fantasizing} their outcomes -- Kriging Believer, Constant Liar, or MC samples
+    \item Fantasies inflate posterior certainty around pending points $\leadsto$ next $\argmax \acq$ moves elsewhere, so proposals stay diverse w.r.t.\ running work
+    \item Once a real eval returns, its fantasy is replaced by the true value and the surrogate is refit
   \end{itemize}
-  \vspace{0.1cm}
-  \textbf{Why it matters:} full worker utilization + straggler-tolerant. Typical HPO win, since some configs train in seconds and others in hours. Cost: one refit per completion rather than per batch $\leadsto$ surrogate-update time must be $\ll$ evaluation time.
 \end{frame}
 
 

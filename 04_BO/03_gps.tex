@@ -122,17 +122,17 @@
   \begin{columns}[onlytextwidth,T]
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth]{images/gp_branin_true.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/gp_branin_true.pdf}\\
       \footnotesize True $\cost(\conf)$
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth]{images/gp_branin_mean.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/gp_branin_mean.pdf}\\
       \footnotesize Posterior mean $\hat\mean(\conf)$ with training points
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth]{images/gp_branin_sd.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/gp_branin_sd.pdf}\\
       \footnotesize Posterior std $\sh(\conf)$
     \end{center}
   \end{columns}
@@ -226,23 +226,21 @@
 \end{frame}
 
 \begin{frame}[t]{Learning Kernel Hyperparameters}
-  \small
-  Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\epsilon$, \ldots).\\[0.2cm]
+  \footnotesize
+  Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\epsilon$, \ldots).\\[0.15cm]
   Standard approach: \textbf{Type-II maximum likelihood} -- maximize the \textbf{log marginal likelihood} of the observed data:
   $$
   \log p(\yv \mid \bm{\theta}) = -\tfrac{1}{2} \yv^T \bm{K}_{\bm{\theta}}^{-1} \yv
     \;-\; \tfrac{1}{2} \log |\bm{K}_{\bm{\theta}}|
     \;-\; \tfrac{t}{2} \log 2\pi
   $$
-  \begin{itemize}
+  \begin{itemize}\setlength\itemsep{0pt}
     \item First term rewards explaining the data
     \item Second term penalizes model complexity (Occam's razor, built-in)
     \item Optimize numerically with L-BFGS-B (multi-start to avoid local optima)
   \end{itemize}
-  \vspace{0.1cm}
-  Alternatives: cross-validation on held-out residuals, or fully Bayesian treatment via MCMC / HMC over $\bm{\theta}$.
-  \vspace{0.1cm}
-
+  \vspace{0.05cm}
+  Alternatives: cross-validation on held-out residuals, or fully Bayesian treatment via MCMC / HMC over $\bm{\theta}$.\\[0.1cm]
   \textbf{Training cost:} each marginal-likelihood evaluation needs a Cholesky of the $t \times t$ Gram matrix, costing $\mathcal{O}(t^3)$ time and $\mathcal{O}(t^2)$ memory -- the main bottleneck for large $t$.
 \end{frame}
 
