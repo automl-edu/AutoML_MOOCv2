@@ -20,7 +20,7 @@
     \item Key question: can we optimize hyperparameters \emph{for ensemble contribution} instead of standalone score?
 \end{itemize}
 \vspace{0.2cm}
-\textbf{Core idea:} directly optimize a fixed-size ensemble during BO, not only post-hoc after BO.
+\textbf{Core idea:} Directly optimize a fixed-size ensemble during BO, not only post-hoc after BO.
 \vspace{0.2cm}
 
 \end{frame}
@@ -59,7 +59,7 @@ f(\conf \mid E) = \loss\left(E \cup \algo(\datasettrain, \conf) \mid \datasetval
 \begin{frame}{Optimization Procedure (Round-Robin EO)}
 \small
 \begin{columns}
-    \begin{column}{0.58\textwidth}
+    \begin{column}{0.62\textwidth}
         \begin{enumerate}
             \item Maintain history $\hist$ and fixed-size ensemble $E$ with $m$ slots
             \item At iteration $i$, remove slot $j=i \bmod m$ from $E$
