@@ -2,6 +2,7 @@
 * in 16:9
 * The position of the talking head should be consistent
 * Each video is no longer than 10 min
+* generate mp4 and separate subtitle files (.srt)
 
 ## Modules and Chunks
 * Each course is divided into modules; each module consists of chunks
@@ -11,7 +12,7 @@
 * Modules should start with a motivation/introduction and should end with a summary chunk
 
 ## Slides
-* Recap questions after each video (not part of the video!) → on ai-campus (or whatever platform we use)
+* (Recap questions after each video (not part of the video!) → on ai-campus (or whatever platform we use))
 * American English
 * Concise and to the point bullet point – no long sentences (exceptions: important quotes)
 * Everything relevant has to be on the slides
@@ -53,6 +54,7 @@ https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
 1. after half of the videos
 2. after the remaining half of the videos
 3. quiz for on-site class
+4. quiz questions to quiz.text for each module
 
 ## Additional Literature
 * The one in charge of the module provides a brief list of recommended (additional) literature and provides a ~3-sentence summary of these recommendations

@@ -1,0 +1,215 @@
+\documentclass[main]{subfiles}
+
+\title[Advanced HPO]{Chapter 5 -- Quiz}
+\subtitle{Multiple Choice Questions}
+\author[Marius Lindauer]{Marius Lindauer}
+\date{}
+
+\titlebackground*{images/AutoML_Speeding_up_HPO}
+
+\newcommand{\correct}[1]{\textcolor{ForestGreen}{\textbf{#1} \checkmark}}
+\newcommand{\wrong}[1]{#1}
+
+\begin{document}
+
+    \maketitle
+
+%----------------------------------------------------------------------
+\begin{frame}{Q1 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{Which statement is true?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Every HPO task must be treated as a fully general black-box problem}
+    \item \wrong{(B) \; HPO lacks reusable information across tasks}
+    \item \correct{(C) \; HPO contains structure such as task similarity, prior information, and intermediate results}
+    \item \wrong{(D) \; Only random search can exploit the structure of HPO}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q2 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Why might standard Bayesian optimization still be insufficient in practice for HPO?}
+
+\begin{itemize}
+    \item \wrong{(A) \; It cannot handle continuous variables}
+    \item \wrong{(B) \; It is less systematic than a manual search}
+    \item \correct{(C) \; A single evaluation can still be too expensive, such as training a large neural network}
+    \item \correct{(D) \; It does not make use of additional, external knowledge}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q3 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is the main motivation for warmstarting from prior observations?}
+
+\begin{itemize}
+    \item \wrong{(A) \; To avoid using surrogate models}
+    \item \correct{(B) \; To use existing data from repeated tuning, similar reruns, or prior work}
+    \item \wrong{(C) \; To make the search space larger}
+    \item \wrong{(D) \; To ensure transfer across unrelated tasks}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q4 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{How does replacing the initial design with prior observation impact the search?}
+
+\begin{itemize}
+    \item \wrong{(A) \; It guarantees cross-task transfer}
+    \item \correct{(B) \; It accelerates early exploitation}
+    \item \wrong{(C) \; It increases uncertainty about the objective function}
+    \item \wrong{(D) \; It eliminates the need for a search space}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q5 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What motivates meta-learning across tasks for HPO?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Objective functions across tasks are entirely independent}
+    \item \correct{(B) \; The best setting tends to remain stable across similar tasks}
+    \item \wrong{(C) \; It decreases the search space}
+    \item \wrong{(D) \; Bayesian optimization is unnecessary across tasks}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q6 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is a task-agnostic portfolio intended to do?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Optimize only the current target dataset}
+    \item \correct{(B) \; Cover optima across diverse tasks using a set of complementary configurations}
+    \item \wrong{(C) \; Cover optima of tasks similar to the target task}
+    \item \wrong{(D) \; Serve as a replacement for Bayesian optimization}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q7 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is a task-specific portfolio intended to do?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Optimize the average performance across meta tasks}
+    \item \wrong{(B) \; Cover optima across diverse tasks using a set of complementary configurations}
+    \item \correct{(C) \; Cover optima of tasks similar to the target task}
+    \item \wrong{(D) \; Learn dataset similarity}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q8 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{In greedy forward selection for portfolio construction, what is added at each step?}
+
+\begin{itemize}
+    \item \wrong{(A) \; The configuration that minimizes uncertainty}
+    \item \wrong{(B) \; The configuration that minimizes performance on the target task}
+    \item \correct{(C) \; The configuration that most improves portfolio loss}
+    \item \wrong{(D) \; A random candidate from the pool}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q9 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{Which of the following can serve as a meta-feature of a dataset?}
+
+\begin{itemize}
+    \item \correct{(A) \; the fraction of missing values}
+    \item \correct{(B) \; the ranking of landmarking algorithms}
+    \item \correct{(C) \; learned dataset embeddings}
+    \item \correct{(D) \; the average correlation between features}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q10 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is the main idea of multi-fidelity optimization in HPO?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Always evaluate every configuration at maximum budget}
+    \item \correct{(B) \; Use low-cost approximations to prune poor candidates early}
+    \item \wrong{(C) \; Restrict optimization to only a few hyperparameters}
+    \item \wrong{(D) \; Use only model-free methods}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q11 \hfill \small\normalfont\textit{(multiple correct answers)}}
+
+\textbf{What is a /are the typical assumptions for multi-fidelity optimization methods?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Higher fidelities are noisier and less accurate}
+    \item \correct{(B) \; Ranks are approximately consistent across fidelities}
+    \item \correct{(C) \; Lower fidelities are noisier and less accurate}
+    \item \wrong{(D) \; Budgets are unrelated to evaluation cost}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q12 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What role does the reduction factor eta in Successive Halving play?}
+
+\begin{itemize}
+    \item \correct{(A) \; It controls how aggressively configurations are pruned}
+    \item \wrong{(B) \; It defines the kernel lengthscale}
+    \item \wrong{(C) \; It measures task similarity}
+    \item \wrong{(D) \; It estimates observation noise}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q13 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What distinguishes BOHB from Hyperband?}
+
+\begin{itemize}
+    \item \wrong{(A) \; BOHB removes all fidelity levels}
+    \item \correct{(B) \; BOHB replaces random sampling with model-based Bayesian optimization}
+    \item \wrong{(C) \; BOHB replaces the initial design with a portfolio}
+    \item \wrong{(D) \; BOHB works only for convex objectives}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q14 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What is the main idea of Prior-Guided Bayesian Optimization (PiBO)?}
+
+\begin{itemize}
+    \item \wrong{(A) \; Replace the initial design with a portfolio}
+    \item \correct{(B) \; Combine a prior over configurations with the acquisition function}
+    \item \wrong{(C) \; Automatically adapt lengthscales
+    }
+    \item \wrong{(D) \; Implementing multi-fidelity optimization}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+\begin{frame}{Q15 \hfill \small\normalfont\textit{(single correct answer)}}
+
+\textbf{What does the factor beta/n in PiBO do?}
+
+\begin{itemize}
+    \item \correct{(A) \; Decay the impact of the additional prior}
+    \item \wrong{(B) \; Rescale the objective function}
+    \item \wrong{(C) \; Normalize the acquisition across configurations}
+    \item \wrong{(D) \; Estimate the objective noise level}
+\end{itemize}
+
+\end{frame}
+%----------------------------------------------------------------------
+
+\end{document}
