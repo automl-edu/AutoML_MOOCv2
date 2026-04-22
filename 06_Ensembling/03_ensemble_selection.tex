@@ -66,7 +66,8 @@ The final weight of a model is proportional to how often it was selected.
 
 \begin{frame}{Example: GES}
 \begin{table}[h]
-\scriptsize
+%\scriptsize
+\footnotesize
 \centering
 \begin{tabular}{lccccc}
 \hline
@@ -99,7 +100,7 @@ The final weight of a model is proportional to how often it was selected.
 \end{table}
 \pause
 Best iteration: 6 with BACC (Valid) of $0.917$\\
-$\rightarrow$ $\{$RF: 4, k-NN: 1, Log. Reg.: 1$\}$\\
+$\rightarrow$ $\{$RF: 4, k-NN: 1, Log. Reg.: 1$\}$ %\\
 $\rightarrow$ $\ensweights^{\star} = (\frac{4}{6}, \frac{1}{6}, \frac{1}{6})^\top$
 \end{frame}
 
@@ -127,7 +128,7 @@ GES Weights & 0.917 & 0.864 \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Tricks of the trade}
+\begin{frame}{Tricks of the Trade}
  \begin{itemize}
   \item Use cross-validation instead of a single validation set (see videos on stacking)
   \item Use a secondary metric (log loss) for tie breaking
