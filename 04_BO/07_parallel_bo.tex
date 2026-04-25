@@ -46,7 +46,7 @@
   \begin{itemize}
     \item Extend acquisition to \emph{joint} criterion over batch $\batchconf = (\confI{1}, \ldots, \confI{q})$:
         % $$\acq_q(\batchconf) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
-    \item Example: $q$-Expected Improvement~\liturl{Wang et al. 2020}{https://arxiv.org/abs/1602.05149}
+    \item Example: $q$-expected improvement~\liturl{Wang et al. 2020}{https://arxiv.org/abs/1602.05149}
         $$\qEI(\batchconf) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \textbf{best} outcome in the batch -- naturally encourages diversity
     \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
@@ -65,16 +65,16 @@
     \item Start with current surrogate; propose $\confI{1} = \argmax \acq(\conf)$
     \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
         \begin{itemize}\setlength\itemsep{0pt}
-            \item Kriging Believer: the posterior \textbf{mean} $\surro(\confI{1})$
-            \item Constant Liar: a fixed value (e.g.\ $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
-            \item MC Fantasizing: a sample from the posterior
+            \item Kriging believer: the posterior \textbf{mean} $\surro(\confI{1})$
+            \item Constant liar: a fixed value (e.g.\ $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
+            \item MC fantasizing: a sample from the posterior
         \end{itemize}
     \item Refit and propose $\confI{2} = \argmax \acq(\conf)$; repeat until $q$ points assembled
   \end{enumerate}
   \textbf{Effect:} fantasy eval lowers post. unc. around $\confI{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
   \begin{center}
     \includegraphics[width=0.55\textwidth]{images/batch_bo_kriging_believer.pdf}\\
-    \footnotesize Kriging Believer on Branin-EI ($q=4$): yellow $\times$ = initial design, red = earlier picks,\\
+    \footnotesize Kriging believer on Branin-EI ($q=4$): yellow $\times$ = initial design, red = earlier picks,\\
     green diamond = current pick. Each panel refits the GP with the prior picks fantasized at $\surro(\confI{k})$.
   \end{center}
 \end{frame}
@@ -123,7 +123,7 @@
   \vspace{0.2cm}
   \textbf{How ADBO avoids duplicates despite picking one point at a time:}
   \begin{itemize}\setlength\itemsep{0pt}
-    \item Treat the $q\!-\!1$ \textbf{pending / in-flight} configs as observed by \textbf{fantasizing} their outcomes -- Kriging Believer, Constant Liar, or MC samples
+    \item Treat the $q\!-\!1$ \textbf{pending / in-flight} configs as observed by \textbf{fantasizing} their outcomes -- Kriging believer, constant liar, or MC samples
     \item Fantasies inflate posterior certainty around pending points $\leadsto$ next $\argmax \acq$ moves elsewhere, so proposals stay diverse w.r.t.\ running work
     \item Once a real eval returns, its fantasy is replaced by the true value and the surrogate is refit
   \end{itemize}
@@ -140,7 +140,7 @@
     \item \textbf{Surrogate choice:}
         \begin{itemize}
             \item GP with autodiff-friendly acquisition (BoTorch) $\leadsto$ joint $q$EI is practical
-            \item RF surrogate $\leadsto$ Thompson sampling or Kriging Believer is more natural
+            \item RF surrogate $\leadsto$ Thompson sampling or Kriging believer is more natural
         \end{itemize}
     \item \textbf{Diversity sanity check:} monitor pairwise distances within batches; near-duplicates are a warning sign
     \item \textbf{Noisy / multi-fidelity:} combines naturally with batching but inflates the design space further
@@ -153,7 +153,7 @@
     \item Parallel BO proposes a batch of $q$ points per iteration to exploit parallel compute
     \item Naive top-$q$ of $\acq$ gives near-duplicates; need joint or sequential diversification
     \item \textbf{$q$-acquisition functions} (e.g., $q$EI) are principled but computationally heavy
-    \item \textbf{Kriging Believer / fantasizing} and \textbf{local penalization} are cheap, effective heuristics
+    \item \textbf{Kriging believer / fantasizing} and \textbf{local penalization} are cheap, effective heuristics
     \item \textbf{Thompson sampling} gives diverse batches for free -- a strong default
     \item Async batches avoid idle workers when $\cost$ runtimes vary
   \end{enumerate}

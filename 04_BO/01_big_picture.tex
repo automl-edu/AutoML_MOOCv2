@@ -141,7 +141,8 @@ Many optimization problems in AutoML share three features:
   \draw[arrsel] (s2a.east) to[bend right=10] (s3c.west);
   \draw[arrsel] (s3c.east) to[bend right=10] (s4b.west);
   \end{tikzpicture}\\[0.1cm]
-  {\footnotesize Each stage picks a categorical alternative; green path = one configuration $\conf$; \textit{italic} = extra numeric HPs attached to that branch.}
+  {\footnotesize Each stage picks a categorical alternative;\\
+  green path = one configuration $\conf$; \textit{italic} = extra numeric HPs attached to that branch.}
   \end{center}
   \begin{itemize}
       \item Let $\conf$ encode \textbf{all} pipeline choices, not just HPs of a single learner
@@ -176,8 +177,8 @@ Many optimization problems in AutoML share three features:
     \begin{itemize}
         \item Noisy evaluations
         \item Multiple objectives (accuracy vs.\ runtime, vs.\ fairness, \ldots)
-        \item Multi-Fidelity
-        \item Warm-Starting
+        \item Multi-fidelity
+        \item Warm-starting
         \item Priors
     \end{itemize}
 \end{itemize}
@@ -213,12 +214,12 @@ The same ``expensive, noisy, black-box'' setting appears in many other parts of 
 
 
 \begin{frame}{Historical Roots: DACE and Expensive Simulations}
-BO did not originate in ML -- it grew out of the \textbf{Design and Analysis of Computer Experiments} (DACE) community~\liturl{Sacks et al. 1989}{https://projecteuclid.org/journals/statistical-science/volume-4/issue-4/Design-and-Analysis-of-Computer-Experiments/10.1214/ss/1177012413.full}.
+BO did not originate in ML -- it grew out of the \textbf{design and analysis of computer experiments} (DACE) community~\liturl{Sacks et al. 1989}{https://projecteuclid.org/journals/statistical-science/volume-4/issue-4/Design-and-Analysis-of-Computer-Experiments/10.1214/ss/1177012413.full}.
 \vspace{0.2cm}
 \begin{itemize}
     \item Classical engineering setting: a single run of a physics / CFD / finite-element simulator can take hours or days
     \item Idea: treat the simulator as an unknown function, fit a \textbf{Gaussian process} (aka Kriging) to a small design, and use it as a cheap proxy
-    \item \textbf{EGO} (Efficient Global Optimization,~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147}) pairs a GP with \textbf{Expected Improvement} -- the direct ancestor of today's BO
+    \item \textbf{EGO} (efficient global optimization,~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147}) pairs a GP with \textbf{expected improvement} -- the direct ancestor of today's BO
 \end{itemize}
 \vspace{0.2cm}
 Typical applications: aerodynamic shape, car crash / airfoil simulations, reservoir / groundwater models, climate / weather code calibration, chip / circuit design.

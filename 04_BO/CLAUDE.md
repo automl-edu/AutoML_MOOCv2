@@ -20,6 +20,7 @@ Slides and R figure scripts for the BO lecture.
 - You can abbreviate words (mainly technical terms) if an intelligent person can guess the abbreviation.
 - Do not capitalize normal nouns or method names. "Bayesian" is capitalized, "random forest" is not. 
 - Capitalize at the beginning of a bullet point
+- Slide titles are written in "title case"
 - Use punctuation "sparingly"; not a "." after every text fragment in a bullet list or so
 - Use cspell to check against typos, and add needed words to .cspell/project-words.txt if reasonable
 

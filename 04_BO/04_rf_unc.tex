@@ -67,7 +67,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{Jackknife-based Variance Estimators}
+\begin{frame}[t]{Jackknife-Based Variance Estimators}
   \begin{itemize}
     \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager, Hastie, Efron 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
         $$\widehat{\sh}^2_{IJ}(\conf) = \sum_{i=1}^n \Big(\operatorname{Cov}_b(N_{ib}, \surro_b(\conf))\Big)^2$$
@@ -81,7 +81,7 @@
 
 \begin{frame}[t]{Quantile Regression Forests}
   \begin{itemize}
-    \item \textbf{Quantile Regression Forests}~\liturl{Meinshausen 2006}{https://jmlr.org/papers/v7/meinshausen06a.html}: instead of per-leaf means, keep the entire \textbf{empirical distribution} of the training labels falling into each leaf
+    \item \textbf{Quantile regression forests}~\liturl{Meinshausen 2006}{https://jmlr.org/papers/v7/meinshausen06a.html}: instead of per-leaf means, keep the entire \textbf{empirical distribution} of the training labels falling into each leaf
     \item For test $\conf$, aggregate per-tree leaf labels (weighted) to approximate $F(y \mid \conf)$
     \item From this CDF we get
         \begin{itemize}
@@ -103,7 +103,7 @@
   \vspace{0.2cm}
   Common workarounds:
   \begin{itemize}
-    \item \textbf{Extra-Trees}: random split locations $\leadsto$ ``smoother'' mean
+    \item \textbf{Extra-trees}: random split locations $\leadsto$ ``smoother'' mean
     \item \textbf{Kernel smoothing}: replace per-leaf mean with a locally-weighted average
     \item \textbf{Increase $B$}: more trees average out step-wise structure
     \item \textbf{Use a different AF optimizer}: random search / EA, since gradients don't help anyway
@@ -148,7 +148,7 @@
   \begin{enumerate}
     \item RFs give BO a scalable, robust surrogate that handles mixed and hierarchical spaces out of the box
     \item Variance estimate via law of total variance (within-tree + between-tree) is the default; jackknife / IJ gives a theoretically sound alternative
-    \item Quantile Regression Forests unlock non-Gaussian predictive distributions
+    \item Quantile regression forests unlock non-Gaussian predictive distributions
     \item RF AF landscapes are step-wise $\leadsto$ use gradient-free optimizers or smoothing tricks (extratrees)
     \item Uncertainty is not truly Bayesian and can be miscalibrated, but RF + EI (SMAC) is a proven recipe in AutoML
   \end{enumerate}

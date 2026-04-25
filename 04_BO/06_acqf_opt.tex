@@ -84,7 +84,7 @@
 \item Some people do this due to simplicity and the ``we do not have to optimize perfectly'' point
 \item Likely not a good idea in higher dimensions
 \end{itemize}
-\item \textbf{Multi-Start local search:}
+\item \textbf{Multi-start local search:}
 \begin{itemize}
 \item Sample multiple start points
 \item Run multiple gradient-based local optimizers from each (L-BFGS-B if $\pcs$ is box-constrained)
@@ -104,7 +104,7 @@
   % \item Recursively partitions the box into hyperrectangles; evaluates $\acq$ at each center
   % \item Per iteration: mark ``potentially optimal'' rectangles -- those that could hold a better point under \textbf{some} Lipschitz constant -- and trisect them along their longest side
   % \end{itemize}
-  \item \textbf{CMA-ES -- Covariance Matrix Adaptation Evolution Strategy}
+  \item \textbf{CMA-ES -- covariance matrix adaptation evolution strategy}
   \begin{itemize}
   \item Population-based, gradient-free
   \item Each generation: sample $\lambda$ candidates from $\mathcal{N}(\bm{m}, \sigma^2 \bm{C})$, rank by $\acq$, update mean $\bm{m}$, step size $\sigma$, and covariance $\bm{C}$ from the best $\mu$
