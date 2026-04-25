@@ -50,12 +50,15 @@ refresh_surrogate = function() {
 #   grid           see above
 #   design         optional data.table of evaluated points (x, y); drawn as black dots
 #   proposal       optional data.table with a single row (x, y_hat); drawn as red dot
+#   latest         optional data.table with a single row (x, y) of the just-evaluated
+#                  point; drawn as red dot (carries the proposal color into the eval frame)
 #   show_truth     draw the true objective curve
 #   show_surrogate draw the surrogate mean (dashed steelblue)
 #   xlim, ylim     axis limits
 loop_plot = function(grid,
                      design         = NULL,
                      proposal       = NULL,
+                     latest         = NULL,
                      show_truth     = FALSE,
                      show_surrogate = FALSE,
                      xlim           = c(0, 1),
@@ -76,7 +79,12 @@ loop_plot = function(grid,
   }
   if (!is.null(proposal)) {
     g = g + geom_point(
-      aes(x = x, y = y_hat), size = 3L, colour = "darkred", data = proposal
+      aes(x = x, y = y_hat), size = 5L, colour = "darkred", data = proposal
+    )
+  }
+  if (!is.null(latest)) {
+    g = g + geom_point(
+      aes(x = x, y = y), size = 5L, colour = "darkred", data = latest
     )
   }
   g +
@@ -107,7 +115,9 @@ myggsave("bo_loop_1d_toy_3", plot = loop_plot(grid, design = archive, proposal =
 # 4: eval proposal, show updated design (surrogate not yet refit)
 instance$eval_batch(mean_argmin[, "x", with = FALSE])
 archive = instance$archive$data
-myggsave("bo_loop_1d_toy_4", plot = loop_plot(grid, design = archive, show_surrogate = TRUE))
+latest  = archive[.N]
+old     = archive[-.N]
+myggsave("bo_loop_1d_toy_4", plot = loop_plot(grid, design = old, latest = latest, show_surrogate = TRUE))
 
 # 5: refit surrogate on extended design
 mean_argmin = refresh_surrogate()
@@ -119,7 +129,9 @@ myggsave("bo_loop_1d_toy_6", plot = loop_plot(grid, design = archive, proposal =
 # 7: eval new proposal
 instance$eval_batch(mean_argmin[, "x", with = FALSE])
 archive = instance$archive$data
-myggsave("bo_loop_1d_toy_7", plot = loop_plot(grid, design = archive, show_surrogate = TRUE))
+latest  = archive[.N]
+old     = archive[-.N]
+myggsave("bo_loop_1d_toy_7", plot = loop_plot(grid, design = old, latest = latest, show_surrogate = TRUE))
 
 # 8: refit surrogate
 mean_argmin = refresh_surrogate()
@@ -131,7 +143,9 @@ myggsave("bo_loop_1d_toy_9", plot = loop_plot(grid, design = archive, proposal =
 # 10: eval proposal
 instance$eval_batch(mean_argmin[, "x", with = FALSE])
 archive = instance$archive$data
-myggsave("bo_loop_1d_toy_10", plot = loop_plot(grid, design = archive, show_surrogate = TRUE))
+latest  = archive[.N]
+old     = archive[-.N]
+myggsave("bo_loop_1d_toy_10", plot = loop_plot(grid, design = old, latest = latest, show_surrogate = TRUE))
 
 # 11: show truth as well -- we missed the global optimum
 myggsave("bo_loop_1d_toy_11", plot = loop_plot(grid, design = archive, show_truth = TRUE, show_surrogate = TRUE))

@@ -15,11 +15,18 @@ set.seed(5)
 
 domain = ps(x1 = p_dbl(lower = 0, upper = 1), x2 = p_dbl(lower = 0, upper = 1))
 
-qs = seq(from = 0, to = 1, length.out = 11)
+n = 10L
+qs = seq(from = 0, to = 1, length.out = n + 1L)
 
-xdt_random = generate_design_random(domain, n = 10L)$data
+# Snap a value in [0, 1] to the midpoint of its bin out of `n` equal bins.
+# Used for LHS only: paradox / lhs sample uniformly within bins, but the slide
+# describes the midpoint variant. Random design stays uniform on purpose.
+to_midpoint = function(x, n) (pmin(floor(n * x), n - 1L) + 0.5) / n
+
+xdt_random = generate_design_random(domain, n = n)$data
 xdt_random[, method := "random"]
-xdt_lhs = generate_design_lhs(domain, n = 10L)$data
+xdt_lhs = generate_design_lhs(domain, n = n)$data
+xdt_lhs[, c("x1", "x2") := lapply(.SD, to_midpoint, n = n), .SDcols = c("x1", "x2")]
 xdt_lhs[, method := "lhs"]
 xdt = rbind(xdt_random, xdt_lhs)
 

@@ -59,7 +59,7 @@
                 \item Latin hypercube sampling (LHS)
                 \item Sobol / Halton quasi-random sequences
             \end{itemize}
-        \item Type of design usually does not have the largest effect
+        \item Type of design usually does not have the largest effect~\liturl{Bossek, Doerr, Kerschke 2020}{https://arxiv.org/abs/2003.13826}
         \item More important: the \textbf{size} of the initial design
             \begin{itemize}
                 \item Too small: bad initial fit, surrogate misleading
@@ -104,16 +104,18 @@
 
 \begin{frame}{Space-Filling Criterion: Maximin}
 \begin{columns}[onlytextwidth]
-    \column{.7\textwidth}
+    \column{.75\textwidth}
     \begin{itemize}
-    \item Specific LHS design selected via extra crit., e.g., \textbf{maximin}
+    \item Specific LHS design selected via, e.g., \textbf{maximin}
     \item For a given design $\dataset$, measure min.\ pairwise distance for any metric $\rho$:
      $2q = \min_{\conf \neq \conf' \in \dataset} \rho(\conf, \conf')$
     \item $q$ = \textbf{packing radius}: radius of largest ball around each point s.t. no 2 balls overlap
-    \item Goal: find $\dataset$ that maximizes $2q$, keeping design points as far apart as possible:
+    \item Goal: find $\dataset$ that maximizes $2q$, keeps points far apart:
     $$\max_{\dataset} \min_{\conf \neq \conf' \in \dataset} \rho(\conf, \conf')$$
+    \item Combinatorial problem; solved heuristically, e.g., by simulated annealing on 
+    column swaps~\liturl{Morris \& Mitchell 1995}{https://www.sciencedirect.com/science/article/abs/pii/037837589400035T} or random search
     \end{itemize}
-    \column{.3\textwidth}
+    \column{.25\textwidth}
     \begin{center}
     \begin{tikzpicture}[scale=2.3,
         pt/.style={circle, fill=black, inner sep=1.2pt},

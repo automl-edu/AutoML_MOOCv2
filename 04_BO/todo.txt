@@ -11,6 +11,10 @@ use latex autoformater and dont indent
 
 compare slides with mlr3mbo paper
 
+check fontsizes on all plots
+
+marius hat irgendwie alle meine titel auf den slides falsch angepasst
+
 ------------------------
 
 Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    
