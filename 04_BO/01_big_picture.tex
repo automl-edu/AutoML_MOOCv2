@@ -31,18 +31,18 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
 \end{frame}
 
 
-\begin{frame}{HPO Is a Black-Box Optimization Problem}
+\begin{frame}{HPO Is an Expensive Black-Box Optim. Problem}
 \begin{itemize}
     \item Finding a good hyperparameter configuration $\conf^\ast$ means solving
     $$\conf^\ast \in \argmin_{\conf \in \pcs} \cost(\conf)$$
     with
-    $$\cost(\conf) = \riskg(\mathcal{I}(\datasettrain, \conf) \mid \datasetval)$$
+    $$\cost(\conf) = \riskg(\mathcal{I}(\datasettrain, \conf) , \datasetval)$$
     
-    \item The mapping $\conf \mapsto \riskg(\dots)$ is exactly a black box:
+    \item $\cost(\conf)$ has the following properties:
     \begin{itemize}
         \item No closed-form expression
         \item Evaluation requires training / resampling a model
-        \item Mixed / hierarchical search space\\
+        \item Often mixed / hierarchical configuration space\\
         (numeric / integer / cat / conditional HPs)
     \end{itemize}
     \item $\riskg$ notation here is simplified to the use of a single validation set,
@@ -75,7 +75,7 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
   \small
   \begin{itemize}
     \item Simple, parallelizable, but \textbf{non-adaptive}: every config is sampled independently of previous results $\leadsto$ no exploitation of structure, budget wasted on obviously unpromising regions
-    \item Scales poorly in higher-dim.\ search spaces
+    \item Scales poorly in higher-dimensional configuration spaces
     \item Expensive objectives demand an optimizer that \textbf{learns from its own evaluations} and follows promising local directions
   \end{itemize}
   \vspace{0.1cm}
@@ -103,6 +103,9 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
       optsel/.style = {draw=mygreen!55!black, line width=0.9pt, rounded corners=2pt,
           fill=mygreen!22, minimum width=1.45cm, minimum height=0.55cm,
           align=center, font=\scriptsize\bfseries, inner sep=2pt},
+      container/.style = {draw=black!30, line width=0.4pt, rounded corners=4pt,
+          dash pattern=on 1.5pt off 1.2pt,
+          inner xsep=5pt, inner ysep=4pt},
       arr/.style    = {->, >=latex, thick, black!55},
       arrsel/.style = {->, >=latex, line width=1.1pt, mygreen!55!black}
   ]
@@ -111,35 +114,41 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
   \node[stage, right=1.25cm of s2] (s3) {Feat.\ Sel.};
   \node[stage, right=1.25cm of s3] (s4) {Learner};
 
-  \node[opt,    below=of s1]  (s1a) {mean};
+  \node[opt,    below=0.6cm of s1]  (s1a) {mean};
   \node[optsel, below=of s1a] (s1b) {median};
   \node[opt,    below=of s1b] (s1c) {\optlbl{kNN}{$k$}};
 
-  \node[optsel, below=of s2]  (s2a) {std};
+  \node[optsel, below=0.6cm of s2]  (s2a) {std};
   \node[opt,    below=of s2a] (s2b) {minmax};
   \node[opt,    below=of s2b] (s2c) {none};
 
-  \node[opt,    below=of s3]  (s3a) {\optlbl{PCA}{$n$ comps}};
+  \node[opt,    below=0.6cm of s3]  (s3a) {\optlbl{PCA}{$n$ comps}};
   \node[opt,    below=of s3a] (s3b) {\optlbl{filter}{$n$ feats}};
   \node[optsel, below=of s3b] (s3c) {none};
 
-  \node[opt,    below=of s4]  (s4a) {\optlbl{RF}{mtry, ntrees}};
+  \node[opt,    below=0.6cm of s4]  (s4a) {\optlbl{RF}{mtry, ntrees}};
   \node[optsel, below=of s4a] (s4b) {\optlbl{SVM}{$C,\gamma$}};
   \node[opt,    below=of s4b] (s4c) {\optlbl{XGB}{$\eta$, depth, \ldots}};
 
-  \foreach \s/\a/\b/\c in {s1/s1a/s1b/s1c, s2/s2a/s2b/s2c,
-                            s3/s3a/s3b/s3c, s4/s4a/s4b/s4c} {
-    \draw[arr] (\s.south) -- (\a.north);
-    \draw[arr] (\s.south) -- (\b.north);
-    \draw[arr] (\s.south) -- (\c.north);
-  }
+  \begin{scope}[on background layer]
+    \node[container, fit=(s1a)(s1b)(s1c)] (c1) {};
+    \node[container, fit=(s2a)(s2b)(s2c)] (c2) {};
+    \node[container, fit=(s3a)(s3b)(s3c)] (c3) {};
+    \node[container, fit=(s4a)(s4b)(s4c)] (c4) {};
+  \end{scope}
+
+  \draw[arr] (s1.south) -- (c1.north);
+  \draw[arr] (s2.south) -- (c2.north);
+  \draw[arr] (s3.south) -- (c3.north);
+  \draw[arr] (s4.south) -- (c4.north);
+
   \draw[arr] (s1.east) -- (s2.west);
   \draw[arr] (s2.east) -- (s3.west);
   \draw[arr] (s3.east) -- (s4.west);
 
-  \draw[arrsel] (s1b.east) to[bend right=10] (s2a.west);
-  \draw[arrsel] (s2a.east) to[bend right=10] (s3c.west);
-  \draw[arrsel] (s3c.east) to[bend right=10] (s4b.west);
+  \draw[arrsel] (s1b.east -| c1.east) -- (s2a.west -| c2.west);
+  \draw[arrsel] (s2a.east -| c2.east) -- (s3c.west -| c3.west);
+  \draw[arrsel] (s3c.east -| c3.east) -- (s4b.west -| c4.west);
   \end{tikzpicture}\\[0.1cm]
   {\footnotesize Each stage picks a categorical alternative;\\
   green path = one configuration $\conf$; \textit{italic} = extra numeric HPs attached to that branch.}
@@ -147,7 +156,7 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
   \begin{itemize}
       \item Let $\conf$ encode \textbf{all} pipeline choices, not just HPs of a single learner
       \item $\cost(\conf)$ is resampled performance of the complete pipeline
-      \item Search space $\pcs$ becomes \textbf{hierarchical / conditional} and higher-dim
+      \item Configuration space $\pcs$ becomes \textbf{hierarchical / conditional} and higher-dim.
   \end{itemize}
 \end{frame}
 
@@ -171,7 +180,7 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
 
 \begin{frame}{BO as an AutoML Backbone}
 \begin{itemize}
-    \item BO is the \textbf{backbone} of many modern AutoML systems (e.g., SMAC, Spearmint, BoTorch, Optuna)~\liturl{Snoek et al. 2012}{https://arxiv.org/abs/1206.2944}
+    \item BO is the \textbf{backbone} of many modern AutoML systems (e.g., SMAC, Spearmint, BoTorch, Optuna)
     \item It is typically much more \textbf{sample-efficient} than random or evolutionary search on HPO benchmarks
     \item It provides a principled way to handle
     \begin{itemize}
@@ -235,15 +244,15 @@ Typical applications: aerodynamic shape, car crash / airfoil simulations, reserv
     \item Which practical choices matter when implementing or using BO?
     E.g. ACQF optimization or parallelization
 \end{itemize}
-\vspace{0.1cm}
-\textbf{Further reading:}
-\begin{itemize}\setlength\itemsep{1pt}
-    \item \liturl{Bischl et al. 2023}{https://onlinelibrary.wiley.com/doi/full/10.1002/widm.1484} -- HPO survey
-    \item \liturl{Hutter, Kotthoff, Vanschoren 2019}{https://www.automl.org/book/} -- AutoML book (free online)
-    \item \liturl{Garnett 2023}{https://bayesoptbook.com/} -- BO textbook (free online)
-    \item \liturl{Shahriari et al. 2016}{https://ieeexplore.ieee.org/document/7352306} -- BO review ``Taking the Human Out of the Loop''
-    \item \liturl{Frazier 2018}{https://arxiv.org/abs/1807.02811} -- short BO tutorial
-\end{itemize}
+% \vspace{0.1cm}
+% \textbf{Further reading:}
+% \begin{itemize}\setlength\itemsep{1pt}
+%     \item \liturl{Bischl et al. 2023}{https://onlinelibrary.wiley.com/doi/full/10.1002/widm.1484} -- HPO survey
+%     \item \liturl{Hutter, Kotthoff, Vanschoren 2019}{https://www.automl.org/book/} -- AutoML book (free online)
+%     \item \liturl{Garnett 2023}{https://bayesoptbook.com/} -- BO textbook (free online)
+%     \item \liturl{Shahriari et al. 2016}{https://ieeexplore.ieee.org/document/7352306} -- BO review ``Taking the Human Out of the Loop''
+%     \item \liturl{Frazier 2018}{https://arxiv.org/abs/1807.02811} -- short BO tutorial
+% \end{itemize}
 \end{frame}
 
 
