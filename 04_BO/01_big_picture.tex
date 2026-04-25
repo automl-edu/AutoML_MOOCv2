@@ -8,7 +8,7 @@
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_HPO_bayesian3.jpg}
 
 %\institute{}
 %\date{}
@@ -18,7 +18,7 @@
 
 \begin{frame}[c]{Why Do We Need Bayesian Optimization?}
 
-Many optimization problems in AutoML share three features:
+Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
 \begin{itemize}
     \item The objective function is a \textbf{black box} -- no analytic form, no gradients
     \item Each evaluation is \textbf{expensive} -- training or resampling an ML model on a dataset can take minutes, hours, or days
@@ -46,7 +46,7 @@ Many optimization problems in AutoML share three features:
         (numeric / integer / cat / conditional HPs)
     \end{itemize}
     \item $\riskg$ notation here is simplified to the use of a single validation set,
-    in practice $\riskg$ might be a resampled performance, e.g. by using CV
+    in practice $\riskg$ might be a resampled performance, e.g., by using CV
 \end{itemize}
 \end{frame}
 

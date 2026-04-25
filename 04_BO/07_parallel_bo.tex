@@ -8,7 +8,7 @@
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_HPO_bayesian3.jpg}
 
     \maketitle
 
@@ -66,7 +66,7 @@
     \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
         \begin{itemize}\setlength\itemsep{0pt}
             \item Kriging believer: the posterior \textbf{mean} $\surro(\confI{1})$
-            \item Constant liar: a fixed value (e.g.\ $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
+            \item Constant liar: a fixed value (e.g., $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
             \item MC fantasizing: a sample from the posterior
         \end{itemize}
     \item Refit and propose $\confI{2} = \argmax \acq(\conf)$; repeat until $q$ points assembled

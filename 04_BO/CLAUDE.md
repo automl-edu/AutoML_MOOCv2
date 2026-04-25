@@ -23,6 +23,7 @@ Slides and R figure scripts for the BO lecture.
 - Slide titles are written in "title case"
 - Use punctuation "sparingly"; not a "." after every text fragment in a bullet list or so
 - Use cspell to check against typos, and add needed words to .cspell/project-words.txt if reasonable
+- "e.g." and "i.e." are embedded in 2 commas
 
 
 ## Text Formatting
