@@ -29,6 +29,10 @@ wir können nicht lambda bei cmaes nutzen
 
 xt im local search plot nicht so gut
 
+sprache und regeln mit LLM nochmach checken
+
+factcheck
+
 ------------------------
 
 Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    

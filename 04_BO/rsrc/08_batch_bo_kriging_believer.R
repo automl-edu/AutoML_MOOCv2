@@ -1,4 +1,4 @@
-# Used in: 04_BO/07_parallel_bo.tex
+# Used in: 04_BO/08_parallel_bo.tex
 #
 # Kriging Believer / fantasizing: after each batch pick x_k, add a fantasized
 # observation (x_k, mu(x_k)) to the archive, re-update the surrogate + EI, and
@@ -71,4 +71,4 @@ plts = lapply(seq_len(q), function(k) {
 })
 
 p = wrap_plots(plts, nrow = 1)
-myggsave("07_batch_bo_kriging_believer", plot = p, width = 10, height = 2.8)
+myggsave("08_batch_bo_kriging_believer", plot = p, width = 10, height = 2.8)

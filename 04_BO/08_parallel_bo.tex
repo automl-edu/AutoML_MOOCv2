@@ -34,7 +34,7 @@
     \item We need batch proposals that are simultaneously \textbf{informative} and \textbf{diverse}
   \end{itemize}
   \begin{center}
-    \includegraphics[width=0.55\textwidth]{images/07_batch_bo_naive_vs_diverse.pdf}\\
+    \includegraphics[width=0.55\textwidth]{images/08_batch_bo_naive_vs_diverse.pdf}\\
     \footnotesize EI on Branin after 8 initial evals (yellow); proposed batch ($q=8$, red). \\
     Naive top-$q$ collapses onto one peak; a diverse batch spreads across several.
   \end{center}
@@ -42,63 +42,71 @@
 
 
 \begin{frame}[t]{Joint / $q$-Acquisition Functions}
-  \small
   \begin{itemize}
     \item Extend acquisition to \emph{joint} criterion over batch $\batchconf = (\confI{1}, \ldots, \confI{q})$:
         % $$\acq_q(\batchconf) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
     \item Example: $q$-expected improvement~\liturl{Wang et al. 2020}{https://arxiv.org/abs/1602.05149}
         $$\qEI(\batchconf) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
     \item Reward the \textbf{best} outcome in the batch -- naturally encourages diversity
-    \item Usually no closed form; estimated via \textbf{Monte Carlo} samples from the joint posterior
-    \item \textbf{Optimization:} inner problem is now $q\!\cdot\!\pcsdim$-dimensional;
-    trick (BoTorch): draw MC base noise $\xi\!\sim\!\mathcal{N}(0,I)$ \textbf{once} and reuse across steps
-    $\leadsto$ $\qEI(\batchconf)$ is smooth + differentiable, optimized with Adam / L-BFGS.
-    Feasible up to $q\!\le\!32$.
+    \item No closed form; estimated via \textbf{Monte Carlo} samples from joint posterior
+    \item \textbf{Optimization:} inner problem is now $q \cdot \pcsdim$-dimensional.
+    Reparameterization trick used in BoTorch 
+    so $\qEI(\batchconf)$ becomes a deterministic, smooth function of $\batchconf$
+    $\leadsto$ optimize with Adam / L-BFGS-B. Feasible up to $q \le 32$.
   \end{itemize}
 \end{frame}
 
 
-\begin{frame}[t]{Heuristic 1: Kriging Believer / Fantasizing~\liturl{Ginsbourger et al. 2010}{https://link.springer.com/chapter/10.1007/978-3-642-10701-6_6}}
+\begin{frame}[t]{Kriging Believer / Fantasizing}
   \footnotesize
-  Iteratively fill the batch:
-  \begin{enumerate}\setlength\itemsep{0pt}
+  Iteratively fill the batch~\liturl{Ginsbourger et al. 2010}{https://link.springer.com/chapter/10.1007/978-3-642-10701-6_6}:
+  \begin{itemize}
     \item Start with current surrogate; propose $\confI{1} = \argmax \acq(\conf)$
     \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
-        \begin{itemize}\setlength\itemsep{0pt}
-            \item Kriging believer: the posterior \textbf{mean} $\surro(\confI{1})$
-            \item Constant liar: a fixed value (e.g., $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
-            \item MC fantasizing: a sample from the posterior
+        \begin{itemize}
+            \item Kriging believer: posterior \textbf{mean} $\surro(\confI{1})$
+            \item Constant liar: fixed value (e.g., $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
+            \item MC fantasizing: sample from the posterior
         \end{itemize}
     \item Refit and propose $\confI{2} = \argmax \acq(\conf)$; repeat until $q$ points assembled
-  \end{enumerate}
+  \end{itemize}
   \textbf{Effect:} fantasy eval lowers post. unc. around $\confI{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
   \begin{center}
-    \includegraphics[width=0.55\textwidth]{images/07_batch_bo_kriging_believer.pdf}\\
+    \includegraphics[width=0.55\textwidth]{images/08_batch_bo_kriging_believer.pdf}\\
     \footnotesize Kriging believer on Branin-EI ($q=4$): yellow $\times$ = initial design, red = earlier picks,\\
     green diamond = current pick. Each panel refits the GP with the prior picks fantasized at $\surro(\confI{k})$.
   \end{center}
 \end{frame}
 
 
-\begin{frame}[t]{Heuristic 2: Local Penalization}
-  \begin{itemize}
-    \item After selecting $\confI{k}$, multiply the acquisition function by a \textbf{penalty} that decays with distance from $\confI{k}$:
-    $$\tilde{\acq}_{k+1}(\conf) = \acq(\conf) \cdot \prod_{j=1}^k \varphi\!\left(\|\conf - \confI{j}\|\right)$$
-    \item $\varphi$ typically a logistic / soft-step function around a Lipschitz-motivated radius
-    \item Picks the next point from areas the previous ones do not already cover
-    \item Cheap to compute, no refitting needed, easy to parallelize across $q$~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html}
-  \end{itemize}
-\end{frame}
+% \begin{frame}[t]{Heuristic 2: Local Penalization}
+%   \begin{itemize}
+%     \item After selecting $\confI{k}$, multiply the acquisition function by a \textbf{penalty} ~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html} that decays with distance from $\confI{k}$:
+%     $$\tilde{\acq}_{k+1}(\conf) = \acq(\conf) \cdot \prod_{j=1}^k \varphi\!\left(\|\conf - \confI{j}\|\right)$$
+%     \item $\varphi$ typically a logistic / soft-step function around a Lipschitz-motivated radius
+%     \item Picks the next point from areas the previous ones do not already cover
+%     \item Cheap to compute, no refitting needed, easy to parallelize across $q$~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html}
+%   \end{itemize}
+% \end{frame}
 
 
 \begin{frame}[t]{Thompson Sampling: Parallelism for Free}
-  \begin{itemize}
-    \item \textbf{Thompson sampling}: draw a sample path $\tilde{\cost}$ from the posterior of the surrogate, propose $\argmin_{\conf} \tilde{\cost}(\conf)$
-    \item Each new posterior sample gives a different proposal $\leadsto$ draw $q$ samples to get $q$ points
-    \item Batch is diverse \textbf{by construction} -- no extra diversity mechanism needed
-    \item Especially clean with GP surrogates (via random Fourier features) and with RF surrogates (sample a tree / a leaf distribution)
-    \item Scales well with $q$; a go-to in large-batch / high-dim BO
-  \end{itemize}
+  \footnotesize
+  \begin{columns}[onlytextwidth,T]
+    \column{.55\textwidth}
+    \begin{itemize}
+      \item \textbf{Thompson sampling}~\liturl{Kandasamy et al. 2018}{https://proceedings.mlr.press/v84/kandasamy18a.html}: draw a sample path $\tilde{\cost}$ from the posterior of the surrogate, propose $\argmin_{\conf} \tilde{\cost}(\conf)$
+      \item Each new posterior sample gives a different proposal $\leadsto$ draw $q$ samples to get $q$ points
+      \item Batch is diverse \textbf{by construction} -- no extra diversity mechanism needed
+      % \item Especially clean with GP surrogates (via random Fourier features) and with RF surrogates (sample a tree / a leaf distribution)
+      \item Scales well with $q$; a go-to in large-batch / high-dim BO
+    \end{itemize}
+    \column{.45\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{images/08_thompson_sampling.pdf}\\[0.05cm]
+      \scriptsize $4$ posterior sample paths (colored); each path's argmin (diamond) is a Thompson proposal. Disagreement between paths $\Rightarrow$ batch diversity
+    \end{center}
+  \end{columns}
 \end{frame}
 
 

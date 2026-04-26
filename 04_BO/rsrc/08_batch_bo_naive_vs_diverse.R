@@ -1,4 +1,4 @@
-# Used in: 04_BO/07_parallel_bo.tex
+# Used in: 04_BO/08_parallel_bo.tex
 #
 # Top-q maximizers of EI vs diverse batch
 
@@ -74,4 +74,4 @@ p = plot_ei(naive,   "Naive top-q maximizers of EI -- cluster at one peak",
             annotate_cluster = TRUE) +
     plot_ei(diverse, "Diverse batch -- spreads across several EI peaks")
 
-myggsave("07_batch_bo_naive_vs_diverse", plot = p, width = 8, height = 3.2)
+myggsave("08_batch_bo_naive_vs_diverse", plot = p, width = 8, height = 3.2)
