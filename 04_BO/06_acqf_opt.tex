@@ -57,22 +57,23 @@
 \end{frame}
 
 
-\begin{frame}[t]{Log-Transforming the Acquisition: LogEI}
-  \small
+\begin{frame}[t]{ACGQFs on Log-Scale}
+  \footnotesize
+  % Plain EI underflows to a hard $0$ in well-explored regions ($\hat\mean(\conf) \gg \cmin$ or tiny $\sh$) $\Rightarrow$ flat plateaus, vanishing gradients, L-BFGS-B stalls. Two distinct cures both go by the name ``LogEI'':
   \begin{itemize}
-    \item \textbf{Problem with plain EI:} $\E[\max(\cmin - Y(\conf), 0)]$ underflows to (effectively) $0$ in well-explored regions
+    \item \textbf{LogEI for numerical stability}~\liturl{Ament et al. 2023}{https://arxiv.org/abs/2310.20708}    \begin{itemize}
+    \item Compute $\log\mathrm{EI}(\conf)$ directly via stable log-space arithmetic (\texttt{erfcx}, \texttt{log1p}) so the value stays finite where plain EI is $0$ in float
+    \item Simple monotone transform $\Rightarrow$ same argmax as EI
+    \item Available trick in BoTorch for many ACQFs
+    \end{itemize}
+      \item \textbf{LogEI on log-transformed targets}~\liturl{Hutter et al. 2009}{https://dl.acm.org/doi/10.1145/1569901.1569940}: 
       \begin{itemize}
-        \item $\hat\mean(\conf) \gg \cmin$ \textbf{or} $\sh(\conf)$ tiny $\leadsto$ $\acq \approx 0$ over huge plateaus
-        \item gradient $\nabla \acq$ vanishes numerically $\leadsto$ L-BFGS stalls, any gradient-free search sees a flat surface
-      \end{itemize}
-    \item Monotone transforms preserve the argmax: $\argmax \log \acq = \argmax \acq$
-    \item \textbf{LogEI}~\liturl{Ament et al. 2023}{https://arxiv.org/abs/2310.20708}: evaluate $\log \mathrm{EI}(\conf)$ \textbf{directly} with numerically stable log-space arithmetic
-      \begin{itemize}
-        \item Combines $\log\pdf$, $\log\cdf$, and the scaled complementary error function \texttt{erfcx} -- no $\exp$-then-$\log$ cancellation
-        \item Recovers meaningful gradients across the whole $\pcs$, even where EI $\approx 0$ in double precision
-      \end{itemize}
-    \item Same trick generalizes: \textbf{LogPI}, \textbf{LogNoisyEI}, \textbf{qLogEI} (all available in BoTorch)
-    \item \textbf{Empirical impact:} substantially better inner-optimum quality and faster BO convergence -- a near drop-in replacement for EI
+        \item Train the surrogate on $\ln \cost$ 
+        \item Helps when $y$ is heavy right-tailed
+        \item Then EI \textbf{on the original $y$-scale} has the log-normal closed form
+    $$\acq_{\mathrm{LogEI}}(\conf) = f_{\min}\,\Phi(v) - \exp\!\big(\mu + \tfrac{1}{2}\sigma^2\big)\,\Phi(v - \sigma), \quad v = (\ln f_{\min} - \mu)/\sigma$$
+    \item Often good results in practice
+  \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -84,10 +85,10 @@
 \item Some people do this due to simplicity and the ``we do not have to optimize perfectly'' point
 \item Likely not a good idea in higher dimensions
 \end{itemize}
-\item \textbf{Multi-start local search:}
+\item \textbf{Multi-start local (gradient-based) search:}
 \begin{itemize}
 \item Sample multiple start points
-\item Run multiple gradient-based local optimizers from each (L-BFGS-B if $\pcs$ is box-constrained)
+\item Run multiple gradient-based local optimizers from each, e.g., L-BFGS-B 
 \item Analytic $\nabla \acq$ is available for GPs with numeric inputs, standard kernels, and standard ACQFs
 \item Works better with GPs than RFs, and if we have gradients
 \end{itemize}
@@ -96,28 +97,27 @@
 
 
 \begin{frame}[t]{Numeric Configuration Spaces}
-  \small
-  \begin{itemize}
+  \footnotesize
   % \item \textbf{DIRECT} (DIviding RECTangles): 
   % \begin{itemize}
   % \item Deterministic global optimizer for box-constrained problems
   % \item Recursively partitions the box into hyperrectangles; evaluates $\acq$ at each center
   % \item Per iteration: mark ``potentially optimal'' rectangles -- those that could hold a better point under \textbf{some} Lipschitz constant -- and trisect them along their longest side
   % \end{itemize}
-  \item \textbf{CMA-ES -- covariance matrix adaptation evolution strategy}
-  \end{itemize}
+  \textbf{CMA-ES -- covariance matrix adaptation evolution strategy}
   \begin{columns}[onlytextwidth,T]
     \column{.6\textwidth}
     \begin{itemize}
     \item Population-based, gradient-free
-    \item Each generation: sample $\lambda$ candidates from $\mathcal{N}(\bm{m}, \sigma^2 \bm{C})$, rank by $\acq$, update mean $\bm{m}$, step size $\sigma$, and covariance $\bm{C}$ from the best $\mu$
+    \item Each generation: sample candidates from $\mathcal{N}(\bm{m}, \sigma^2 \bm{C})$, 
+    rank by fitness, update mean $\bm{m}$, step size $\sigma$, and covariance $\bm{C}$ from best candidates
     \item $\bm{C}$ learns the local curvature\\
-    $\leadsto$ robust on non-convex, ill-conditioned $\acq$; handles medium $\pcsdim$ well
-    \item But: once $\sigma$ contracts around a basin, the search is effectively \textbf{local} -- a single run can miss better modes elsewhere
-    \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
+    $\leadsto$ robust on non-convex, ill-conditioned functions
+    \item But: once $\sigma$ contracts around a basin, the search is effectively local -- a single run can miss better modes
+    \item Restarts are standard on multi-modal functions:
       \begin{itemize}
-      \item \textbf{IPOP-CMA-ES}~\liturl{Auger et al. 2005}{https://ieeexplore.ieee.org/document/1554902} -- doubles $\lambda$ on every restart to widen exploration
-      \item \textbf{BIPOP-CMA-ES}~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} -- interleaves IPOP-like restarts with small-$\lambda$, randomized-$\sigma$ restarts; winner of multiple BBOB benchmarks
+      \item IPOP-CMA-ES~\liturl{Auger et al. 2005}{https://ieeexplore.ieee.org/document/1554902} %-- doubles $\lambda$ on every restart to widen exploration
+      \item BIPOP-CMA-ES~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} %-- interleaves IPOP-like restarts with small-$\lambda$, randomized-$\sigma$ restarts; winner of multiple BBOB benchmarks
       \end{itemize}
     \end{itemize}
     \column{.4\textwidth}
@@ -133,49 +133,69 @@
 
 
 \begin{frame}[t]{Mixed / Hierarchical Configuration Spaces}
-  \small
-  \begin{itemize}
-    \item AutoML spaces mix continuous, integer, categorical, and \textbf{conditional} HPs
-    \item No gradients and no smoothness across categorical cuts $\leadsto$ L-BFGS / DIRECT / CMA-ES don't apply out-of-the-box
-    \item \textbf{SMAC's approach:} interleaved random search + \textbf{iterated local search} on $\acq$~\liturl{Hutter et al. 2011}{https://link.springer.com/chapter/10.1007/978-3-642-25566-3_40}
-  \end{itemize}
-  \vspace{0.15cm}
-  \textbf{One-exchange local search from each start point:}
-  \begin{enumerate}\setlength\itemsep{0pt}
-    \item Start from the current incumbent (plus the top-$k$ archive entries)
-    \item Generate neighbours by changing \textbf{exactly one} HP:
-      \begin{itemize}\setlength\itemsep{0pt}
-        \item Categorical: try each other level
-        \item Numeric / integer: small (Gaussian) perturbation around the current value
-        \item Conditional HPs: only mutate children of \textbf{active} parents
-      \end{itemize}
-    \item Move to the best-improving neighbour; stop when no neighbour improves $\acq$
-  \end{enumerate}
-  \vspace{0.1cm}
-  \textbf{Interleave with random search to avoid being stuck in local optima:}
-  \begin{itemize}\setlength\itemsep{0pt}
-    \item Draw a large pool of random configs, score under $\acq$
-    \item Return the best across local-search optima and random samples
-  \end{itemize}
+  Iterated one-exchange local search~\liturl{Lindauer et al. 2022}{https://arxiv.org/abs/2109.09831}
+  \begin{columns}[onlytextwidth,T]
+    \column{.6\textwidth}
+    \begin{itemize}
+      \item Run multiple local searches in parallel
+      \item Generate multiple neighbors by changing \textbf{exactly one} HP:
+        \begin{itemize}
+          \item Categorical: try other level
+          \item Numeric / integer: small (Gaussian) perturbation around the current value
+          \item Conditional HPs: only mutate children of \textbf{active} parents
+        \end{itemize}
+      \item Move to best-improving neighbor
+      \item \textbf{Restart} from a fresh random point if no improvement for some iterations
+    \end{itemize}
+    \column{.4\textwidth}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.9, font=\scriptsize]
+      \draw[gray!25] (-0.2, -0.1) ellipse (2.4 and 1.6);
+      \draw[gray!40] (-0.2, -0.1) ellipse (1.5 and 1.0);
+      \draw[gray!55] (-0.2, -0.1) ellipse (0.7 and 0.45);
+      % faint axes through lambda to make the one-HP-change geometry explicit
+      \draw[gray!50, very thin] (-1.7, 0) -- (1.7, 0)
+            node[anchor=west, xshift=2pt, color=gray!70] {$\lambda_1$};
+      \draw[gray!50, very thin] (0, -1.3) -- (0, 1.3)
+            node[anchor=south, color=gray!70] {$\lambda_2$};
+      \filldraw[black] (0, 0) circle (3pt);
+      \node[anchor=north east, xshift=-2pt, yshift=2pt] at (0, 0) {$\lambda$};
+      % each neighbor changes exactly one coordinate of lambda -- so they all
+      % lie on the axes through lambda, not on diagonals
+      \draw[gray, dashed, ->] (0, 0) -- (-1.05, 0);
+      \filldraw[white, draw=black, thick] (-1.05, 0) circle (3pt);
+      \draw[gray, dashed, ->] (0, 0) -- (0,  1.2);
+      \filldraw[white, draw=black, thick] (0,  1.2) circle (3pt);
+      \draw[gray, dashed, ->] (0, 0) -- (0, -0.65);
+      \filldraw[white, draw=black, thick] (0, -0.65) circle (3pt);
+      % best-improving neighbor: a +lambda_1 step
+      \draw[mygreen!55!black, thick, ->] (0, 0) -- (1.55, 0);
+      \filldraw[mygreen, draw=mygreen!55!black, thick] (1.55, 0) circle (3pt);
+      \node[anchor=south west, xshift=3pt, color=mygreen!55!black] at (1.55, 0) {$\tilde{\lambda}$};
+    \end{tikzpicture}\\[0.05cm]
+    % \scriptsize Each neighbor changes \textbf{one} HP $\Rightarrow$ they sit on the axes through $\lambda$; the best becomes $\tilde{\lambda}$
+    \end{center}
+  \end{columns}
 \end{frame}
 
 
 \begin{frame}[t]{Summary and Discussion}
-  \small
-  \textbf{Key takeaways:}
-  \begin{itemize}\setlength\itemsep{0pt}
-    \item BO's inner loop is itself an optimization problem -- but over the \textbf{cheap} surrogate; we don't need to solve it perfectly
+  \begin{itemize}
+    \item Proposing a point via ACQF is itself an optimization problem;
+    but based on the \textbf{cheap} surrogate
     \item $\acq$ is non-convex, multi-modal, and gets rugged with more data
-    \item Numeric $\pcs$: multi-start L-BFGS-B (w/ GP gradients) or CMA-ES (+ IPOP/BIPOP restarts)
-    \item Mixed / hierarchical $\pcs$: SMAC-style iterated local search interleaved with random search
+    \item Numeric $\pcs$: multi-start L-BFGS-B (w/ GP gradients)\\
+    CMA-ES (+ IPOP/BIPOP restarts)
+    \item Mixed / hierarchical $\pcs$: SMAC-style iterated local search 
+    \item It is unclear how perfectly we have to solve the ACQF optimization problem
+    and how much (overhead) budget we should spent on this
   \end{itemize}
-  \vspace{0.1cm}
-  \textbf{Budget: \#starts $\times$ iterations per start -- scales with $\pcsdim$}
-  \begin{itemize}\setlength\itemsep{0pt}
-    \item Too few restarts $\leadsto$ miss the global peak, propose suboptimal points
-    \item Too many $\leadsto$ per-iteration overhead dominates, especially when $\cost$ is cheap
-    \item Typical defaults: $10$--$50$ restarts for GP + L-BFGS-B in $\le 20$ dimensions
-  \end{itemize}
+  % \textbf{Budget: \#starts $\times$ iterations per start -- scales with $\pcsdim$}
+  % \begin{itemize}\setlength\itemsep{0pt}
+  %   \item Too few restarts $\leadsto$ miss the global peak, propose suboptimal points
+  %   \item Too many $\leadsto$ per-iteration overhead dominates, especially when $\cost$ is cheap
+  %   \item Typical defaults: $10$--$50$ restarts for GP + L-BFGS-B in $\le 20$ dimensions
+  % \end{itemize}
   % \vspace{0.1cm}
   % \textbf{When inner optimization matters most (invest CPU):}
   % \begin{itemize}\setlength\itemsep{0pt}
