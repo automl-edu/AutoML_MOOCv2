@@ -62,6 +62,8 @@ Slides and R figure scripts for the BO lecture.
 
 - We write figures to `images/` via `myggsave("name", plot, width, height)`.
 
+- **Naming scheme for `rsrc/*.R` and `images/*`:** every R script's filename is prefixed with the chapter where the figure is used. E.g., a plot used in chapter 02 lives in `rsrc/02_foo.R` and produces `images/02_foo.<ext>`. Each script's image stem must equal the script's stem; postfixing for multi-output scripts is fine: `rsrc/02_foo.R` may write `02_foo_1.pdf`, `02_foo_2.pdf`, `02_foo_x.pdf`, etc. Hand-curated images that do not come from a script (e.g., title backgrounds, photos) keep their original names.
+
 - Use the `rsrc/_setup.R`helpers if reasonable
 
 - use mlr3mbo whenever possible
