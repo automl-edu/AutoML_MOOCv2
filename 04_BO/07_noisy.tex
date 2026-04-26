@@ -17,42 +17,34 @@
   \begin{itemize}
     \item So far we assumed noise-free evaluations of $\cost(\conf)$
     \item In practice we only observe a noisy read-out
-        $$y = \cost(\conf) + \epsilon, \quad \epsilon \sim \normaldist(0, \noisevar)$$
-    \item Sources in HPO: resampling / CV splits, stochastic optimizers, mini-batching, data augmentation
-    \item Also outside ML: oil-well estimates, robot-gait measurements, simulator stochasticity
+        $$y = \cost(\conf) + \epsilon, \quad \epsilon \sim \normaldist(0, \noisevar)$$    
+    \item Sources in HPO: resampling, stochastic learners
+    \item Also common in computer experiments
+    \item NB: We usually want inference on $\cost(\conf)$ (true signal) not $y(\conf)$
   \end{itemize}
   \vfill
   \begin{center}
-    \includegraphics[width=.45\textwidth, height=2.5cm, keepaspectratio]{images/noisy_0.png}
+    \includegraphics[width=.45\textwidth, height=2.5cm, keepaspectratio]{images/07_noisy_data.pdf}
   \end{center}
 \end{frame}
 
 
-\begin{frame}[t]{What Breaks Under Noise?}
-  \begin{itemize}
-    \item \textbf{Surrogate:} interpolating GP forces $\sh^2(\confI{i}) = 0$ at design points -- wrong, posterior should stay uncertain
-    \item \textbf{Acquisition:} PI / EI use $\cmin = \min_i y_i$, but that is a noisy random variable $\leadsto$ lucky outliers dominate
-    \item \textbf{Final best point:} the empirically best observation is not the true best -- bad points get overrated by chance, good points overlooked
-  \end{itemize}
-  \vspace{0.2cm}
-  \textbf{Three fixes, one per problem:} noise-aware surrogate, noise-aware ACQF, robust incumbent rule.
-\end{frame}
-
-
 \begin{frame}[t]{Noise-Aware Surrogate: Nugget GP}
+  % \textbf{Issue:} an interpolating GP forces $\sh^2(\confI{i}) = 0$ at design points -- under noise the posterior should stay uncertain.
   \begin{columns}[onlytextwidth,T]
     \column{.55\textwidth}
     \begin{itemize}
-      \item Add nugget $\noisevar \bm{I}$ to the Gram matrix:
+      \item Add nugget $\noisevar \bm{I}$ to the kernel matrix:
         $$\surro(\conf) = k_*^T (\bm{K} + \noisevar \bm{I})^{-1} \yv$$
         $$\sh^2(\conf) = k_{**} - k_*^T (\bm{K} + \noisevar \bm{I})^{-1} k_*$$
       \item Posterior \textbf{smooths} through the data instead of interpolating
       \item $\sh^2(\confI{i}) > 0$ even at design points
-      \item $\noisevar$ learned via type-II ML alongside the kernel HPs
+      \item $\noisevar$ learned via max. likelihood alongside kernel parameters
+      \item We covered this before
     \end{itemize}
     \column{.45\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth]{images/noisy_2.png}
+      \includegraphics[width=\textwidth]{images/07_noisy_nugget.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -60,6 +52,9 @@
 
 \begin{frame}[t]{Noise-Aware Acquisition: AEI and NEI}
   \small
+  \textbf{Issue:} PI / EI use $\cmin = \min_i y_i$, but that is a noisy random variable $\leadsto$ lucky outliers dominate.
+  \vspace{0.1cm}
+
   \textbf{Plug-in EI.} Replace unknown $\cmin$ with an \textbf{effective best}:
   $$\cmin^* = \min_{i = 1, \ldots, t} \surro(\confI{i}) + c\, \sh(\confI{i})$$
   Risk-aversion $c \ge 0$ down-weights points with uncertain mean.
@@ -74,7 +69,7 @@
 
 
 \begin{frame}[t]{Which Point to Return?}
-  Do \textbf{not} return $\argmin_i y_i$ -- that is the noisy empirical min, prone to lucky outliers.
+  Do \textbf{not} return $\argmin_i y_i$ -- the noisy empirical min: bad points get overrated by chance, good points overlooked.
   \vspace{0.1cm}
   \begin{itemize}
     \item \textbf{Model-based incumbent:} return $\argmin_i \surro(\confI{i})$ -- the design point with the best predicted mean
@@ -84,7 +79,7 @@
   \end{itemize}
   \vfill
   \begin{center}
-    \includegraphics[width=.4\textwidth, height=2.5cm, keepaspectratio]{images/noisy_5.png}
+    \includegraphics[width=.4\textwidth, height=2.5cm, keepaspectratio]{images/07_noisy_incumbent.pdf}
   \end{center}
 \end{frame}
 
