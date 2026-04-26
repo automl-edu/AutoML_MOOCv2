@@ -34,7 +34,7 @@
     \item We need batch proposals that are simultaneously \textbf{informative} and \textbf{diverse}
   \end{itemize}
   \begin{center}
-    \includegraphics[width=0.55\textwidth]{images/batch_bo_naive_vs_diverse.pdf}\\
+    \includegraphics[width=0.55\textwidth]{images/07_batch_bo_naive_vs_diverse.pdf}\\
     \footnotesize EI on Branin after 8 initial evals (yellow); proposed batch ($q=8$, red). \\
     Naive top-$q$ collapses onto one peak; a diverse batch spreads across several.
   \end{center}
@@ -73,7 +73,7 @@
   \end{enumerate}
   \textbf{Effect:} fantasy eval lowers post. unc. around $\confI{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
   \begin{center}
-    \includegraphics[width=0.55\textwidth]{images/batch_bo_kriging_believer.pdf}\\
+    \includegraphics[width=0.55\textwidth]{images/07_batch_bo_kriging_believer.pdf}\\
     \footnotesize Kriging believer on Branin-EI ($q=4$): yellow $\times$ = initial design, red = earlier picks,\\
     green diamond = current pick. Each panel refits the GP with the prior picks fantasized at $\surro(\confI{k})$.
   \end{center}

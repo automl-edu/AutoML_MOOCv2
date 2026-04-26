@@ -1,0 +1,82 @@
+# Used in: 04_BO/07_parallel_bo.tex
+#
+# Top-q maximizers of EI vs diverse batch
+
+library(bbotk)
+library(data.table)
+library(mlr3mbo)
+library(mlr3learners)
+library(ggplot2)
+library(patchwork)
+source("rsrc/_setup.R")
+
+set.seed(42)
+
+# Fit GP on a small LHS design of Branin and compute EI on a grid.
+
+instance = OptimInstanceSingleCrit$new(objective = branin_obj_rfundt, terminator = trm("none"))
+design = generate_design_lhs(instance$search_space, n = 8)$data
+instance$eval_batch(design)
+
+surrogate = my_gp_surrogate(instance$archive)
+acq = acqf("ei", surrogate = surrogate)
+acq$surrogate$update()
+acq$update()
+
+res = 150L
+x1 = seq(-5, 10, length.out = res)
+x2 = seq( 0, 15, length.out = res)
+grid = as.data.table(expand.grid(x1 = x1, x2 = x2))
+grid[, ei := acq$eval_dt(grid)$acq_ei]
+
+# ------------------------------------------------------------------------------
+# Batches.
+
+q = 8
+
+# Naive: the q grid cells with highest EI (they cluster).
+naive = grid[order(-ei)][seq_len(q)]
+
+# Diverse: greedy distance-filtered top-q (cheap stand-in for local penalization /
+#   Kriging Believer).  After each pick, exclude a ball of radius r around it so
+#   the next pick has to come from a different EI peak.
+greedy_diverse = function(grid, q, r) {
+  cand = grid[order(-ei)]
+  out = cand[1]
+  for (i in 2:nrow(cand)) {
+    if (nrow(out) >= q) break
+    d = sqrt((cand$x1[i] - out$x1)^2 + (cand$x2[i] - out$x2)^2)
+    if (min(d) >= r) out = rbind(out, cand[i])
+  }
+  out
+}
+diverse = greedy_diverse(grid, q = q, r = 2.5)
+
+# Draw the EI landscape with a proposed batch overlaid as red circles.
+# We jitter the batch points because the naive top-q picks land on adjacent
+# grid cells -- without jitter they'd stack into a single blob and the "8 points
+# all here" story is invisible. `annotate_cluster = TRUE` adds an arrow + label
+# pointing at the cluster centroid, used only on the naive panel.
+plot_ei = function(batch, subtitle, annotate_cluster = FALSE) {
+  p = acqf_base_plot(grid, instance$archive$data) +
+    geom_jitter(aes(x = x1, y = x2), data = batch,
+                shape = 21, colour = "black", fill = "#e41a1c", size = 3.6,
+                alpha = 0.8, width = 0.25, height = 0.25) +
+    labs(subtitle = subtitle, x = expression(lambda[1]), y = expression(lambda[2]))
+  if (annotate_cluster) {
+    cx = mean(batch$x1); cy = mean(batch$x2)
+    p = p +
+      annotate("segment", x = cx + 2.5, y = cy - 1.5, xend = cx + 0.7, yend = cy - 0.3,
+               arrow = arrow(length = unit(0.15, "cm")), colour = "black") +
+      annotate("label", x = cx + 2.8, y = cy - 1.8,
+               label = sprintf("all %d points\nhere", nrow(batch)),
+               size = 3, hjust = 0, label.size = 0, fill = alpha("white", 0.85))
+  }
+  p
+}
+
+p = plot_ei(naive,   "Naive top-q maximizers of EI -- cluster at one peak",
+            annotate_cluster = TRUE) +
+    plot_ei(diverse, "Diverse batch -- spreads across several EI peaks")
+
+myggsave("07_batch_bo_naive_vs_diverse", plot = p, width = 8, height = 3.2)

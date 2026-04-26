@@ -23,6 +23,8 @@ check if x and other symbplds should be bold
 
 gucken was man für "datensets" als notation nimmt
 
+write down naming scheme for rsrc files and images with number
+
 ------------------------
 
 Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    

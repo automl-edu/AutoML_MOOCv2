@@ -48,7 +48,7 @@
   \end{itemize}
   % \vspace{0.2cm}
   \begin{center}
-    \includegraphics[width=.2\textwidth]{images/bayesian_loop_sm_normal.png}
+    \includegraphics[width=.2\textwidth]{images/05_bayesian_loop_sm_normal.pdf}
   \end{center}
 \end{frame}
 
@@ -154,7 +154,7 @@
         \addplot[red, thick]            {exp(-x^2/(2*1.5^2))}; \addlegendentry{$l=1.5$}
       \end{axis}
     \end{tikzpicture}\\[0.1cm]
-    \includegraphics[width=\textwidth]{images/rbf_samples.pdf}\\
+    \includegraphics[width=\textwidth]{images/03_rbf_samples.pdf}\\
     \scriptsize 1D GP prior samples
     \end{center}
 \end{columns}
@@ -197,7 +197,7 @@
           {(1 + sqrt(5)*x/1 + 5*x^2/(3*1^2)) * exp(-sqrt(5)*x/1)}; \addlegendentry{$\nu=5/2$}
       \end{axis}
     \end{tikzpicture}\\[0.1cm]
-    \includegraphics[width=\textwidth]{images/matern_samples.pdf}\\
+    \includegraphics[width=\textwidth]{images/03_matern_samples.pdf}\\
     \scriptsize 1D GP prior samples; smaller $\nu$ $\to$ rougher
     \end{center}
 \end{columns}
@@ -209,17 +209,17 @@
   \begin{columns}[onlytextwidth,T]
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/gp_branin_true.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_true.pdf}\\
       \footnotesize True $\cost(\conf)$
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/gp_branin_mean.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_mean.pdf}\\
       \footnotesize Posterior mean $\hat\mean(\conf)$ with training points
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/gp_branin_sd.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_sd.pdf}\\
       \footnotesize Posterior std $\sh(\conf)$ with training points
     \end{center}
   \end{columns}
@@ -235,7 +235,7 @@
   \small
   GP prior samples with RBF kernel; only the length scales differ:
   \begin{center}
-    \includegraphics[width=0.8\textwidth]{images/gp_lengthscale_2d.pdf}
+    \includegraphics[width=0.8\textwidth]{images/03_gp_lengthscale_2d.pdf}
   \end{center}
   \begin{itemize}
     \item Small $l$ $\Rightarrow$ wiggly, many local features; large $l$ $\Rightarrow$ smooth, slowly varying

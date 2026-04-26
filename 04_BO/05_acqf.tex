@@ -18,7 +18,7 @@
 %   \end{itemize}
 %   \vfill
 %   \begin{center}
-%     \includegraphics[width=.6\textwidth]{images/bayesian_loop_ee.pdf}
+%     \includegraphics[width=.6\textwidth]{images/.pdf}
 %   \end{center}
 % \end{frame}
 
@@ -37,11 +37,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_ee.pdf}
+      \includegraphics[width=0.6\textwidth]{images/05_bayesian_loop_ee.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_sm_normal.pdf}
+      \includegraphics[width=0.6\textwidth]{images/05_bayesian_loop_sm_normal.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -69,11 +69,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_ee.pdf}
+      \includegraphics[width=0.6\textwidth]{images/05_bayesian_loop_ee.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_sm_normal.pdf}
+      \includegraphics[width=0.6\textwidth]{images/05_bayesian_loop_sm_normal.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -90,8 +90,8 @@
   \end{itemize}
   % \column{.38\textwidth}
   \begin{center}
-  \includegraphics[width=0.42\textwidth, height=2.5cm, keepaspectratio]{images/bayesian_loop_lcb_0_obj.pdf}\\
-  \includegraphics[width=0.42\textwidth, height=2.5cm, keepaspectratio]{images/bayesian_loop_lcb_0_acq.pdf}
+  \includegraphics[width=0.42\textwidth, height=2.5cm, keepaspectratio]{images/05_bayesian_loop_lcb_0_obj.pdf}\\
+  \includegraphics[width=0.42\textwidth, height=2.5cm, keepaspectratio]{images/05_bayesian_loop_lcb_0_acq.pdf}
   \end{center}
 % \end{columns}
 \end{frame}
@@ -108,11 +108,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/bayesian_loop_sm_normal_fmin.pdf}
+      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/05_bayesian_loop_sm_normal_fmin.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/bayesian_loop_pi_0.pdf}
+      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/05_bayesian_loop_pi_0.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -129,11 +129,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/bayesian_loop_sm_normal_fmin.pdf}
+      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/05_bayesian_loop_sm_normal_fmin.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/bayesian_loop_pi_0.pdf}
+      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/05_bayesian_loop_pi_0.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -156,18 +156,19 @@
   \end{itemize}
   \vfill
   \begin{center}
-    \includegraphics[width=.55\textwidth, height=2.5cm, keepaspectratio]{images/bayesian_loop_6_obj.pdf}\\
-    \includegraphics[width=.55\textwidth, height=2.5cm, keepaspectratio]{images/bayesian_loop_6_acq.pdf}
+    \includegraphics[width=.55\textwidth, height=2.5cm, keepaspectratio]{images/05_bayesian_loop_6_obj.pdf}\\
+    \includegraphics[width=.55\textwidth, height=2.5cm, keepaspectratio]{images/05_bayesian_loop_6_acq.pdf}
   \end{center}
 \end{frame}
 
 
 \begin{frame}[t]{Summary and Discussion}
   \begin{itemize}
-    \item ACQFs balance exploitation and exploration, usually by combining posterior mean and uncertainty
+    \item ACQFs balance exploitation and exploration,\\
+    usually by combining posterior mean and uncertainty
     \item 3 basic ACQFs: PI, LCB, EI
     \item EI is most standard; LCB also works well in practice
-    \item Under some mild conditions: BO with a GP as SM and EI is a \textbf{global optimizer}, i.e., convergence to the \textbf{global} optimum is guaranteed given unlimited budget~\liturl{Bull 2011}{https://www.jmlr.org/papers/volume12/bull11a/bull11a.pdf}
+    \item Under some mild conditions: BO with a GP and EI is a \textbf{global optimizer}, i.e., convergence to the \textbf{global} optimum is guaranteed given unlimited budget~\liturl{Bull 2011}{https://www.jmlr.org/papers/volume12/bull11a/bull11a.pdf}
     \item Other acquisition functions: entropy search, predictive entropy search~\liturl{Hern\'andez-Lobato et al. 2014}{https://arxiv.org/abs/1406.2541}, max-value entropy search, knowledge gradient, Thompson sampling, \ldots
   \end{itemize}
 \end{frame}
