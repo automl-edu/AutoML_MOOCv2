@@ -98,21 +98,24 @@
 
 
 \begin{frame}[t]{Probability of Improvement}
+  \footnotesize
   \begin{itemize}
     \item Maximize $\acq_{\text{PI}}(\conf) = \PP(Y(\conf) < \cmin) = \Phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right)$
     \item $\Phi(\cdot)$ is the standard normal cdf (assuming Gaussian posterior)
     \item PI does not take the size of the improvement into account
     \item Often proposes points close to the current $\cmin$
+    \item $\acq_{\text{PI}}(\conf) = 0$ at design points $\conf_i$: $\sh(\conf_i) = 0$ for an interpolating GP and $\surro(\conf_i) \ge \cmin$,\\
+    so the cdf argument $\to -\infty$ $\Rightarrow$ $\Phi(\cdot) = 0$
   \end{itemize}
   \vfill
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/05_acqf_ei_sm_normal_fmin.pdf}
+      \includegraphics[width=0.50\textwidth, height=3cm, keepaspectratio]{images/05_acqf_ei_sm_normal_fmin.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/05_acqf_pi.pdf}
+      \includegraphics[width=0.50\textwidth, height=3cm, keepaspectratio]{images/05_acqf_pi.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -122,8 +125,9 @@
   \begin{itemize}
     \item Maximize $\acq_{\text{EI}}(\conf) = \E(\max\{\cmin - Y(\conf), 0\})$
     \item We take the \textbf{expectation} in the tail, instead of the probability as in PI
-    \item Improvement is always assumed $\geq 0$
-    \item Originally introduced by~\liturl{Mo\v{c}kus 1975}{https://link.springer.com/chapter/10.1007/978-3-662-38527-2_55}; popularized for expensive simulators by~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147} (EGO)
+    \item Improvement is always assumed $\geq 0$, enforces exploration
+    \item Originally introduced by~\liturl{Mo\v{c}kus 1975}{https://link.springer.com/chapter/10.1007/978-3-662-38527-2_55};\\
+    popularized for expensive simulators by~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147} (EGO)
   \end{itemize}
   \vfill
   \begin{columns}[onlytextwidth]
@@ -143,16 +147,19 @@
   \begin{itemize}
     \item If $Y(\conf) \sim \normaldist\left(\surro(\conf), \sh^2(\conf)\right)$, the EI has a closed form:
     $$\acq_{\text{EI}}(\conf) = (\cmin-\surro(\conf))\, \Phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right) + \sh(\conf)\, \phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right)$$
-    \item $\acq_{\text{EI}}(\conf) = 0$ at design points:
-    $$\acq_{\text{EI}}(\conf) = (\cmin-\surro(\conf)) \underbrace{\Phi\!\left(\tfrac{\cmin - \surro(\conf)}{\sh(\conf)}\right)}_{= 0, \text{ see PI}} + \underbrace{\sh(\conf)}_{= 0}\, \phi\!\left(\tfrac{\cmin - \surro(\conf)}{\sh(\conf)}\right)$$
+    \item Can easily show this by partial integration
+    \item $\acq_{\text{EI}}(\conf) = 0$ at design points $\conf_i$:\\
+    $\sh(\conf_i) = 0$ for an interpolating GP $\Rightarrow$ second term vanishes;\\
+    and $\surro(\conf_i) \ge \cmin$ pushes the cdf argument to $-\infty$\\
+    $\Rightarrow$ $\Phi(\cdot) \to 0$, killing the first term as well
   \end{itemize}
 \end{frame}
 
 
 \begin{frame}[t]{Expected Improvement}
   \begin{itemize}
-    \item EI is capable of exploration and quickly proposes promising points in areas we have not visited yet
-    \item Here, also a result of the well-calibrated uncertainty $\sh(\conf)$ of our GP
+    \item Using EI instead of the posterior mean, we would find the global
+    minimum on our toy function
   \end{itemize}
   \vfill
   \begin{center}

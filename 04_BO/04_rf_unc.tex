@@ -58,7 +58,7 @@
 
 \begin{frame}[t]{Naive Variance from Per-Tree Predictions}
 \begin{columns}[onlytextwidth,T]
-  \column{.55\textwidth}
+  \column{.6\textwidth}
   \begin{itemize}
     \item Treat $B$ tree predictions $\hat{f}_b(x)$ as samples and take their empirical variance~\liturl{Hutter et al. 2014}{https://doi.org/10.1016/j.artint.2013.10.003}
     \item Forest mean: $\hat{f}(x) = \frac{1}{B} \sum_{b=1}^B \hat{f}_b(x)$
@@ -69,7 +69,7 @@
     \item Captures only \textbf{between-tree disagreement};
     ignores spread of training labels within each leaf
   \end{itemize}
-  \column{.45\textwidth}
+  \column{.4\textwidth}
   \begin{center}
     \includegraphics[width=\textwidth]{images/04_rf_unc_var_estimators_naive.pdf}\\
     {\scriptsize $\pm 2\sh_{\text{naive}}$ band; truth (black), forest mean (dashed)}
@@ -109,7 +109,7 @@
 
 \begin{frame}[t]{Extra-Trees: Random Split Locations}
 \begin{columns}[onlytextwidth,T]
-  \column{.5\textwidth}
+  \column{.6\textwidth}
   \begin{itemize}
     \item Standard RF: at each node, pick \textbf{empirically best} split (max L2 loss reduction)
     \item \textbf{Extra-trees}~\liturl{Geurts et al. 2006}{https://link.springer.com/article/10.1007/s10994-006-6226-1}: pick the split point \textbf{uniformly at random} per candidate feature
@@ -120,7 +120,7 @@
             \item Slightly higher bias per tree, lower variance after averaging
         \end{itemize}
   \end{itemize}
-  \column{.5\textwidth}
+  \column{.4\textwidth}
   \begin{center}
     \includegraphics[width=\textwidth]{images/04_extra_trees.pdf}\\
     {\scriptsize $\pm 2\sh$ band from per-tree disagreement; mean (dashed)}
