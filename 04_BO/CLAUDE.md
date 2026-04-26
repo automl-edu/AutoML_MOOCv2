@@ -7,6 +7,7 @@ Slides and R figure scripts for the BO lecture.
 - Nearly all slides, if possible, should be "flat itemize" lists; maybe with pic(s) below or on the RHS
 - always use \begin{columns}[onlytextwidth,T] because we have a speakermargin in the slide setup
 - always use the \liturl macro to cite literature
+- in the displayed citation text, only use the first author: "X et al. YYYY" (or "X YYYY" for single-author papers); never list two or three authors
 
 
 ## Language and Text Formatting

@@ -96,7 +96,7 @@
 
 \begin{frame}[t]{Jackknife-Based Variance Estimators}
   \begin{itemize}
-    \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager, Hastie, Efron 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
+    \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager et al. 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
         $$\widehat{\sh}^2_{IJ}(x) = \sum_{i=1}^n \Big(\operatorname{Cov}_b(N_{ib}, \hat{f}_b(x))\Big)^2$$
         where $N_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
     \item Bias-corrected variant removes systematic bias in finite forests
@@ -113,14 +113,13 @@
   \column{.5\textwidth}
   \begin{itemize}
     \item Standard RF: at each node, pick the \textbf{empirically best} split (max variance reduction)
-    \item \textbf{Extra-trees}~\liturl{Geurts, Ernst, Wehenkel 2006}{https://link.springer.com/article/10.1007/s10994-006-6226-1}: pick the split point \textbf{uniformly at random} per candidate feature
+    \item \textbf{Extra-trees}~\liturl{Geurts et al. 2006}{https://link.springer.com/article/10.1007/s10994-006-6226-1}: pick the split point \textbf{uniformly at random} per candidate feature
     \item Trade-offs:
         \begin{itemize}
             \item Faster training -- no scan over candidate splits
-            \item More between-tree disagreement $\leadsto$ smoother $\hat f$
+            \item More between-tree disagreement $\leadsto$ smoother $\hat f$, helps AF optimization
             \item Slightly higher bias per tree, lower variance after averaging
         \end{itemize}
-    \item Often used in BO for smoother AF landscapes
   \end{itemize}
   \column{.5\textwidth}
   \begin{center}
@@ -175,7 +174,7 @@
 \begin{frame}[t]{Summary and Discussion}
 \begin{itemize}
   \item Use RF for mixed / conditional / large-integer $\pcs$, large $n$, cheaper $f$ with many iterations;\\
-  GP for numeric low-to-medium dim with tighter budget
+  GP for numeric $\pcs$ with tighter budget
   \item We discussed as uncertainty options:\\
   naive between-tree variance, law of total variance, infinitesimal jackknife, and quantile regression forests
   \item Extra-trees for further smoothing

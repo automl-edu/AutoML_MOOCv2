@@ -116,7 +116,7 @@
     \item But: once $\sigma$ contracts around a basin, the search is effectively \textbf{local} -- a single run can miss better modes elsewhere
     \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
       \begin{itemize}
-      \item \textbf{IPOP-CMA-ES}~\liturl{Auger \& Hansen 2005}{https://ieeexplore.ieee.org/document/1554902} -- doubles $\lambda$ on every restart to widen exploration
+      \item \textbf{IPOP-CMA-ES}~\liturl{Auger et al. 2005}{https://ieeexplore.ieee.org/document/1554902} -- doubles $\lambda$ on every restart to widen exploration
       \item \textbf{BIPOP-CMA-ES}~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} -- interleaves IPOP-like restarts with small-$\lambda$, randomized-$\sigma$ restarts; winner of multiple BBOB benchmarks
       \end{itemize}
     \end{itemize}

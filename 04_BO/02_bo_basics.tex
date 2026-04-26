@@ -59,7 +59,7 @@
                 \item Latin hypercube sampling (LHS)
                 \item Sobol / Halton quasi-random sequences
             \end{itemize}
-        \item Type of design usually does not have the largest effect~\liturl{Bossek, Doerr, Kerschke 2020}{https://arxiv.org/abs/2003.13826}
+        \item Type of design usually does not have the largest effect~\liturl{Bossek et al. 2020}{https://arxiv.org/abs/2003.13826}
         \item More important: the \textbf{size} of the initial design
             \begin{itemize}
                 \item Too small: bad initial fit, surrogate misleading
@@ -113,7 +113,7 @@
     \item Goal: find $\dataset$ that maximizes $2q$, keeps points far apart:
     $$\max_{\dataset} \min_{\conf \neq \conf' \in \dataset} \rho(\conf, \conf')$$
     \item Combinatorial problem; solved heuristically, e.g., by simulated annealing on 
-    column swaps~\liturl{Morris \& Mitchell 1995}{https://www.sciencedirect.com/science/article/abs/pii/037837589400035T} or random search
+    column swaps~\liturl{Morris et al. 1995}{https://www.sciencedirect.com/science/article/abs/pii/037837589400035T} or random search
     \end{itemize}
     \column{.25\textwidth}
     \begin{center}
@@ -258,7 +258,7 @@
     Core design choices: the \textbf{initial design}, the \textbf{surrogate model}, and the \textbf{rule} used to propose the next point.
     % \vspace{0.2cm}
     %
-    % \textbf{Further reading:} \liturl{Forrester, S\'obester, Keane 2008}{https://onlinelibrary.wiley.com/doi/book/10.1002/9780470770801} -- classic surrogate-modelling textbook with full LHS / maximin / BO treatment.
+    % \textbf{Further reading:} \liturl{Forrester et al. 2008}{https://onlinelibrary.wiley.com/doi/book/10.1002/9780470770801} -- classic surrogate-modelling textbook with full LHS / maximin / BO treatment.
 \end{frame}
 
 
