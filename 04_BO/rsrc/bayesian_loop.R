@@ -35,7 +35,7 @@ g = ggplot() +
   geom_text(aes(x = c(0.8), y = -1.8, label = c("insufficiently explored")), data = data.table(), color = "indianred4") +
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 myggsave("bayesian_loop_ee", plot = g, width = 5, height = 4)
 
@@ -56,7 +56,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 myggsave("bayesian_loop_sm", plot = g, width = 5, height = 4)
 
@@ -69,7 +69,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_point(aes(x = x, y = y), size = 3L, colour = "#00A64F", data = instance$archive$best()) +  
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 myggsave("bayesian_loop_sm_fmin", plot = g, width = 5, height = 4)
 
@@ -87,7 +87,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_segment(aes(y = ei_argmax$y_hat, yend = ei_argmax$y_hat, x = 0, xend = 0.1), colour = "darkgrey") +
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 myggsave("bayesian_loop_sm_normal", plot = g, width = 5, height = 4)
 
@@ -107,7 +107,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_segment(aes(y = ei_argmax$y_hat, yend = ei_argmax$y_hat, x = 0, xend = 0.1), colour = "darkgrey") +
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 myggsave("bayesian_loop_sm_normal_fmin", plot = g, width = 5, height = 4)
 
@@ -131,7 +131,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 ei = ggplot(aes(x = x, y = ei), data = grid) +
   geom_line(colour = "darkred") +
@@ -163,7 +163,7 @@ for (i in 2:6) {
     geom_point(aes(x = x, y = y), size = 3L, colour = "grey", data = old_ei_argmax) +
     xlim(c(0, 1)) +
     ylim(c(-2, 2.2)) +
-    labs(x = expression(lambda)) + theme_minimal()
+    labs(x = expression(lambda), y = expression(c)) + theme_minimal()
   
   ei = ggplot(aes(x = x, y = ei), data = grid) +
     geom_line(colour = "darkred") +

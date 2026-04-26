@@ -18,7 +18,7 @@
 %   \end{itemize}
 %   \vfill
 %   \begin{center}
-%     \includegraphics[width=.6\textwidth]{images/bayesian_loop_ee.png}
+%     \includegraphics[width=.6\textwidth]{images/bayesian_loop_ee.pdf}
 %   \end{center}
 % \end{frame}
 
@@ -29,7 +29,7 @@
     \item \textbf{Goal:} Find a trade-off between \textbf{exploration} (areas we have not visited yet) and \textbf{exploitation} (search around good design points)
     \item \textbf{Idea:} Use a \textbf{Bayesian approach} to build a surrogate model yielding estimates for the posterior mean $\surro(\conf)$ and posterior variance $\sh^2(\conf)$
     \item $\sh^2(\conf)$ expresses ``confidence''/``certainty'' in the prediction
-    % \item To sequentially propose new points based on the surrogate model, we use \textbf{acquisition functions} $a: \pcs \to \realnum$
+    % \item To sequentially propose new points based on the surrogate model, we use \textbf{acquisition functions} $\acq: \pcs \to \realnum$
     % \item Let $\cmin := \min\{\cost(\confI{1}), \ldots, \cost(\confI{t})\}$ be the best observed value so far (green in plots)
     % \item In the examples before, we simply used the posterior mean $\acq(\conf) = \surro(\conf)$ as acquisition function -- ignoring uncertainty
   \end{itemize}
@@ -37,11 +37,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_ee.png}
+      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_ee.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_sm_normal.png}
+      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_sm_normal.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -61,7 +61,7 @@
 
 \begin{frame}[t]{Acquisition Functions}
   \begin{itemize}
-    \item To sequentially propose new points based on the surrogate model, we use \textbf{acquisition functions} $a: \pcs \to \realnum$
+    \item To sequentially propose new points based on the surrogate model, we use \textbf{acquisition functions} $\acq: \pcs \to \realnum$
     % \item Let $\cmin := \min\{\cost(\confI{1}), \ldots, \cost(\confI{t})\}$ be the best observed value so far (green in plots)
     \item In the examples before, we simply used the posterior mean $\acq(\conf) = \surro(\conf)$ as acquisition function -- ignoring uncertainty
   \end{itemize}
@@ -69,11 +69,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_ee.png}
+      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_ee.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_sm_normal.png}
+      \includegraphics[width=0.6\textwidth]{images/bayesian_loop_sm_normal.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -108,11 +108,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/bayesian_loop_sm_normal_fmin.png}
+      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/bayesian_loop_sm_normal_fmin.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/bayesian_loop_pi_0.png}
+      \includegraphics[width=0.55\textwidth, height=3cm, keepaspectratio]{images/bayesian_loop_pi_0.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -120,7 +120,7 @@
 
 \begin{frame}[t]{Expected Improvement}
   \begin{itemize}
-    \item \textbf{Goal:} Propose $\confI{t+1}$ that maximizes the \textbf{expected improvement} (EI):
+    \item Maximizes \textbf{expected improvement} (EI):
     $$\acq_{\text{EI}}(\conf) = \E(\max\{\cmin - Y(\conf), 0\})$$
     \item We take the \textbf{expectation} in the tail, instead of the probability as in PI
     \item Improvement is always assumed $\geq 0$
@@ -130,11 +130,11 @@
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/bayesian_loop_sm_normal_fmin.png}
+      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/bayesian_loop_sm_normal_fmin.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/bayesian_loop_pi_0.png}
+      \includegraphics[width=\textwidth, height=2.8cm, keepaspectratio]{images/bayesian_loop_pi_0.pdf}
     \end{center}
   \end{columns}
 \end{frame}

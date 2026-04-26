@@ -68,7 +68,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
   xlim(c(0, 1)) +
   ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 pi = ggplot(aes(x = x, y = pi), data = grid) +
   geom_line(colour = "darkred") +
@@ -100,7 +100,7 @@ for (i in 2:9) {
     geom_point(aes(x = x, y = y), size = 3L, colour = "grey", data = old_pi_argmax) +
     xlim(c(0, 1)) +
     ylim(c(-2, 2.2)) +
-    labs(x = expression(lambda)) + theme_minimal()
+    labs(x = expression(lambda), y = expression(c)) + theme_minimal()
   
   pi = ggplot(aes(x = x, y = pi), data = grid) +
     geom_line(colour = "darkred") +

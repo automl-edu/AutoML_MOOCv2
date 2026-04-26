@@ -64,7 +64,7 @@ grid[, qrf_med := q[, 2]]
 grid[, qrf_hi  := q[, 3]]
 
 # ---- plotting helpers -------------------------------------------------------
-band_plot = function(grid, train, mean_col, sd_col, subtitle) {
+band_plot = function(grid, train, mean_col, sd_col) {
   ggplot(grid, aes(x = x)) +
     geom_ribbon(aes(ymin = .data[[mean_col]] - 2 * .data[[sd_col]],
                     ymax = .data[[mean_col]] + 2 * .data[[sd_col]]),
@@ -75,18 +75,16 @@ band_plot = function(grid, train, mean_col, sd_col, subtitle) {
     geom_point(data = train, aes(x = x, y = y),
                colour = "black", size = 1.2, alpha = 0.7) +
     coord_cartesian(ylim = c(-2, 2)) +
-    labs(x = expression(x), y = expression(f), subtitle = subtitle) +
+    labs(x = expression(x), y = expression(f)) +
     theme_minimal()
 }
 
 myggsave("rf_unc_naive",
-         band_plot(grid, train, "mean", "sd_naive",
-                   "naive between-tree variance"),
+         band_plot(grid, train, "mean", "sd_naive"),
          width = 4.2, height = 3.2)
 
 myggsave("rf_unc_lotv",
-         band_plot(grid, train, "mean", "sd_lotv",
-                   "law of total variance"),
+         band_plot(grid, train, "mean", "sd_lotv"),
          width = 4.2, height = 3.2)
 
 qrf_plot = ggplot(grid, aes(x = x)) +
@@ -98,8 +96,7 @@ qrf_plot = ggplot(grid, aes(x = x)) +
   geom_point(data = train, aes(x = x, y = y),
              colour = "black", size = 1.2, alpha = 0.7) +
   coord_cartesian(ylim = c(-2, 2)) +
-  labs(x = expression(x), y = expression(f),
-       subtitle = "QRF: 10 / 50 / 90% quantile band") +
+  labs(x = expression(x), y = expression(f)) +
   theme_minimal()
 
 myggsave("rf_unc_qrf", qrf_plot,

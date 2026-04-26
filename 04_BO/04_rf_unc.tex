@@ -108,16 +108,15 @@
 
 
 \begin{frame}[t]{Extra-Trees: Random Split Locations}
-\footnotesize
 \begin{columns}[onlytextwidth,T]
   \column{.5\textwidth}
   \begin{itemize}
-    \item Standard RF: at each node, pick the \textbf{empirically best} split (max variance reduction)
+    \item Standard RF: at each node, pick \textbf{empirically best} split (max L2 loss reduction)
     \item \textbf{Extra-trees}~\liturl{Geurts et al. 2006}{https://link.springer.com/article/10.1007/s10994-006-6226-1}: pick the split point \textbf{uniformly at random} per candidate feature
     \item Trade-offs:
         \begin{itemize}
             \item Faster training -- no scan over candidate splits
-            \item More between-tree disagreement $\leadsto$ smoother $\hat f$, helps AF optimization
+            \item More between-tree disagreement $\leadsto$ smoother $\hat f$
             \item Slightly higher bias per tree, lower variance after averaging
         \end{itemize}
   \end{itemize}
@@ -173,7 +172,7 @@
 
 \begin{frame}[t]{Summary and Discussion}
 \begin{itemize}
-  \item Use RF for mixed / conditional / large-integer $\pcs$, large $n$, cheaper $f$ with many iterations;\\
+  \item Use RF for mixed / conditional / large-integer $\pcs$, large $n$, cheaper $f$ with many iterations;
   GP for numeric $\pcs$ with tighter budget
   \item We discussed as uncertainty options:\\
   naive between-tree variance, law of total variance, infinitesimal jackknife, and quantile regression forests

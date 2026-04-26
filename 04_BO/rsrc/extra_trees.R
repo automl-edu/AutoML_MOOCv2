@@ -44,8 +44,7 @@ g = ggplot(grid, aes(x = x)) +
   geom_point(data = train, aes(x = x, y = y),
              colour = "black", size = 1.2, alpha = 0.7) +
   coord_cartesian(ylim = c(-2, 2)) +
-  labs(x = expression(x), y = expression(f),
-       subtitle = "extra-trees: between-tree variance") +
+  labs(x = expression(x), y = expression(f)) +
   theme_minimal()
 
 myggsave("extra_trees", plot = g, width = 4.2, height = 3.2)

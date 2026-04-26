@@ -45,7 +45,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_min), colour = "darkred") +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 cb = ggplot(aes(x = x, y = cb), data = grid) +
   geom_line(colour = "darkred") +
@@ -75,7 +75,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_min), colour = "darkred") +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 cb = ggplot(aes(x = x, y = cb), data = grid) +
   geom_line(colour = "darkred") +
@@ -105,7 +105,7 @@ g = ggplot(aes(x = x, y = y), data = grid) +
   geom_line(aes(x = x, y = y_min), colour = "darkred") +
   xlim(c(0, 1)) +
   ylim(c(-2, 3.8)) +
-  labs(x = expression(lambda)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
 cb = ggplot(aes(x = x, y = cb), data = grid) +
   geom_line(colour = "darkred") +
