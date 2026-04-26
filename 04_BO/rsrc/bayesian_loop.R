@@ -48,31 +48,6 @@ acq_function$update()
 set(grid, j = "ei", value = acq_function$eval_dt(grid[, "x"])$acq_ei)
 ei_argmax = grid[which.max(ei), ]
 
-# intial design + surrogate prediction
-g = ggplot(aes(x = x, y = y), data = grid) +
-  geom_line() +
-  geom_line(aes(x = x, y = y_hat), colour = "steelblue", linetype = 2) +
-  geom_ribbon(aes(min = y_min, max = y_max), fill = "steelblue", colour = NA, alpha = 0.1) +
-  geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
-  xlim(c(0, 1)) +
-  ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
-
-myggsave("bayesian_loop_sm", plot = g, width = 5, height = 4)
-
-# intial design + surrogate prediction + best
-g = ggplot(aes(x = x, y = y), data = grid) +
-  geom_line() +
-  geom_line(aes(x = x, y = y_hat), colour = "steelblue", linetype = 2) +
-  geom_ribbon(aes(min = y_min, max = y_max), fill = "steelblue", colour = NA, alpha = 0.1) +
-  geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
-  geom_point(aes(x = x, y = y), size = 3L, colour = "#00A64F", data = instance$archive$best()) +  
-  xlim(c(0, 1)) +
-  ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
-
-myggsave("bayesian_loop_sm_fmin", plot = g, width = 5, height = 4)
-
 # intial design + surrogate prediction + normal
 ei_argmax_normal = data.table(y = seq(-2, 2.2, by = 0.01))
 set(ei_argmax_normal, j = "x", value = dnorm(ei_argmax_normal$y, mean = ei_argmax$y_hat, sd = ei_argmax$y_max - ei_argmax$y_hat))
@@ -124,58 +99,40 @@ acq_function$update()
 set(grid, j = "ei", value = acq_function$eval_dt(grid[, "x"])$acq_ei)
 ei_argmax = grid[which.max(ei), ]
 
-g = ggplot(aes(x = x, y = y), data = grid) +
-  geom_line() +
-  geom_line(aes(x = x, y = y_hat), colour = "steelblue", linetype = 2) +
-  geom_ribbon(aes(min = y_min, max = y_max), fill = "steelblue", colour = NA, alpha = 0.1) +
-  geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
-  xlim(c(0, 1)) +
-  ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
-
-ei = ggplot(aes(x = x, y = ei), data = grid) +
-  geom_line(colour = "darkred") +
-  geom_point(aes(x = x, y = ei), size = 3L, colour = "darkred", data = ei_argmax) +
-  xlim(c(0, 1)) +
-  ylab("EI") +
-  labs(x = expression(lambda)) + theme_minimal()
-
-myggsave("bayesian_loop_1_obj", plot = g,  width = 5, height = 2)
-myggsave("bayesian_loop_1_acq", plot = ei, width = 5, height = 2)
-
+# Advance the BO archive through iterations 1..5 so that the plot at i = 6
+# is fitted on the matured archive. Only iteration i = 6 produces saved output.
 old_ei_argmax = ei_argmax
-
 instance$eval_batch(ei_argmax[, "x", with = FALSE])
 
 for (i in 2:6) {
   update_surrogate_and_grid(surrogate, grid)
-  
+
   acq_function$update()
   set(grid, j = "ei", value = acq_function$eval_dt(grid[, "x"])$acq_ei)
   ei_argmax = grid[which.max(ei), ]
 
-  # initial design + surrogate prediction + arg max of ei + ei
-  g = ggplot(aes(x = x, y = y), data = grid) +
-    geom_line() +
-    geom_line(aes(x = x, y = y_hat), colour = "steelblue", linetype = 2) +
-    geom_ribbon(aes(min = y_min, max = y_max), fill = "steelblue", colour = NA, alpha = 0.1) +
-    geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
-    geom_point(aes(x = x, y = y), size = 3L, colour = "grey", data = old_ei_argmax) +
-    xlim(c(0, 1)) +
-    ylim(c(-2, 2.2)) +
-    labs(x = expression(lambda), y = expression(c)) + theme_minimal()
-  
-  ei = ggplot(aes(x = x, y = ei), data = grid) +
-    geom_line(colour = "darkred") +
-    geom_point(aes(x = x, y = ei), size = 3L, colour = "darkred", data = ei_argmax) +
-    xlim(c(0, 1)) +
-    ylab("EI") +
-    labs(x = expression(lambda)) + theme_minimal()
-  
-  myggsave(sprintf("bayesian_loop_%i_obj", i), plot = g,  width = 5, height = 2)
-  myggsave(sprintf("bayesian_loop_%i_acq", i), plot = ei, width = 5, height = 2)
+  if (i == 6) {
+    g = ggplot(aes(x = x, y = y), data = grid) +
+      geom_line() +
+      geom_line(aes(x = x, y = y_hat), colour = "steelblue", linetype = 2) +
+      geom_ribbon(aes(min = y_min, max = y_max), fill = "steelblue", colour = NA, alpha = 0.1) +
+      geom_point(aes(x = x, y = y), size = 3L, colour = "black", data = instance$archive$data) +
+      geom_point(aes(x = x, y = y), size = 3L, colour = "grey", data = old_ei_argmax) +
+      xlim(c(0, 1)) +
+      ylim(c(-2, 2.2)) +
+      labs(x = expression(lambda), y = expression(c)) + theme_minimal()
+
+    ei = ggplot(aes(x = x, y = ei), data = grid) +
+      geom_line(colour = "darkred") +
+      geom_point(aes(x = x, y = ei), size = 3L, colour = "darkred", data = ei_argmax) +
+      xlim(c(0, 1)) +
+      ylab("EI") +
+      labs(x = expression(lambda)) + theme_minimal()
+
+    myggsave("bayesian_loop_6_obj", plot = g,  width = 5, height = 2)
+    myggsave("bayesian_loop_6_acq", plot = ei, width = 5, height = 2)
+  }
 
   old_ei_argmax = ei_argmax
-  
   instance$eval_batch(ei_argmax[, "x", with = FALSE])
 }

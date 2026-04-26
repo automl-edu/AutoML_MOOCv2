@@ -21,6 +21,8 @@ RF tree pic looks wrong....
 
 check if x and other symbplds should be bold
 
+gucken was man für "datensets" als notation nimmt
+
 ------------------------
 
 Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    

@@ -120,8 +120,7 @@
 
 \begin{frame}[t]{Expected Improvement}
   \begin{itemize}
-    \item Maximizes \textbf{expected improvement} (EI):
-    $$\acq_{\text{EI}}(\conf) = \E(\max\{\cmin - Y(\conf), 0\})$$
+    \item Maximize $\acq_{\text{EI}}(\conf) = \E(\max\{\cmin - Y(\conf), 0\})$
     \item We take the \textbf{expectation} in the tail, instead of the probability as in PI
     \item Improvement is always assumed $\geq 0$
     \item Originally introduced by~\liturl{Mo\v{c}kus 1975}{https://link.springer.com/chapter/10.1007/978-3-662-38527-2_55}; popularized for expensive simulators by~\liturl{Jones et al. 1998}{https://link.springer.com/article/10.1023/A:1008306431147} (EGO)

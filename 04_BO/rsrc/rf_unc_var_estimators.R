@@ -1,9 +1,9 @@
 # Used in: 04_BO/04_rf_unc.tex
 #
 # 1D visualizations of RF-based variance estimators discussed in the chapter:
-# naive between-tree variance, law of total variance (within + between), and
-# quantile regression forests. All fits use the same toy 1D data (sin with a
-# data gap in the middle of the domain) so the plots are directly comparable.
+# naive between-tree variance and quantile regression forests. Both fits use
+# the same toy 1D data (sin with a data gap in the middle of the domain) so
+# the plots are directly comparable.
 
 library(ranger)
 library(data.table)
@@ -40,22 +40,6 @@ grid[, mean := rowMeans(preds)]
 # ---- naive between-tree variance --------------------------------------------
 grid[, sd_naive := apply(preds, 1, sd)]
 
-# ---- LoTV: within (aleatoric) + between (epistemic) ------------------------
-tn_train = predict(rf, data = train, type = "terminalNodes")$predictions
-tn_grid  = predict(rf, data = grid,  type = "terminalNodes")$predictions
-
-within_var = matrix(0, nrow = nrow(grid), ncol = B)
-for (b in seq_len(B)) {
-  leaves   = tn_train[, b]
-  leaf_var = tapply(train$y, leaves,
-                    function(z) if (length(z) > 1L) var(z) else 0)
-  within_var[, b] = as.numeric(leaf_var[as.character(tn_grid[, b])])
-}
-within_var[is.na(within_var)] = 0
-
-grid[, sd_lotv := sqrt(rowMeans(within_var) +
-                       (rowMeans(preds^2) - mean^2))]
-
 # ---- QRF: 10 / 50 / 90% quantiles -------------------------------------------
 q = predict(rf, data = grid, type = "quantiles",
             quantiles = c(0.1, 0.5, 0.9))$predictions
@@ -81,10 +65,6 @@ band_plot = function(grid, train, mean_col, sd_col) {
 
 myggsave("rf_unc_naive",
          band_plot(grid, train, "mean", "sd_naive"),
-         width = 4.2, height = 3.2)
-
-myggsave("rf_unc_lotv",
-         band_plot(grid, train, "mean", "sd_lotv"),
          width = 4.2, height = 3.2)
 
 qrf_plot = ggplot(grid, aes(x = x)) +
