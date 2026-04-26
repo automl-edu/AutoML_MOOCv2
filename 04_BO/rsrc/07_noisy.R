@@ -1,10 +1,8 @@
 # Used in: 04_BO/07_noisy.tex
 #
-# Three figures for the noisy-BO chapter:
-#   1) 07_noisy_data       -- truth + noisy observations (with replicates)
-#   2) 07_noisy_nugget     -- nugget GP fit: posterior smooths through noise
-#   3) 07_noisy_incumbent  -- the empirical argmin (lucky outlier) vs. the
-#                             model-based argmin
+# Two figures for the noisy-BO chapter:
+#   1) 07_noisy_data    -- truth + noisy observations (with replicates)
+#   2) 07_noisy_nugget  -- nugget GP fit: posterior smooths through noise
 
 library(DiceKriging)
 source("rsrc/_setup.R")
@@ -42,13 +40,6 @@ grid[, mean := pred$mean]
 grid[, lo   := pred$mean - pred$sd]
 grid[, hi   := pred$mean + pred$sd]
 
-# Posterior mean at the training points -- needed to compare incumbents
-pred_train = predict(m, newdata = data.frame(x = x_train), type = "UK")
-train[, mean := pred_train$mean]
-
-emp_min = train[which.min(y),    .(x, y)]      # argmin_i y_i (noisy outlier)
-mod_min = train[which.min(mean), .(x, mean)]   # argmin_i \hat f(\lambda_i)
-
 # ---- shared theme -----------------------------------------------------------
 noisy_theme = function() list(
   ylim(c(-1.8, 2.0)),
@@ -75,26 +66,3 @@ p2 = ggplot(grid, aes(x = x)) +
              colour = "darkred", size = 2.4) +
   noisy_theme()
 myggsave("07_noisy_nugget", plot = p2, width = 5, height = 3)
-
-# ---- (3) empirical vs. model-based incumbent --------------------------------
-p3 = ggplot(grid, aes(x = x)) +
-  geom_ribbon(aes(ymin = lo, ymax = hi), fill = "steelblue", alpha = 0.18) +
-  geom_line(aes(y = truth), colour = "black", linewidth = 0.5) +
-  geom_line(aes(y = mean), colour = "steelblue",
-            linetype = 2, linewidth = 0.7) +
-  geom_point(data = train, aes(x = x, y = y),
-             colour = "darkred", size = 2.4) +
-  geom_point(data = emp_min, aes(x = x, y = y),
-             shape = 21, size = 5, colour = "darkorange", stroke = 1.6,
-             fill = NA) +
-  geom_point(data = mod_min, aes(x = x, y = mean),
-             shape = 22, size = 5, colour = "#00A64F", stroke = 1.6,
-             fill = NA) +
-  annotate("text", x = emp_min$x, y = emp_min$y - 0.25,
-           label = expression(argmin[i] ~ y[i]),
-           colour = "darkorange", size = 3) +
-  annotate("text", x = mod_min$x, y = mod_min$mean + 0.30,
-           label = expression(argmin[i] ~ hat(f)(lambda[i])),
-           colour = "#00A64F", size = 3) +
-  noisy_theme()
-myggsave("07_noisy_incumbent", plot = p3, width = 5, height = 3)
