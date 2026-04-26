@@ -105,19 +105,29 @@
   % \item Per iteration: mark ``potentially optimal'' rectangles -- those that could hold a better point under \textbf{some} Lipschitz constant -- and trisect them along their longest side
   % \end{itemize}
   \item \textbf{CMA-ES -- covariance matrix adaptation evolution strategy}
-  \begin{itemize}
-  \item Population-based, gradient-free
-  \item Each generation: sample $\lambda$ candidates from $\mathcal{N}(\bm{m}, \sigma^2 \bm{C})$, rank by $\acq$, update mean $\bm{m}$, step size $\sigma$, and covariance $\bm{C}$ from the best $\mu$
-  \item $\bm{C}$ learns the local curvature\\
-  $\leadsto$ robust on non-convex, ill-conditioned $\acq$; handles medium $\pcsdim$ well
-  \item But: once $\sigma$ contracts around a basin, the search is effectively \textbf{local} -- a single run can miss better modes elsewhere
-  \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
-  \begin{itemize}
-  \item \textbf{IPOP-CMA-ES}~\liturl{Auger \& Hansen 2005}{https://ieeexplore.ieee.org/document/1554902} -- doubles $\lambda$ on every restart to widen exploration
-  \item \textbf{BIPOP-CMA-ES}~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} -- interleaves IPOP-like restarts with small-$\lambda$, randomized-$\sigma$ restarts; winner of multiple BBOB benchmarks
   \end{itemize}
-  \end{itemize}
-  \end{itemize}
+  \begin{columns}[onlytextwidth,T]
+    \column{.6\textwidth}
+    \begin{itemize}
+    \item Population-based, gradient-free
+    \item Each generation: sample $\lambda$ candidates from $\mathcal{N}(\bm{m}, \sigma^2 \bm{C})$, rank by $\acq$, update mean $\bm{m}$, step size $\sigma$, and covariance $\bm{C}$ from the best $\mu$
+    \item $\bm{C}$ learns the local curvature\\
+    $\leadsto$ robust on non-convex, ill-conditioned $\acq$; handles medium $\pcsdim$ well
+    \item But: once $\sigma$ contracts around a basin, the search is effectively \textbf{local} -- a single run can miss better modes elsewhere
+    \item Restarts are standard on multi-modal $\acq$; dedicated schemes exist:
+      \begin{itemize}
+      \item \textbf{IPOP-CMA-ES}~\liturl{Auger \& Hansen 2005}{https://ieeexplore.ieee.org/document/1554902} -- doubles $\lambda$ on every restart to widen exploration
+      \item \textbf{BIPOP-CMA-ES}~\liturl{Hansen 2009}{https://dl.acm.org/doi/10.1145/1570256.1570333} -- interleaves IPOP-like restarts with small-$\lambda$, randomized-$\sigma$ restarts; winner of multiple BBOB benchmarks
+      \end{itemize}
+    \end{itemize}
+    \column{.4\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth]{images/cmaes_sampling.pdf}\\[0.1cm]
+      \scriptsize 2 generations on a tilted valley:\\
+      $\times$ = mean $\bm{m}$, dashed = $2\sigma$ ellipse of $\sigma^2 \bm{C}$,\\
+      filled $\bullet$ = top $\mu$, open $\circ$ = the rest
+    \end{center}
+  \end{columns}
   \end{frame}
   
 
@@ -166,12 +176,12 @@
     \item Too many $\leadsto$ per-iteration overhead dominates, especially when $\cost$ is cheap
     \item Typical defaults: $10$--$50$ restarts for GP + L-BFGS-B in $\le 20$ dimensions
   \end{itemize}
-  \vspace{0.1cm}
-  \textbf{When inner optimization matters most (invest CPU):}
-  \begin{itemize}\setlength\itemsep{0pt}
-    \item Expensive $\cost$ (minutes-to-hours per eval), late in the BO run (AF peaks narrow), noisy / multi-objective $\acq$
-    \item When \textbf{not} to over-engineer: cheap $\cost$ with many BO iterations; low-$\pcsdim$, smooth surrogate ($\sim\!5$ L-BFGS-B restarts suffice)
-  \end{itemize}
+  % \vspace{0.1cm}
+  % \textbf{When inner optimization matters most (invest CPU):}
+  % \begin{itemize}\setlength\itemsep{0pt}
+  %   \item Expensive $\cost$ (minutes-to-hours per eval), late in the BO run (AF peaks narrow), noisy / multi-objective $\acq$
+  %   \item When \textbf{not} to over-engineer: cheap $\cost$ with many BO iterations; low-$\pcsdim$, smooth surrogate ($\sim\!5$ L-BFGS-B restarts suffice)
+  % \end{itemize}
 \end{frame}
 
 

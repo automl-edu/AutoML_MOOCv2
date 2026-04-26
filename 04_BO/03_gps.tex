@@ -28,7 +28,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{GP Intuition}
+\begin{frame}[t]{Gaussian Process Intuition}
   \small
   \begin{itemize}
     \item Generic regression model on inputs $\x \in \Xspace$ and outputs $y \in \realnum$\\
@@ -37,7 +37,7 @@
     For \textbf{any} finite set of inputs $\{\xI{1}, \ldots, \xI{t}\}$, the vector of function values 
     $(f(\xI{1}), \ldots, f(\xI{t}))$ is \textbf{jointly Gaussian}
     \item Fully characterized by a \textbf{mean function} $m(\x)$ and a \textbf{kernel} $k(\x, \x')$ 
-    that encodes how correlated the outputs of nearby points are
+    \item Kernel encodes how correlated the outputs of nearby points are
     \item Theory of GPs comes from stochastic processes, usage on concrete data
     boils down to simple linear algebra on the multivariate Gaussian
   %   \item Observing data $\dataset = \langle \xI{i}, \yI{i} \rangle_{i=1}^t$ gives a \textbf{posterior} over functions that
@@ -58,7 +58,7 @@
   \begin{itemize}
     \item \textbf{Prior over functions:} we place a GP prior on the unknown function,
       $$f \sim \gp(m(\x),\; k(\x,\x'))$$
-      assume zero prior mean $m(\x) \equiv 0$ (easy to relax, see later)
+      % assume zero prior mean $m(\x) \equiv 0$ (easy to relax, see later)
     \item \textbf{Observation model:} each output is a noisy read-out of $f$ at input $\xI{i}$,
       $$\yI{i} = f(\xI{i}) + \epsilon_i, \qquad \epsilon_i \overset{\text{i.i.d.}}{\sim} \normaldist(0, \noisevar)$$
     \item \textbf{Two regimes:}
@@ -66,7 +66,10 @@
         \item $\noisevar = 0$: \textbf{interpolation} -- posterior passes exactly through each $(\xI{i}, \yI{i})$
         \item $\noisevar > 0$: \textbf{regression} -- posterior smooths through noisy observations; uncertainty never shrinks to $0$ at training points
       \end{itemize}
-    \item Computationally: the noise just adds $\noisevar \bm{I}$ to the Gram matrix ($\bm{K} \to \bm{K} + \noisevar \bm{I}$)
+      \item NB: we assume $m(\x) \equiv 0$ from now on.
+      % For non-zero $m$, simply replace $\yv$ by $\yv - m(\bm{X})$ and add $m(\x)$ back to $\hat\mean(\x)$. \\
+      We can add estimated trend to the model, but in practice people usually center the outputs and use zero mean.
+    % \item Computationally: the noise just adds $\noisevar \bm{I}$ to the kernel matrix ($\bm{K} \to \bm{K} + \noisevar \bm{I}$)
   \end{itemize}
 \end{frame}
 
@@ -85,12 +88,13 @@
     \item $k_* := \big(k(\x, \xI{1}), \ldots, k(\x, \xI{t})\big)^T$ -- kernel between test $\x$ and training inputs
     \item $k_{**} := k(\x, \x)$ -- kernel self-similarity at the test input
     \item $\yv := (\yI{1}, \ldots, \yI{t})^T$ -- vector of observed outputs
-    \item $\bm{K} := \big(k(\xI{i}, \xI{j})\big)_{i,j=1}^t$ -- Gram / kernel matrix of training inputs
+    \item $\bm{K} := \big(k(\xI{i}, \xI{j})\big)_{i,j=1}^t$ -- kernel matrix of training inputs
   \end{itemize}
-  \item \textbf{Note on prior mean $m(\x)$:} we assume $m(\x) \equiv 0$, so it drops out of the formulas.
-  For non-zero $m$, simply replace $\yv$ by $\yv - m(\bm{X})$ and add $m(\x)$ back to $\hat\mean(\x)$. \\
-  In practice people usually center the outputs and use zero mean.
-  \item \textbf{Prediction cost:} with a cached Cholesky factor of $\bm{K}+\noisevar\bm{I}$, each test point costs $\mathcal{O}(t)$ for the mean and $\mathcal{O}(t^2)$ for the variance.
+  % \item \textbf{Note on prior mean $m(\x)$:} we assume $m(\x) \equiv 0$, so it drops out of the formulas.
+  % For non-zero $m$, simply replace $\yv$ by $\yv - m(\bm{X})$ and add $m(\x)$ back to $\hat\mean(\x)$. \\
+  % In practice people usually center the outputs and use zero mean.
+  \item \textbf{Prediction cost:} the Cholesky of $\bm{K}+\noisevar\bm{I}$ is $\mathcal{O}(t^3)$;\\
+  with it cached, each test point then costs $\mathcal{O}(t)$ for mean and $\mathcal{O}(t^2)$ for variance.
 \end{itemize}
 \end{frame}
 
@@ -115,6 +119,87 @@
   \end{itemize}
 \end{frame}
 
+
+
+
+\begin{frame}[t]{Kernel: RBF (Squared Exponential)}
+\begin{columns}[onlytextwidth,T]
+    \column{.60\textwidth}
+    \small
+    $$k(\x, \x') = \exp\!\left(-\sum_{j=1}^{\pcsdim} \frac{(x_j - x'_j)^2}{2 l_j^2}\right)$$
+    \begin{itemize}
+        \item $l_j$: per-dim \textbf{length scale} (\textbf{ARD}) -- larger $l_j$, longer range of correlation along dim $j$; \\
+        small $l_j$ $\Rightarrow$ dim $j$ is ``relevant''
+        \item Isotropic special case: $l_j \equiv l$;\\
+        plot shows that 1D regime
+        \item Infinitely differentiable\\
+        $\leadsto$ sample paths are \textbf{very smooth}
+        \item Often too smooth for realistic response surfaces
+    \end{itemize}
+    \column{.40\textwidth}
+    \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=5cm, height=4cm,
+        xlabel={$d(\x,\x')$}, ylabel={$k$},
+        xmin=0, xmax=3, ymin=0, ymax=1.05,
+        domain=0:3, samples=80,
+        legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east, draw=none, fill=none},
+        tick label style={font=\scriptsize},
+        label style={font=\scriptsize},
+        axis lines=left,
+      ]
+        \addplot[blue, thick]           {exp(-x^2/(2*0.3^2))}; \addlegendentry{$l=0.3$}
+        \addplot[green!60!black, thick] {exp(-x^2/(2*0.7^2))}; \addlegendentry{$l=0.7$}
+        \addplot[red, thick]            {exp(-x^2/(2*1.5^2))}; \addlegendentry{$l=1.5$}
+      \end{axis}
+    \end{tikzpicture}\\[0.1cm]
+    % \scriptsize Correlation vs.\ distance for three length scales.
+    \end{center}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[t]{Kernel: Matérn Family}
+\begin{columns}[onlytextwidth,T]
+    \column{.60\textwidth}
+    \small
+    $$k(\x, \x') = \frac{1}{\Gamma(\nu)\, 2^{\nu-1}}\left(\sqrt{2\nu}\, r\right)^{\!\nu} K_\nu\!\left(\sqrt{2\nu}\, r\right)$$
+    with ARD-scaled distance $r = \sqrt{\sum_{j=1}^{\pcsdim} (x_j - x'_j)^2 / l_j^2}$, $K_\nu$: modified Bessel function.
+    \begin{itemize}
+        \item $\nu$ controls \textbf{smoothness}: sample paths are $\lceil\nu\rceil - 1$ times differentiable
+        \item $\nu = 3/2$: once differentiable -- ``wiggly''
+        \item $\nu = 5/2$: twice differentiable -- \textbf{default for BO}
+        \item $\nu \to \infty$: recovers RBF kernel 
+    \end{itemize}
+    \column{.40\textwidth}
+    \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=5cm, height=4cm,
+        xlabel={$d(\x,\x')$}, ylabel={$k$},
+        xmin=0, xmax=3, ymin=0, ymax=1.05,
+        domain=0.0001:3, samples=120,
+        legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east, draw=none, fill=none},
+        tick label style={font=\scriptsize},
+        label style={font=\scriptsize},
+        axis lines=left,
+      ]
+        % Matern 1/2 (exponential): exp(-d/l)
+        \addplot[orange, thick]
+          {exp(-x/1)}; \addlegendentry{$\nu=1/2$}
+        % Matern 3/2: (1 + sqrt(3) d/l) * exp(-sqrt(3) d/l)
+        \addplot[green!60!black, thick]
+          {(1 + sqrt(3)*x/1) * exp(-sqrt(3)*x/1)}; \addlegendentry{$\nu=3/2$}
+        % Matern 5/2: (1 + sqrt(5)d/l + 5d^2/(3l^2)) * exp(-sqrt(5)d/l)
+        \addplot[blue, thick]
+          {(1 + sqrt(5)*x/1 + 5*x^2/(3*1^2)) * exp(-sqrt(5)*x/1)}; \addlegendentry{$\nu=5/2$}
+      \end{axis}
+    \end{tikzpicture}\\[0.1cm]
+    % \scriptsize Matérn kernels at $l=1$; higher $\nu$ $\to$ smoother.
+    \end{center}
+\end{columns}
+\end{frame}
 
 \begin{frame}[t]{GP Posterior on 2D Branin}
   \small
@@ -143,88 +228,6 @@
   \end{itemize}
 \end{frame}
 
-
-\begin{frame}[t]{Kernel: RBF (Squared Exponential)}
-\begin{columns}[onlytextwidth,T]
-    \column{.55\textwidth}
-    \small
-    $$k(\x, \x') = \exp\!\left(-\frac{d(\x, \x')^2}{2 l^2}\right)$$
-    \vspace{0.1cm}
-    \begin{itemize}
-        \item $l$: \textbf{length scale} -- the larger $l$, the longer the range of correlation
-        \item $d(\cdot,\cdot)$: Euclidean distance
-        \item Infinitely differentiable $\leadsto$ sample paths are \textbf{very smooth}
-        \item Often too smooth for realistic response surfaces
-    \end{itemize}
-    \column{.45\textwidth}
-    \begin{center}
-    \begin{tikzpicture}
-      \begin{axis}[
-        width=5cm, height=4cm,
-        xlabel={$d(\x,\x')$}, ylabel={$k$},
-        xmin=0, xmax=3, ymin=0, ymax=1.05,
-        domain=0:3, samples=80,
-        legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east, draw=none, fill=none},
-        tick label style={font=\scriptsize},
-        label style={font=\scriptsize},
-        axis lines=left,
-      ]
-        \addplot[blue, thick]           {exp(-x^2/(2*0.3^2))}; \addlegendentry{$l=0.3$}
-        \addplot[green!60!black, thick] {exp(-x^2/(2*0.7^2))}; \addlegendentry{$l=0.7$}
-        \addplot[red, thick]            {exp(-x^2/(2*1.5^2))}; \addlegendentry{$l=1.5$}
-      \end{axis}
-    \end{tikzpicture}\\[0.1cm]
-    \scriptsize Correlation vs.\ distance for three length scales.
-    \end{center}
-\end{columns}
-\end{frame}
-
-
-\begin{frame}[t]{Kernel: Matérn Family}
-\begin{columns}[onlytextwidth,T]
-    \column{.55\textwidth}
-    \small
-    $$k(\x, \x') = \frac{1}{\Gamma(\nu)\, 2^{\nu-1}}\left(\tfrac{\sqrt{2\nu}}{l} d\right)^{\!\nu} K_\nu\!\left(\tfrac{\sqrt{2\nu}}{l} d\right)$$
-    with $d = d(\x,\x')$, $K_\nu$: modified Bessel function.
-    \vspace{0.1cm}
-    \begin{itemize}
-        \item $\nu$ controls \textbf{smoothness}: sample paths are $\lceil\nu\rceil - 1$ times differentiable
-        \item $\nu = 3/2$: once differentiable -- ``wiggly''
-        \item $\nu = 5/2$: twice differentiable -- \textbf{default for BO}
-        \item $\nu \to \infty$: recovers the RBF kernel (infinitely smooth)
-    \end{itemize}
-    \column{.45\textwidth}
-    \begin{center}
-    \begin{tikzpicture}
-      \begin{axis}[
-        width=5cm, height=4cm,
-        xlabel={$d(\x,\x')$}, ylabel={$k$},
-        xmin=0, xmax=3, ymin=0, ymax=1.05,
-        domain=0.0001:3, samples=120,
-        legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east, draw=none, fill=none},
-        tick label style={font=\scriptsize},
-        label style={font=\scriptsize},
-        axis lines=left,
-      ]
-        % Matern 1/2 (exponential): exp(-d/l)
-        \addplot[orange, thick]
-          {exp(-x/1)}; \addlegendentry{$\nu=1/2$}
-        % Matern 3/2: (1 + sqrt(3) d/l) * exp(-sqrt(3) d/l)
-        \addplot[green!60!black, thick]
-          {(1 + sqrt(3)*x/1) * exp(-sqrt(3)*x/1)}; \addlegendentry{$\nu=3/2$}
-        % Matern 5/2: (1 + sqrt(5)d/l + 5d^2/(3l^2)) * exp(-sqrt(5)d/l)
-        \addplot[blue, thick]
-          {(1 + sqrt(5)*x/1 + 5*x^2/(3*1^2)) * exp(-sqrt(5)*x/1)}; \addlegendentry{$\nu=5/2$}
-        % RBF with l=1
-        \addplot[red, thick, dashed]
-          {exp(-x^2/2)}; \addlegendentry{RBF}
-      \end{axis}
-    \end{tikzpicture}\\[0.1cm]
-    \scriptsize Matérn kernels at $l=1$; higher $\nu$ $\to$ smoother.
-    \end{center}
-\end{columns}
-\end{frame}
-
 \begin{frame}[t]{Learning Kernel Hyperparameters}
   \footnotesize
   Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\epsilon$, \ldots).\\[0.15cm]
@@ -241,7 +244,7 @@
   \end{itemize}
   \vspace{0.05cm}
   Alternatives: cross-validation on held-out residuals, or fully Bayesian treatment via MCMC / HMC over $\bm{\theta}$.\\[0.1cm]
-  \textbf{Training cost:} each marginal-likelihood evaluation needs a Cholesky of the $t \times t$ Gram matrix, costing $\mathcal{O}(t^3)$ time and $\mathcal{O}(t^2)$ memory -- the main bottleneck for large $t$.
+  \textbf{Training cost:} each marginal-likelihood evaluation needs a Cholesky of the $t \times t$ kernel matrix, costing $\mathcal{O}(t^3)$ time and $\mathcal{O}(t^2)$ memory -- the main bottleneck for large $t$.
 \end{frame}
 
 
