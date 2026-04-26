@@ -60,7 +60,7 @@ band_plot = function(grid, train, mean_col, sd_col) {
     theme_minimal()
 }
 
-myggsave("04_rf_unc_naive",
+myggsave("04_rf_unc_var_estimators_naive",
          band_plot(grid, train, "mean", "sd_naive"),
          width = 4.2, height = 3.2)
 
@@ -76,5 +76,5 @@ qrf_plot = ggplot(grid, aes(x = x)) +
   labs(x = expression(x), y = expression(f)) +
   theme_minimal()
 
-myggsave("04_rf_unc_qrf", qrf_plot,
+myggsave("04_rf_unc_var_estimators_qrf", qrf_plot,
          width = 4.2, height = 3.2)

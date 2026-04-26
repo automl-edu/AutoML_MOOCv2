@@ -53,7 +53,7 @@ g_rbf = ggplot(rbf_paths, aes(x = x, y = y, colour = l)) +
     panel.grid.minor = element_blank()
   )
 
-myggsave("03_rbf_samples", plot = g_rbf, width = 4.5, height = 1.8)
+myggsave("03_kernel_samples_rbf", plot = g_rbf, width = 4.5, height = 1.8)
 
 # ------------------------------------------------------------------------------
 # Matérn: nu in {1/2, 3/2, 5/2} at l=1, matching the top plot's legend.
@@ -82,4 +82,4 @@ g_matern = ggplot(matern_paths, aes(x = x, y = y, colour = nu)) +
     panel.grid.minor = element_blank()
   )
 
-myggsave("03_matern_samples", plot = g_matern, width = 4.5, height = 1.8)
+myggsave("03_kernel_samples_matern", plot = g_matern, width = 4.5, height = 1.8)

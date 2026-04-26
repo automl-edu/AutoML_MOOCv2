@@ -36,7 +36,7 @@ g = ggplot() +
   xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
   labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
-myggsave("05_bayesian_loop_ee", plot = g, width = 5, height = 4)
+myggsave("05_acqf_ei_ee", plot = g, width = 5, height = 4)
 
 # ===== Plot 2: GP fit + best + normal density at EI argmax ==================
 
@@ -67,7 +67,7 @@ g = ggplot(grid, aes(x = x, y = y)) +
   xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
   labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
-myggsave("05_bayesian_loop_sm_normal_fmin", plot = g, width = 5, height = 4)
+myggsave("05_acqf_ei_sm_normal_fmin", plot = g, width = 5, height = 4)
 
 # ===== Plot 3: BO state after 5 EI proposals from a 5-point initial design ==
 
@@ -103,5 +103,5 @@ acq = ggplot(grid, aes(x = x, y = ei)) +
   xlim(c(0, 1)) +
   labs(x = expression(lambda), y = "EI") + theme_minimal()
 
-myggsave("05_bayesian_loop_6_obj", plot = obj, width = 5, height = 2)
-myggsave("05_bayesian_loop_6_acq", plot = acq, width = 5, height = 2)
+myggsave("05_acqf_ei_obj", plot = obj, width = 5, height = 2)
+myggsave("05_acqf_ei_acq", plot = acq, width = 5, height = 2)

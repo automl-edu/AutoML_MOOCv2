@@ -41,18 +41,18 @@ design_dt[, sd := pred_design$se]
 # Render via the shared `save_persp` helper from _setup.R.
 
 # truth
-save_persp("03_gp_branin_true", x1, x2, grid$y,
+save_persp("03_gp_branin_3d_true", x1, x2, grid$y,
            pal_cols = c("#f7fcf5", "#a1d99b", "#238b45", "#00441b"),
            zlab = "c")
 
 # posterior mean (with training points)
-save_persp("03_gp_branin_mean", x1, x2, grid$mean,
+save_persp("03_gp_branin_3d_mean", x1, x2, grid$mean,
            pal_cols = c("#f7fbff", "#9ecae1", "#3182bd", "#08306b"),
            points = data.table(x1 = design_dt$x1, x2 = design_dt$x2, z = design_dt$y),
            zlab = "μ")
 
 # posterior sd (with training points)
-save_persp("03_gp_branin_sd", x1, x2, grid$sd,
+save_persp("03_gp_branin_3d_sd", x1, x2, grid$sd,
            pal_cols = c("#fff5eb", "#fdae6b", "#d94801", "#7f2704"),
            points = data.table(x1 = design_dt$x1, x2 = design_dt$x2, z = design_dt$sd),
            zlab = "σ")

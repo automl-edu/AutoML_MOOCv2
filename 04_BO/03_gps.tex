@@ -48,7 +48,7 @@
   \end{itemize}
   % \vspace{0.2cm}
   \begin{center}
-    \includegraphics[width=.2\textwidth]{images/05_bayesian_loop_sm_normal.pdf}
+    \includegraphics[width=.2\textwidth]{images/05_sm_normal.pdf}
   \end{center}
 \end{frame}
 
@@ -154,7 +154,7 @@
         \addplot[red, thick]            {exp(-x^2/(2*1.5^2))}; \addlegendentry{$l=1.5$}
       \end{axis}
     \end{tikzpicture}\\[0.1cm]
-    \includegraphics[width=\textwidth]{images/03_rbf_samples.pdf}\\
+    \includegraphics[width=\textwidth]{images/03_kernel_samples_rbf.pdf}\\
     \scriptsize 1D GP prior samples
     \end{center}
 \end{columns}
@@ -197,7 +197,7 @@
           {(1 + sqrt(5)*x/1 + 5*x^2/(3*1^2)) * exp(-sqrt(5)*x/1)}; \addlegendentry{$\nu=5/2$}
       \end{axis}
     \end{tikzpicture}\\[0.1cm]
-    \includegraphics[width=\textwidth]{images/03_matern_samples.pdf}\\
+    \includegraphics[width=\textwidth]{images/03_kernel_samples_matern.pdf}\\
     \scriptsize 1D GP prior samples; smaller $\nu$ $\to$ rougher
     \end{center}
 \end{columns}
@@ -209,17 +209,17 @@
   \begin{columns}[onlytextwidth,T]
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_true.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_3d_true.pdf}\\
       \footnotesize True $\cost(\conf)$
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_mean.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_3d_mean.pdf}\\
       \footnotesize Posterior mean $\hat\mean(\conf)$ with training points
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_sd.pdf}\\
+      \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/03_gp_branin_3d_sd.pdf}\\
       \footnotesize Posterior std $\sh(\conf)$ with training points
     \end{center}
   \end{columns}

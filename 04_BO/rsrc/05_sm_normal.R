@@ -39,4 +39,4 @@ g = ggplot(grid, aes(x = x, y = y)) +
   xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
   labs(x = expression(lambda), y = expression(c)) + theme_minimal()
 
-myggsave("05_bayesian_loop_sm_normal", plot = g, width = 5, height = 4)
+myggsave("05_sm_normal", plot = g, width = 5, height = 4)

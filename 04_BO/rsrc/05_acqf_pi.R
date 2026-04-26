@@ -27,4 +27,4 @@ g = ggplot(pi_normal, aes(x = y, y = d)) +
   labs(x = expression(Y(lambda)), y = "density") +
   theme_minimal()
 
-myggsave("05_bayesian_loop_pi_0", plot = g, width = 5, height = 4)
+myggsave("05_acqf_pi", plot = g, width = 5, height = 4)

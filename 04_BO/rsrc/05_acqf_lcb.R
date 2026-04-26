@@ -42,5 +42,5 @@ acq = ggplot(grid, aes(x = x, y = cb)) +
   xlim(c(0, 1)) + ylim(c(-2, 3.8)) +
   labs(x = expression(lambda), y = bquote("LCB, " * tau == .(tau))) + theme_minimal()
 
-myggsave("05_bayesian_loop_lcb_0_obj", plot = obj, width = 5, height = 2)
-myggsave("05_bayesian_loop_lcb_0_acq", plot = acq, width = 5, height = 2)
+myggsave("05_acqf_lcb_obj", plot = obj, width = 5, height = 2)
+myggsave("05_acqf_lcb_acq", plot = acq, width = 5, height = 2)
