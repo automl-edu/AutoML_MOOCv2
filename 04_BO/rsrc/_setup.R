@@ -1,7 +1,16 @@
 # ------------------------------------------------------------------------------
 # Shared setup for 04_BO figure scripts.
 # Source this from every figure-generating R script (assuming WD = 04_BO/).
+# Loads the libraries used by every script; per-script extras (`ranger`,
+# `lhs`, `ggExtra`, `patchwork`) are loaded in the calling script.
 # ------------------------------------------------------------------------------
+
+library(bbotk)
+library(mlr3mbo)
+library(mlr3learners)
+library(data.table)
+library(ggplot2)
+
 
 # myggsave
 #
@@ -99,5 +108,45 @@ acqf_base_plot = function(grid, design, value = "ei",
       panel.grid = element_blank(),
       plot.subtitle = element_text(face = "bold")
     )
+}
+
+
+# Render a colored perspective plot of a 2D surface and save as cairo_pdf.
+#
+# Arguments
+#   name       file stem (without "images/" or extension)
+#   x1, x2     grid axis values along each dimension
+#   z          surface heights; either a length(x1) * length(x2) vector
+#              (in column-major order) or a matrix with rows indexed by x1
+#   pal_cols   color stops for the surface palette
+#   points     optional data.table with columns x1, x2, z; rendered on top
+#              as yellow filled circles
+#   theta, phi viewing angles for persp()
+#   zlab       label for the z axis (literal string; persp does not accept
+#              expressions, hence x/y labels are also literal unicode)
+#   width, height  in inches
+save_persp = function(name, x1, x2, z, pal_cols,
+                      points = NULL, theta = 25, phi = 22, zlab = "",
+                      width = 4, height = 3) {
+  pal = colorRampPalette(pal_cols)(120)
+  if (!is.matrix(z)) z = matrix(z, nrow = length(x1), ncol = length(x2))
+  zfacet = (z[-1, -1] + z[-1, -ncol(z)] + z[-nrow(z), -1] + z[-nrow(z), -ncol(z)]) / 4
+  facet_col = pal[cut(zfacet, length(pal), include.lowest = TRUE)]
+
+  path = file.path("images", paste0(name, ".pdf"))
+  cairo_pdf(path, width = width, height = height)
+  par(mar = c(0.4, 1.4, 0.3, 0.8))
+  tmat = persp(x1, x2, z,
+               theta = theta, phi = phi, expand = 0.55,
+               xlab = "λ₁", ylab = "λ₂", zlab = zlab,
+               ticktype = "detailed", nticks = 4,
+               col = facet_col, border = "grey40", lwd = 0.2,
+               cex.axis = 0.6, cex.lab = 0.8)
+  if (!is.null(points)) {
+    p3 = trans3d(points$x1, points$x2, points$z, tmat)
+    points(p3$x, p3$y, pch = 21, bg = "#ffcc00", col = "black",
+           cex = 1.1, lwd = 0.8)
+  }
+  dev.off()
 }
 

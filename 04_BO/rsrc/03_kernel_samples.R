@@ -5,9 +5,6 @@
 # as nu shrinks. Two figures, one per slide, colored to match the
 # correlation-vs-distance pgfplots above each slide.
 
-library(bbotk)
-library(data.table)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(31)

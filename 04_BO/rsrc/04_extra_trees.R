@@ -6,9 +6,6 @@
 # forest mean, and the +-2 sd band from per-tree disagreement.
 
 library(ranger)
-library(data.table)
-library(ggplot2)
-library(bbotk)
 source("rsrc/_setup.R")
 
 set.seed(42)

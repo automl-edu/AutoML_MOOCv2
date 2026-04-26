@@ -6,9 +6,6 @@
 #   2) large isotropic l                 -> very smooth
 #   3) ARD with l1 << l2                 -> ridge-like (anisotropic)
 
-library(bbotk)
-library(data.table)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(11)

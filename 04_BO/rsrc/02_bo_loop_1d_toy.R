@@ -2,11 +2,6 @@
 #
 # render BO loop on 1D toy example
 
-library(bbotk)
-library(data.table)
-library(mlr3mbo)
-library(mlr3learners)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(123)

@@ -3,11 +3,6 @@
 # PI illustration: GP posterior at one test point, with the area below c_min
 # shaded as the probability of improvement.
 
-library(bbotk)
-library(mlr3mbo)
-library(mlr3learners)
-library(data.table)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(123)

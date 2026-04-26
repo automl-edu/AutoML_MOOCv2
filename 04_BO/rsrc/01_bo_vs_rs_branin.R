@@ -2,11 +2,6 @@
 #
 # BO vs random search on Branin: point placement in 2D + best-so-far convergence.
 
-library(bbotk)
-library(data.table)
-library(mlr3mbo)
-library(mlr3learners)
-library(ggplot2)
 library(patchwork)
 source("rsrc/_setup.R")
 

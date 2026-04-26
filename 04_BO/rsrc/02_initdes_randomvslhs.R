@@ -2,9 +2,6 @@
 #
 # Visualize random vs LHS init designs
 
-library(bbotk)
-library(data.table)
-library(ggplot2)
 library(ggExtra)
 library(lhs)
 source("rsrc/_setup.R")

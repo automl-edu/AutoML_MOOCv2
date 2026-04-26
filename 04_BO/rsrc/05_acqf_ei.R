@@ -8,11 +8,6 @@
 #   3) bayesian_loop_6_{obj,acq}:      GP fit and EI curve after 5 BO steps
 #                                      starting from a 5-point initial design
 
-library(bbotk)
-library(mlr3mbo)
-library(mlr3learners)
-library(data.table)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(123)

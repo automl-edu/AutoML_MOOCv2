@@ -6,9 +6,6 @@
 # the plots are directly comparable.
 
 library(ranger)
-library(data.table)
-library(ggplot2)
-library(bbotk)
 source("rsrc/_setup.R")
 
 set.seed(42)

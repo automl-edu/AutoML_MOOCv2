@@ -4,11 +4,6 @@
 # fit with a +- tau * sd band whose lower edge is the LCB curve in the lower
 # plot.
 
-library(bbotk)
-library(mlr3mbo)
-library(mlr3learners)
-library(data.table)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(123)

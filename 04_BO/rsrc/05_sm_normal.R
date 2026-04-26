@@ -4,11 +4,6 @@
 # GP posterior predictive is a 1D normal. Plot shows truth, GP fit, archive,
 # and a vertical normal density at the EI argmax.
 
-library(bbotk)
-library(mlr3mbo)
-library(mlr3learners)
-library(data.table)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(123)

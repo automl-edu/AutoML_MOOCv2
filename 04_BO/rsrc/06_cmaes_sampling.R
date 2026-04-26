@@ -5,9 +5,6 @@
 # Shows three generations on a rotated narrow-valley quadratic so the learned
 # covariance ellipse visibly rotates to follow the local curvature.
 
-library(bbotk)
-library(data.table)
-library(ggplot2)
 source("rsrc/_setup.R")
 
 set.seed(7)

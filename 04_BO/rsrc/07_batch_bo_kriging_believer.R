@@ -9,11 +9,6 @@
 # Constant Liar, args q, liar = mean for Kriging Believer). Here we roll the
 # loop by hand so we can snapshot the EI grid between picks for the figure.
 
-library(bbotk)
-library(data.table)
-library(mlr3mbo)
-library(mlr3learners)
-library(ggplot2)
 library(patchwork)
 source("rsrc/_setup.R")
 

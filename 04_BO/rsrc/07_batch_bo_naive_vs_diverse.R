@@ -2,11 +2,6 @@
 #
 # Top-q maximizers of EI vs diverse batch
 
-library(bbotk)
-library(data.table)
-library(mlr3mbo)
-library(mlr3learners)
-library(ggplot2)
 library(patchwork)
 source("rsrc/_setup.R")
 
