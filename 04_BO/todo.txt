@@ -15,6 +15,12 @@ check fontsizes on all plots
 
 marius hat irgendwie alle meine titel auf den slides falsch angepasst
 
+RFs nutzen n statt t für size....
+
+RF tree pic looks wrong....
+
+check if x and other symbplds should be bold
+
 ------------------------
 
 Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    
