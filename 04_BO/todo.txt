@@ -5,7 +5,7 @@ die pipelines grafik könnte schöner sein
 
 plot GPs better in 2D, more beautifully
 
-bobudget und bocount werden falsch verwendet
+bobudget und bocount werden falsch verwendet auch checked ob "t" überall korrekt verwendet wird
 
 use latex autoformater and dont indent
 

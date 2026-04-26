@@ -154,7 +154,8 @@
         \addplot[red, thick]            {exp(-x^2/(2*1.5^2))}; \addlegendentry{$l=1.5$}
       \end{axis}
     \end{tikzpicture}\\[0.1cm]
-    % \scriptsize Correlation vs.\ distance for three length scales.
+    \includegraphics[width=\textwidth]{images/rbf_samples.pdf}\\
+    \scriptsize 1D GP prior samples
     \end{center}
 \end{columns}
 \end{frame}
@@ -196,7 +197,8 @@
           {(1 + sqrt(5)*x/1 + 5*x^2/(3*1^2)) * exp(-sqrt(5)*x/1)}; \addlegendentry{$\nu=5/2$}
       \end{axis}
     \end{tikzpicture}\\[0.1cm]
-    % \scriptsize Matérn kernels at $l=1$; higher $\nu$ $\to$ smoother.
+    \includegraphics[width=\textwidth]{images/matern_samples.pdf}\\
+    \scriptsize 1D GP prior samples; smaller $\nu$ $\to$ rougher
     \end{center}
 \end{columns}
 \end{frame}
@@ -218,7 +220,7 @@
     \column{.33\textwidth}
     \begin{center}
       \includegraphics[width=\textwidth, height=2.7cm, keepaspectratio]{images/gp_branin_sd.pdf}\\
-      \footnotesize Posterior std $\sh(\conf)$
+      \footnotesize Posterior std $\sh(\conf)$ with training points
     \end{center}
   \end{columns}
   \vspace{0.1cm}
@@ -228,23 +230,37 @@
   \end{itemize}
 \end{frame}
 
+
+\begin{frame}[t]{Length Scales Shape the GP Landscape}
+  \small
+  GP prior samples with RBF kernel; only the length scales differ:
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{images/gp_lengthscale_2d.pdf}
+  \end{center}
+  \begin{itemize}
+    \item Small $l$ $\Rightarrow$ wiggly, many local features; large $l$ $\Rightarrow$ smooth, slowly varying
+    \item \textbf{ARD} with $l_1 \ll l_2$: function changes fast along $\lambda_1$, slow along $\lambda_2$\\
+    $\Rightarrow$ ridge-like, $\lambda_2$ is ``less relevant''
+    \item Length scales are learned from data so GP adapts to typical landscape per dimension
+  \end{itemize}
+\end{frame}
+
 \begin{frame}[t]{Learning Kernel Hyperparameters}
   \footnotesize
-  Kernels come with hyperparameters $\bm{\theta}$ (length scale $l$, output scale, Matérn smoothness $\nu$, noise $\sigma^2_\epsilon$, \ldots).\\[0.15cm]
-  Standard approach: \textbf{type-II maximum likelihood} -- maximize the \textbf{log marginal likelihood} of the observed data:
+  \begin{itemize}
+   \item Kernels come with continuous hyperparameters $\bm{\theta}$ (length scales $l_j$, noise $\sigma^2_\epsilon$)
+  \item Maximize the \textbf{log marginal likelihood} of the observed data:
   $$
   \log p(\yv \mid \bm{\theta}) = -\tfrac{1}{2} \yv^T \bm{K}_{\bm{\theta}}^{-1} \yv
     \;-\; \tfrac{1}{2} \log |\bm{K}_{\bm{\theta}}|
     \;-\; \tfrac{t}{2} \log 2\pi
   $$
-  \begin{itemize}\setlength\itemsep{0pt}
-    \item First term rewards explaining the data
-    \item Second term penalizes model complexity (Occam's razor, built-in)
+    \item First term rewards fitting the data
+    \item Second term penalizes model complexity
     \item Optimize numerically with L-BFGS-B (multi-start to avoid local optima)
-  \end{itemize}
-  \vspace{0.05cm}
-  Alternatives: cross-validation on held-out residuals, or fully Bayesian treatment via MCMC / HMC over $\bm{\theta}$.\\[0.1cm]
-  \textbf{Training cost:} each marginal-likelihood evaluation needs a Cholesky of the $t \times t$ kernel matrix, costing $\mathcal{O}(t^3)$ time and $\mathcal{O}(t^2)$ memory -- the main bottleneck for large $t$.
+    \item \textbf{Training cost:} each marginal-likelihood evaluation needs a Cholesky of the kernel matrix, costing $\mathcal{O}(t^3)$
+    \item Alternatives: Fully Bayesian treatment via MCMC / HMC over $\bm{\theta}$
+\end{itemize}
 \end{frame}
 
 
@@ -282,7 +298,8 @@
     \textbf{Cons:}
     \begin{itemize}
         \item Vanilla GPs scale cubically in the number of data points
-        \item Can natively only handle numeric features; mixed inputs / dependencies require special kernels
+        \item Can natively only handle numeric features;\\
+        mixed inputs / dependencies require special kernels
         \item Not that robust; numerical problems can occur
         \item Can be sensitive to the choice of kernel and hyperparameters
     \end{itemize}

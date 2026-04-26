@@ -36,6 +36,11 @@ pred = surrogate$predict(grid)
 grid[, mean := pred$mean]
 grid[, sd   := pred$se]
 
+# Predict at training points too -- needed to place markers on the sd surface
+# (sd ~ 0 for interpolating GP, but use the actual prediction for correctness).
+pred_design = surrogate$predict(design_dt[, .(x1, x2)])
+design_dt[, sd := pred_design$se]
+
 # ------------------------------------------------------------------------------
 # Perspective plot helper. Colors facets by the 2x2-block mean of z. Optionally
 # overlays 3D points via trans3d() on top of the surface.
@@ -77,7 +82,8 @@ save_persp("gp_branin_mean", grid$mean,
            points = data.table(x1 = design_dt$x1, x2 = design_dt$x2, z = design_dt$y),
            zlab = "μ")
 
-# posterior sd
+# posterior sd (with training points)
 save_persp("gp_branin_sd", grid$sd,
            pal_cols = c("#fff5eb", "#fdae6b", "#d94801", "#7f2704"),
+           points = data.table(x1 = design_dt$x1, x2 = design_dt$x2, z = design_dt$sd),
            zlab = "σ")
