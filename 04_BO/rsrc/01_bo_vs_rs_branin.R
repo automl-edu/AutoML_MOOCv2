@@ -75,13 +75,10 @@ landscape_plot = function(pts, title) {
                shape = 8, colour = "#ffcc00", size = 2.8, stroke = 1.1) +
     geom_point(aes(x = x1, y = x2, size = iter), data = pts,
                shape = 21, colour = "black", fill = "#e41a1c", alpha = 0.85) +
-    scale_fill_viridis_c(option = "mako", direction = -1) +
     scale_size_continuous(range = c(1.2, 3.2), guide = "none") +
     coord_cartesian(xlim = c(-5, 10), ylim = c(0, 15), expand = FALSE) +
     labs(subtitle = title, x = expression(lambda[1]), y = expression(lambda[2])) +
-    theme_minimal(base_size = 10) +
-    theme(legend.position = "none", panel.grid = element_blank(),
-          plot.subtitle = element_text(face = "bold"))
+    landscape_style()
 }
 
 conv_plot = ggplot(conv, aes(x = iter, y = best, colour = method)) +

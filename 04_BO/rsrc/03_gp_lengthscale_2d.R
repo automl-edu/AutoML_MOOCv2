@@ -55,14 +55,8 @@ g = ggplot(panels, aes(x = x1, y = x2, fill = z)) +
   geom_contour(aes(z = z), colour = "white", alpha = 0.4,
                linewidth = 0.25, bins = 8) +
   facet_wrap(~ panel, nrow = 1) +
-  scale_fill_viridis_c(option = "mako", direction = -1) +
   coord_equal(expand = FALSE) +
   labs(x = expression(lambda[1]), y = expression(lambda[2])) +
-  theme_minimal(base_size = 9) +
-  theme(
-    legend.position = "none",
-    panel.grid = element_blank(),
-    strip.text = element_text(face = "bold")
-  )
+  landscape_style(base_size = 9)
 
 myggsave("03_gp_lengthscale_2d", plot = g, width = 9, height = 3)

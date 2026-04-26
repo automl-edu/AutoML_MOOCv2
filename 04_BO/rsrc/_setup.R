@@ -82,6 +82,21 @@ update_surrogate_and_grid = function(surrogate, grid) {
 }
 
 
+# Shared style for 2D landscape plots: mako-viridis fill + a light theme
+# tuned for raster + contour overlays. Returns a list of ggplot layers; use
+# as `+ landscape_style()` after the call site's geoms and coords.
+landscape_style = function(base_size = 10) list(
+  scale_fill_viridis_c(option = "mako", direction = -1),
+  theme_minimal(base_size = base_size),
+  theme(
+    legend.position = "none",
+    panel.grid = element_blank(),
+    plot.subtitle = element_text(face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+)
+
+
 # Base landscape plot for 2D acquisition/surrogate visualizations:
 # mako raster + white contours of `value` + yellow-x markers for the design
 # points. Callers add their own point geoms (batch picks, annotations, ...)
@@ -100,14 +115,8 @@ acqf_base_plot = function(grid, design, value = "ei",
                  linewidth = 0.3, bins = 8) +
     geom_point(aes(x = x1, y = x2), data = design,
                shape = 4, colour = "#ffcc00", size = 3, stroke = 1.3) +
-    scale_fill_viridis_c(option = "mako", direction = -1) +
     coord_cartesian(xlim = xlim, ylim = ylim, expand = FALSE) +
-    theme_minimal(base_size = 10) +
-    theme(
-      legend.position = "none",
-      panel.grid = element_blank(),
-      plot.subtitle = element_text(face = "bold")
-    )
+    landscape_style()
 }
 
 
