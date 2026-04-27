@@ -3,8 +3,8 @@
 
 \begin{document}
 
-\title[AutoML: BO]{Acquisition Function Optimization}
-\subtitle{Solving the Inner Optimization Problem}
+\title[AutoML: BO]{Bayesian Optimization}
+\subtitle{Acquisition Function Optimization: Solving the Inner Optimization Problem}
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
 
@@ -20,9 +20,9 @@
     of $\acq(\conf)$
     \item The 2 optimization problems have many similarities, but also differences
     \item The $\pcs$ search space structure is the same
-    \item The objective structure $\acq(\conf)$ is somehow shaped by the type of ACQF but likely 
+    \item The objective structure $\acq(\conf)$ is somehow shaped by the type of acquisition function but likely 
     complicated and multi-modal
-    \item But the problem now becomes cheap
+    \item But the problem now becomes cheap since we query the surrogate model instead of training a model
     \item NB: We do not have to solve this problem perfectly, as the surrogate is only a coarse approximation
   \end{itemize}
   \vspace{0.2cm}

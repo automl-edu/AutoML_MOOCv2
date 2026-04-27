@@ -69,11 +69,11 @@
 
 \begin{frame}[t]{Jackknife-based Variance Estimators}
   \begin{itemize}
-    \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager, Hastie, Efron 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
+    \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager et al. 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
         $$\widehat{\sh}^2_{IJ}(\conf) = \sum_{i=1}^n \Big(\operatorname{Cov}_b(N_{ib}, \surro_b(\conf))\Big)^2$$
         where $N_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
     \item Bias-corrected variant removes systematic bias in finite forests
-    \item Captures uncertainty that the law-of-total-variance estimator misses (esp.\ for small $B$)
+    \item Captures uncertainty that the law-of-total-variance estimator misses (esp.\ for small~$B$)
     \item More expensive than the basic mean-of-variances, but tractable
   \end{itemize}
 \end{frame}

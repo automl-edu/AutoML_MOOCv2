@@ -3,7 +3,7 @@
 
 \begin{document}
 
-\title[AutoML: BO]{Gaussian Process Surrogates}
+\title[AutoML: BO]{Bayesian Optimization}
 \subtitle{Priors, Posteriors, and Kernels}
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
@@ -28,7 +28,7 @@
 \end{frame}
 
 
-\begin{frame}[t]{GP Intuition}
+\begin{frame}[t]{Gaussian Process (GP): Intuition}
   \small
   \begin{itemize}
     \item Generic regression model on inputs $\x \in \Xspace$ and outputs $y \in \realnum$\\
@@ -36,8 +36,7 @@
     \item A GP is a \textbf{distribution over functions} $f: \Xspace \to \realnum$:\\
     For \textbf{any} finite set of inputs $\{\xI{1}, \ldots, \xI{t}\}$, the vector of function values 
     $(f(\xI{1}), \ldots, f(\xI{t}))$ is \textbf{jointly Gaussian}
-    \item Fully characterized by a \textbf{mean function} $m(\x)$ and a \textbf{kernel} $k(\x, \x')$ 
-    that encodes how correlated the outputs of nearby points are
+    \item Fully characterized by a \textbf{mean function} $m(\x)$ and a \textbf{kernel} $k(\x, \x')$. The kernel encodes how correlated the outputs of nearby points are
     \item Theory of GPs comes from stochastic processes, usage on concrete data
     boils down to simple linear algebra on the multivariate Gaussian
   %   \item Observing data $\dataset = \langle \xI{i}, \yI{i} \rangle_{i=1}^t$ gives a \textbf{posterior} over functions that

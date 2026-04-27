@@ -78,7 +78,7 @@ Is it possible to train \textbf{all architectures at once} by sharing weights ac
         \end{column}
     \begin{column}{0.4\textwidth}
 \begin{center}
-    \includegraphics[height=2cm]{images/05/supernet_illustration.pdf}
+    \includegraphics[height=1.5cm]{images/05/supernet_illustration.pdf}
     \captionof{figure}{Supernet illustration  ~\liturl{White et al. 2023}{https://arxiv.org/pdf/2301.08727.pdf}}
 \end{center}
         \end{column}
@@ -104,124 +104,42 @@ Is it possible to train \textbf{all architectures at once} by sharing weights ac
 \end{frame}
 
 \begin{frame}{One-Shot Model Training -- DropPath \liturl{Bender et al. 2018}{http://proceedings.mlr.press/v80/bender18a/bender18a.pdf}}
-\begin{columns}
-    \begin{column}{0.48\textwidth}
     \begin{itemize}
         \item To avoid co-adaptation, apply \alert{DropPath}: analogous to Dropout~\liturl{Srivastava et al. 2014}{http://jmlr.org/papers/v15/srivastava14a.html}
+        \onslide<2-3>{
         \begin{itemize}
             \item At each mini-batch iteration: for each operation edge, zero it out with probability $p$
             \item Forces each path to learn independently
-        \end{itemize}
+        \end{itemize}}
+        \onslide<3>{
         \item \alert{ScheduledDropPath}: start with $p\!=\!0$; increase $p$ linearly to $p_{\max}$ over training
         \begin{itemize}
             \item Gentle regularisation early; stronger later
-        \end{itemize}
+        \end{itemize}}
     \end{itemize}
+\begin{columns}
+    
+    \begin{column}{0.3\textwidth}
+\includegraphics[height=2.5cm]{07_NAS/images/05/supernet_only.pdf}\\
+One-shot model
     \end{column}
-    \begin{column}{0.48\textwidth}
-    \begin{center}
-        
-
-\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1, scale=0.5]
-%uncomment if require: \path (0,354); %set diagram left start at 0, and has height of 354
-
-%Rounded Rect [id:dp4208895880037362] 
-\draw  [fill={rgb, 255:red, 242; green, 238; blue, 238 }  ,fill opacity=1 ] (143.14,6.33) .. controls (153.6,6.38) and (162.03,14.9) .. (161.98,25.35) -- (160.7,288.48) .. controls (160.64,298.94) and (152.13,307.38) .. (141.67,307.32) -- (84.87,307.05) .. controls (74.41,307) and (65.98,298.48) .. (66.03,288.02) -- (67.32,24.89) .. controls (67.37,14.43) and (75.88,6) .. (86.34,6.05) -- cycle ;
-%Shape: Circle [id:dp4908605297118057] 
-\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=1 ][fill={rgb, 255:red, 243; green, 223; blue, 97 }  ,fill opacity=1 ] (114.68,19.52) .. controls (119.19,19.54) and (122.83,23.21) .. (122.81,27.73) .. controls (122.79,32.24) and (119.11,35.88) .. (114.6,35.86) .. controls (110.08,35.84) and (106.44,32.16) .. (106.46,27.65) .. controls (106.48,23.13) and (110.16,19.49) .. (114.68,19.52) -- cycle ;
-%Shape: Circle [id:dp32910894757430365] 
-\draw  [fill={rgb, 255:red, 105; green, 170; blue, 249 }  ,fill opacity=1 ] (114.26,105.51) .. controls (118.77,105.54) and (122.41,109.21) .. (122.39,113.73) .. controls (122.37,118.24) and (118.69,121.88) .. (114.18,121.86) .. controls (109.66,121.84) and (106.02,118.16) .. (106.04,113.65) .. controls (106.06,109.13) and (109.74,105.49) .. (114.26,105.51) -- cycle ;
-%Shape: Circle [id:dp39694232134723384] 
-\draw  [fill={rgb, 255:red, 105; green, 170; blue, 249 }  ,fill opacity=1 ] (113.84,191.51) .. controls (118.35,191.54) and (121.99,195.21) .. (121.97,199.73) .. controls (121.95,204.24) and (118.27,207.88) .. (113.76,207.86) .. controls (109.24,207.84) and (105.6,204.16) .. (105.62,199.65) .. controls (105.64,195.13) and (109.32,191.49) .. (113.84,191.51) -- cycle ;
-%Shape: Circle [id:dp05994064859317039] 
-\draw  [fill={rgb, 255:red, 228; green, 107; blue, 124 }  ,fill opacity=1 ] (113.41,277.51) .. controls (117.93,277.53) and (121.57,281.21) .. (121.55,285.73) .. controls (121.53,290.24) and (117.85,293.88) .. (113.34,293.86) .. controls (108.82,293.84) and (105.18,290.16) .. (105.2,285.65) .. controls (105.22,281.13) and (108.9,277.49) .. (113.41,277.51) -- cycle ;
-%Straight Lines [id:da13324796783877657] 
-\draw    (114.6,35.86) -- (114.27,102.51) ;
-\draw [shift={(114.26,105.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Straight Lines [id:da45435201736948916] 
-\draw    (114.18,121.86) -- (113.85,188.51) ;
-\draw [shift={(113.84,191.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Straight Lines [id:da4152608208525701] 
-\draw    (113.76,207.86) -- (113.43,274.51) ;
-\draw [shift={(113.41,277.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da10478213596403207] 
-\draw    (114.6,35.86) .. controls (144.1,75.61) and (151,133.69) .. (122.83,197.78) ;
-\draw [shift={(121.97,199.73)}, rotate = 294.21] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da9168131818811978] 
-\draw    (114.18,121.86) .. controls (143.68,161.61) and (142.6,211.64) .. (114.28,275.57) ;
-\draw [shift={(113.41,277.51)}, rotate = 294.21] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da1366332199563608] 
-\draw    (114.6,35.86) .. controls (103.49,73.44) and (71.58,108.12) .. (104.7,283) ;
-\draw [shift={(105.2,285.65)}, rotate = 259.16] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-
-%Rounded Rect [id:dp17154346128785647] 
-\draw  [fill={rgb, 255:red, 242; green, 238; blue, 238 }  ,fill opacity=1 ] (300.14,7.33) .. controls (310.6,7.38) and (319.03,15.9) .. (318.98,26.35) -- (317.7,289.48) .. controls (317.64,299.94) and (309.13,308.38) .. (298.67,308.32) -- (241.87,308.05) .. controls (231.41,308) and (222.98,299.48) .. (223.03,289.02) -- (224.32,25.89) .. controls (224.37,15.43) and (232.88,7) .. (243.34,7.05) -- cycle ;
-%Shape: Circle [id:dp9509110800564388] 
-\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=1 ][fill={rgb, 255:red, 243; green, 223; blue, 97 }  ,fill opacity=1 ] (271.68,20.52) .. controls (276.19,20.54) and (279.83,24.21) .. (279.81,28.73) .. controls (279.79,33.24) and (276.11,36.88) .. (271.6,36.86) .. controls (267.08,36.84) and (263.44,33.16) .. (263.46,28.65) .. controls (263.48,24.13) and (267.16,20.49) .. (271.68,20.52) -- cycle ;
-%Shape: Circle [id:dp8778742410693867] 
-\draw  [fill={rgb, 255:red, 105; green, 170; blue, 249 }  ,fill opacity=1 ] (271.26,106.51) .. controls (275.77,106.54) and (279.41,110.21) .. (279.39,114.73) .. controls (279.37,119.24) and (275.69,122.88) .. (271.18,122.86) .. controls (266.66,122.84) and (263.02,119.16) .. (263.04,114.65) .. controls (263.06,110.13) and (266.74,106.49) .. (271.26,106.51) -- cycle ;
-%Shape: Circle [id:dp635233862148283] 
-\draw  [fill={rgb, 255:red, 105; green, 170; blue, 249 }  ,fill opacity=1 ] (270.84,192.51) .. controls (275.35,192.54) and (278.99,196.21) .. (278.97,200.73) .. controls (278.95,205.24) and (275.27,208.88) .. (270.76,208.86) .. controls (266.24,208.84) and (262.6,205.16) .. (262.62,200.65) .. controls (262.64,196.13) and (266.32,192.49) .. (270.84,192.51) -- cycle ;
-%Shape: Circle [id:dp6064891340021821] 
-\draw  [fill={rgb, 255:red, 228; green, 107; blue, 124 }  ,fill opacity=1 ] (270.41,278.51) .. controls (274.93,278.53) and (278.57,282.21) .. (278.55,286.73) .. controls (278.53,291.24) and (274.85,294.88) .. (270.34,294.86) .. controls (265.82,294.84) and (262.18,291.16) .. (262.2,286.65) .. controls (262.22,282.13) and (265.9,278.49) .. (270.41,278.51) -- cycle ;
-%Straight Lines [id:da9015554562598511] 
-\draw    (271.6,36.86) -- (271.27,103.51) ;
-\draw [shift={(271.26,106.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Straight Lines [id:da38844208885435316] 
-\draw    (271.18,122.86) -- (270.85,189.51) ;
-\draw [shift={(270.84,192.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Straight Lines [id:da9143022220153731] 
-\draw    (270.76,208.86) -- (270.43,275.51) ;
-\draw [shift={(270.41,278.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da06811477582899617] 
-\draw [color={rgb, 255:red, 128; green, 128; blue, 128 }  ,draw opacity=1 ] [dash pattern={on 4.5pt off 4.5pt}]  (271.6,36.86) .. controls (301.1,76.61) and (308,134.69) .. (279.83,198.78) ;
-\draw [shift={(278.97,200.73)}, rotate = 294.21] [fill={rgb, 255:red, 128; green, 128; blue, 128 }  ,fill opacity=1 ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da08351144146888023] 
-\draw    (271.18,122.86) .. controls (300.68,162.61) and (299.6,212.64) .. (271.28,276.57) ;
-\draw [shift={(270.41,278.51)}, rotate = 294.21] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da6747987338076401] 
-\draw [color={rgb, 255:red, 128; green, 128; blue, 128 }  ,draw opacity=1 ] [dash pattern={on 4.5pt off 4.5pt}]  (271.6,36.86) .. controls (260.49,74.44) and (228.58,109.12) .. (261.7,284) ;
-\draw [shift={(262.2,286.65)}, rotate = 259.16] [fill={rgb, 255:red, 128; green, 128; blue, 128 }  ,fill opacity=1 ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Rounded Rect [id:dp33927272410791576] 
-\draw  [fill={rgb, 255:red, 242; green, 238; blue, 238 }  ,fill opacity=1 ] (452.14,9.33) .. controls (462.6,9.38) and (471.03,17.9) .. (470.98,28.35) -- (469.7,291.48) .. controls (469.64,301.94) and (461.13,310.38) .. (450.67,310.32) -- (393.87,310.05) .. controls (383.41,310) and (374.98,301.48) .. (375.03,291.02) -- (376.32,27.89) .. controls (376.37,17.43) and (384.88,9) .. (395.34,9.05) -- cycle ;
-%Shape: Circle [id:dp7211478574824824] 
-\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=1 ][fill={rgb, 255:red, 243; green, 223; blue, 97 }  ,fill opacity=1 ] (423.68,22.52) .. controls (428.19,22.54) and (431.83,26.21) .. (431.81,30.73) .. controls (431.79,35.24) and (428.11,38.88) .. (423.6,38.86) .. controls (419.08,38.84) and (415.44,35.16) .. (415.46,30.65) .. controls (415.48,26.13) and (419.16,22.49) .. (423.68,22.52) -- cycle ;
-%Shape: Circle [id:dp002604107977017822] 
-\draw  [fill={rgb, 255:red, 105; green, 170; blue, 249 }  ,fill opacity=1 ] (423.26,108.51) .. controls (427.77,108.54) and (431.41,112.21) .. (431.39,116.73) .. controls (431.37,121.24) and (427.69,124.88) .. (423.18,124.86) .. controls (418.66,124.84) and (415.02,121.16) .. (415.04,116.65) .. controls (415.06,112.13) and (418.74,108.49) .. (423.26,108.51) -- cycle ;
-%Shape: Circle [id:dp6004551048950394] 
-\draw  [fill={rgb, 255:red, 105; green, 170; blue, 249 }  ,fill opacity=1 ] (422.84,194.51) .. controls (427.35,194.54) and (430.99,198.21) .. (430.97,202.73) .. controls (430.95,207.24) and (427.27,210.88) .. (422.76,210.86) .. controls (418.24,210.84) and (414.6,207.16) .. (414.62,202.65) .. controls (414.64,198.13) and (418.32,194.49) .. (422.84,194.51) -- cycle ;
-%Shape: Circle [id:dp31886993733122493] 
-\draw  [fill={rgb, 255:red, 228; green, 107; blue, 124 }  ,fill opacity=1 ] (422.41,280.51) .. controls (426.93,280.53) and (430.57,284.21) .. (430.55,288.73) .. controls (430.53,293.24) and (426.85,296.88) .. (422.34,296.86) .. controls (417.82,296.84) and (414.18,293.16) .. (414.2,288.65) .. controls (414.22,284.13) and (417.9,280.49) .. (422.41,280.51) -- cycle ;
-%Straight Lines [id:da2160398914020527] 
-\draw    (423.6,38.86) -- (423.27,105.51) ;
-\draw [shift={(423.26,108.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Straight Lines [id:da8038843580445767] 
-\draw [color={rgb, 255:red, 128; green, 128; blue, 128 }  ,draw opacity=1 ] [dash pattern={on 4.5pt off 4.5pt}]  (423.18,124.86) -- (422.85,191.51) ;
-\draw [shift={(422.84,194.51)}, rotate = 270.28] [fill={rgb, 255:red, 128; green, 128; blue, 128 }  ,fill opacity=1 ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Straight Lines [id:da5117190411103258] 
-\draw    (422.76,210.86) -- (422.43,277.51) ;
-\draw [shift={(422.41,280.51)}, rotate = 270.28] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da9507835254277128] 
-\draw    (423.6,38.86) .. controls (453.1,78.61) and (460,136.69) .. (431.83,200.78) ;
-\draw [shift={(430.97,202.73)}, rotate = 294.21] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da9972298839164025] 
-\draw    (423.18,124.86) .. controls (452.68,164.61) and (451.6,214.64) .. (423.28,278.57) ;
-\draw [shift={(422.41,280.51)}, rotate = 294.21] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-%Curve Lines [id:da7684695212865164] 
-\draw [color={rgb, 255:red, 128; green, 128; blue, 128 }  ,draw opacity=1 ] [dash pattern={on 4.5pt off 4.5pt}]  (423.6,38.86) .. controls (412.49,76.44) and (380.58,111.12) .. (413.7,286) ;
-\draw [shift={(414.2,288.65)}, rotate = 259.16] [fill={rgb, 255:red, 128; green, 128; blue, 128 }  ,fill opacity=1 ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-\end{tikzpicture}
-        % \includegraphics[width=\textwidth]{images/05/droppath_illustration.png}
-        \captionof{figure}{DropPath: edges (operations) are randomly zeroed per mini-batch}
-    \end{center}
+    \onslide<2-3>{
+    \begin{column}{0.3\textwidth}
+\includegraphics[height=2.5cm]{07_NAS/images/05/supernet_droppath_1.pdf} \\
+    Architecture for batch 1
     \end{column}
+    \begin{column}{0.3\textwidth}
+\includegraphics[height=2.5cm]{07_NAS/images/05/supernet_droppath_2.pdf}\\
+    Architecture for batch 2
+    \end{column}}
 \end{columns}
 \end{frame}
 
 \begin{frame}{One-Shot Model Training -- Sampling}
   \begin{itemize}
+    \item At each mini-batch iteration during the trainimg of the one-shot model \alert{sample a single architecture} from the search space
+    \only<3>{
+    \begin{itemize}
     \item \textbf{Uniform sampling — Random Search with Weight Sharing (RSWS)}~\liturl{Li and Talwalkar 2020}{https://arxiv.org/pdf/1902.07638.pdf}
     \begin{itemize}
         \item Each sub-architecture sampled from uniform distribution
@@ -237,7 +155,27 @@ Is it possible to train \textbf{all architectures at once} by sharing weights ac
         \item Uniform path sampling, then evolutionary search over the trained supernet
         \item Fully decoupled supernet training from architecture search
     \end{itemize}
+    \end{itemize}
+    }
+    \onslide<2->{
+    \item \alert{Update the parameters of the one-shot model} correspding to only that architecture}
 	\end{itemize}
+    \only<2>{
+    \begin{columns}
+    \begin{column}{0.3\textwidth}
+\includegraphics[height=2.5cm]{07_NAS/images/05/supernet_only.pdf}\\
+One-shot model
+    \end{column}
+    \onslide<2-3>{
+    \begin{column}{0.3\textwidth}
+\includegraphics[height=2.5cm]{07_NAS/images/05/supernet_sample_1.pdf} \\
+    Architecture for batch 1
+    \end{column}
+    \begin{column}{0.3\textwidth}
+\includegraphics[height=2.5cm]{07_NAS/images/05/supernet_sample_2.pdf}\\
+    Architecture for batch 2
+    \end{column}}
+\end{columns}}
 \end{frame}
 
 

@@ -3,12 +3,12 @@
 
 \begin{document}
 
-\title[AutoML: BO]{Noisy Bayesian Optimization}
+\title[AutoML: BO]{Bayesian Optimization}
 \subtitle{Surrogates, Acquisitions, and Final Best Under Noise}
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_HPO_bayesian3.jpg}
 
     \maketitle
 
@@ -48,7 +48,7 @@
         $$\sh^2(\conf) = k_{**} - k_*^T (\bm{K} + \noisevar \bm{I})^{-1} k_*$$
       \item Posterior \textbf{smooths} through the data instead of interpolating
       \item $\sh^2(\confI{i}) > 0$ even at design points
-      \item $\noisevar$ learned via type-II ML alongside the kernel HPs
+      \item $\noisevar$ learned via type-II maximum likelihood alongside the kernel HPs
     \end{itemize}
     \column{.45\textwidth}
     \begin{center}
@@ -80,7 +80,7 @@
     \item \textbf{Model-based incumbent:} return $\argmin_i \surro(\confI{i})$ -- the design point with the best predicted mean
     \item \textbf{Risk-averse:} $\argmin_i \surro(\confI{i}) + c\, \sh(\confI{i})$ (same as the AEI plug-in) -- punish uncertain candidates
     \item \textbf{Replication strategies:} re-evaluate the current incumbent (and maybe close competitors) to reduce noise on the decisive point
-    \item \textbf{Posterior-mean argmin on the whole domain:} $\argmin_{\conf \in \pcs} \surro(\conf)$ -- may fall outside the evaluated archive, so only trust if the GP is well-calibrated
+    \item \textbf{Posterior-mean argmin on the whole domain:} $\argmin_{\conf \in \pcs} \surro(\conf)$ -- may fall outside the evaluated history, so only trust if the GP is well-calibrated
   \end{itemize}
   \vfill
   \begin{center}
@@ -91,11 +91,11 @@
 
 \begin{frame}[t]{Summary}
   \begin{enumerate}
-    \item Noise breaks three things: interpolating surrogate, $\cmin$-based ACQFs, and empirical best-point identification
+    \item Noise breaks three things: interpolating surrogate, $\cmin$-based acquisition function, and empirical best-point identification
     \item \textbf{Surrogate:} switch to a nugget GP (regression mode); learn $\noisevar$ via type-II ML
     \item \textbf{Acquisition:} use a plug-in incumbent $\cmin^*$; AEI adds a diminishing-returns penalty, NEI integrates EI over posterior fantasies
     \item \textbf{Final best:} return the model-based (or risk-averse) incumbent, replicate the current best to sharpen its estimate
-    \item Connects to \textbf{multi-fidelity} BO (not covered here): trade cheap-and-noisy for expensive-and-accurate evaluations
+    %\item Connects to \textbf{multi-fidelity} BO (not covered here): trade cheap-and-noisy for expensive-and-accurate evaluations
   \end{enumerate}
 \end{frame}
 

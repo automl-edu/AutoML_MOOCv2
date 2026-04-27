@@ -3,12 +3,12 @@
 
 \begin{document}
 
-\title[AutoML: BO]{Parallel Bayesian Optimization}
+\title[AutoML: BO]{Bayesian Optimization}
 \subtitle{Batch Proposals for Parallel Evaluation}
 \author[Bernd Bischl]{Bernd Bischl}
 \date{}
 
-\titlebackground*{images/AutoML_HPO_2_2}
+\titlebackground*{images/AutoML_HPO_bayesian3.jpg}
 
     \maketitle
 
@@ -17,11 +17,11 @@
   \begin{itemize}
     \item Modern compute budgets are \textbf{parallel}, not sequential:
     \item Often multiple cores / nodes on clusters available 
-    \item We can try to fully parallelize the underlying objective,
+    \item We can try to fully parallelize the underlying function evaluations,
       and in ML there are good chances this is possible
     \item Still attractive to generate a \textbf{batch} of $q > 1$ points to evaluate \textbf{simultaneously}
     \item Trade-off: more wall-clock speedup vs.\ fewer feedback rounds / less optimally placed points
-    \item But remember: RS sometimes hard to beat
+    \item But remember: random search sometimes hard to beat (in particular in the parallel setting)
   \end{itemize}
 \end{frame}
 
@@ -69,7 +69,7 @@
             \item Constant Liar: a fixed value (e.g.\ $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
             \item MC Fantasizing: a sample from the posterior
         \end{itemize}
-    \item Refit and propose $\confI{2} = \argmax \acq(\conf)$; repeat until $q$ points assembled
+    \item Refit and propose $\confI{2} \in \argmax \acq(\conf)$; repeat until $q$ points assembled
   \end{enumerate}
   \textbf{Effect:} fantasy eval lowers post. unc. around $\confI{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
   \begin{center}
