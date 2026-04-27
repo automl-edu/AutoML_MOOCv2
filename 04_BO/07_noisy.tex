@@ -35,8 +35,8 @@
     \column{.55\textwidth}
     \begin{itemize}
       \item Add nugget $\noisevar \bm{I}$ to the kernel matrix:
-        $$\surro(\conf) = k_*^T (\bm{K} + \noisevar \bm{I})^{-1} \yv$$
-        $$\sh^2(\conf) = k_{**} - k_*^T (\bm{K} + \noisevar \bm{I})^{-1} k_*$$
+        $$\surro(\conf) = \bm{k}_*^T (\bm{K} + \noisevar \bm{I})^{-1} \yv$$
+        $$\sh^2(\conf) = k_{**} - \bm{k}_*^T (\bm{K} + \noisevar \bm{I})^{-1} \bm{k}_*$$
       \item Posterior \textbf{smooths} through the data instead of interpolating
       \item $\sh^2(\confI{i}) > 0$ even at design points
       \item $\noisevar$ learned via max. likelihood alongside kernel parameters

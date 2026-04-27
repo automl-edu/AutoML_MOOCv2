@@ -52,7 +52,7 @@
 %     \item \textbf{Random split locations} (\textbf{extratrees}): cut point chosen uniformly at random inside the feature's range
 %   \end{itemize}
 %   \vspace{0.2cm}
-%   \textbf{Key idea for BO:} the spread of per-tree predictions across the ensemble reflects \textbf{epistemic uncertainty} at $x$ -- high spread where data is scarce or the target is harder to model.
+%   \textbf{Key idea for BO:} the spread of per-tree predictions across the ensemble reflects \textbf{epistemic uncertainty} at $\x$ -- high spread where data is scarce or the target is harder to model.
 % \end{frame}
 
 
@@ -60,11 +60,11 @@
 \begin{columns}[onlytextwidth,T]
   \column{.6\textwidth}
   \begin{itemize}
-    \item Treat $B$ tree predictions $\hat{f}_b(x)$ as samples and take their empirical variance~\liturl{Hutter et al. 2014}{https://doi.org/10.1016/j.artint.2013.10.003}
-    \item Forest mean: $\hat{f}(x) = \frac{1}{B} \sum_{b=1}^B \hat{f}_b(x)$
+    \item Treat $B$ tree predictions $\hat{f}_b(\x)$ as samples and take their empirical variance~\liturl{Hutter et al. 2014}{https://doi.org/10.1016/j.artint.2013.10.003}
+    \item Forest mean: $\hat{f}(\x) = \frac{1}{B} \sum_{b=1}^B \hat{f}_b(\x)$
     \item Naive variance:
       $$
-      \sh^2_{\text{naive}}(x) = \frac{1}{B-1} \sum_{b=1}^B \big(\hat{f}_b(x) - \hat{f}(x)\big)^2
+      \sh^2_{\text{naive}}(\x) = \frac{1}{B-1} \sum_{b=1}^B \big(\hat{f}_b(\x) - \hat{f}(\x)\big)^2
       $$
     \item Captures only \textbf{between-tree disagreement};
     ignores spread of training labels within each leaf
@@ -80,14 +80,14 @@
 
 \begin{frame}[t]{Mean and Variance via Law of Total Variance}
   \begin{itemize}
-    \item Fix test point $x$ -- from here on everything is conditional on $x$ 
-    \item Let $\hat{f}_b(x)$, $\sh_b^2(x)$ be mean and within-leaf variance of tree $b$
-    \item Two-stage draw: $b \sim \text{Unif}\{1,\ldots,B\}$, then $Y \sim$ leaf distribution of tree $b$ at $x$
-    \item Conditionals: $\E[Y \mid b] = \hat{f}_b(x)$, $\Var(Y \mid b) = \sh_b^2(x)$
+    \item Fix test point $\x$ -- from here on everything is conditional on $\x$ 
+    \item Let $\hat{f}_b(\x)$, $\sh_b^2(\x)$ be mean and within-leaf variance of tree $b$
+    \item Two-stage draw: $b \sim \text{Unif}\{1,\ldots,B\}$, then $Y \sim$ leaf distribution of tree $b$ at $\x$
+    \item Conditionals: $\E[Y \mid b] = \hat{f}_b(\x)$, $\Var(Y \mid b) = \sh_b^2(\x)$
     \item Law of total variance: $\Var(Y) = \E_b[\Var(Y \mid b)] + \Var_b(\E[Y \mid b])$ becomes
     $$
-    \sh^2(x) = \underbrace{\frac{1}{B} \sum_{b=1}^B \sh_b^2(x)}_{\text{within-tree (aleatoric)}}
-      + \underbrace{\frac{1}{B} \sum_{b=1}^B \hat{f}_b(x)^2 - \hat{f}(x)^2}_{\text{between-tree (epistemic)}}
+    \sh^2(\x) = \underbrace{\frac{1}{B} \sum_{b=1}^B \sh_b^2(\x)}_{\text{within-tree (aleatoric)}}
+      + \underbrace{\frac{1}{B} \sum_{b=1}^B \hat{f}_b(\x)^2 - \hat{f}(\x)^2}_{\text{between-tree (epistemic)}}
     $$
     \item Also from \liturl{Hutter et al. 2014}{https://doi.org/10.1016/j.artint.2013.10.003}, used in SMAC and most RF-based BO implementations
   \end{itemize}
@@ -97,7 +97,7 @@
 \begin{frame}[t]{Jackknife-Based Variance Estimators}
   \begin{itemize}
     \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager et al. 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
-        $$\widehat{\sh}^2_{IJ}(x) = \sum_{i=1}^n \Big(\operatorname{Cov}_b(N_{ib}, \hat{f}_b(x))\Big)^2$$
+        $$\widehat{\sh}^2_{IJ}(\x) = \sum_{i=1}^n \Big(\operatorname{Cov}_b(N_{ib}, \hat{f}_b(\x))\Big)^2$$
         where $N_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
     \item Bias-corrected variant removes systematic bias in finite forests
     \item Captures uncertainty that the law-of-total-variance estimator misses\\
@@ -135,7 +135,7 @@
   \column{.6\textwidth}
   \begin{itemize}
     \item \textbf{Quantile regression forests}~\liturl{Meinshausen 2006}{https://jmlr.org/papers/v7/meinshausen06a.html}: keep the entire \textbf{empirical leaf distribution} of training labels, not just per-leaf means
-    \item Aggregate per-tree leaf labels (weighted) to approximate $F(y \mid x)$
+    \item Aggregate per-tree leaf labels (weighted) to approximate $F(y \mid \x)$
     \item From this CDF:
         \begin{itemize}
             \item predictive \textbf{quantiles} 

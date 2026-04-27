@@ -80,12 +80,12 @@
   \item For a test input $\x$ and observed data $\dataset$, the posterior predictive is Gaussian:
   $$Y(\x) \mid \x, \dataset \sim \normaldist(\hat\mean(\x),\, \sh^2(\x))$$
   with closed-form posterior mean and variance:
-  $$\hat\mean(\x) = k_*^T (\bm{K} + \noisevar \bm{I})^{-1} \yv, \qquad
-    \sh^2(\x) = k_{**} - k_*^T (\bm{K} + \noisevar \bm{I})^{-1} k_*$$
+  $$\hat\mean(\x) = \bm{k}_*^T (\bm{K} + \noisevar \bm{I})^{-1} \yv, \qquad
+    \sh^2(\x) = k_{**} - \bm{k}_*^T (\bm{K} + \noisevar \bm{I})^{-1} \bm{k}_*$$
   Set $\noisevar = 0$ to recover the noise-free interpolating case.
   \item Notation:
   \begin{itemize}
-    \item $k_* := \big(k(\x, \xI{1}), \ldots, k(\x, \xI{t})\big)^T$ -- kernel between test $\x$ and training inputs
+    \item $\bm{k}_* := \big(k(\x, \xI{1}), \ldots, k(\x, \xI{t})\big)^T$ -- kernel between test $\x$ and training inputs
     \item $k_{**} := k(\x, \x)$ -- kernel self-similarity at the test input
     \item $\yv := (\yI{1}, \ldots, \yI{t})^T$ -- vector of observed outputs
     \item $\bm{K} := \big(k(\xI{i}, \xI{j})\big)_{i,j=1}^t$ -- kernel matrix of training inputs
@@ -105,15 +105,15 @@
   $$
   \begin{pmatrix} \yv \\ Y(\x) \end{pmatrix}
   \sim \normaldist\!\left(\bm{0},\;
-  \begin{pmatrix} \bm{K} + \noisevar \bm{I} & k_* \\ k_*^T & k_{**} + \noisevar \end{pmatrix}\right)
+  \begin{pmatrix} \bm{K} + \noisevar \bm{I} & \bm{k}_* \\ \bm{k}_*^T & k_{**} + \noisevar \end{pmatrix}\right)
   $$
   Apply the standard \textbf{conditioning rule} for a multivariate Gaussian (treat $\widetilde{\bm K} := \bm{K} + \noisevar \bm{I}$):
   $$
-  Y(\x) \mid \yv \;\sim\; \normaldist\!\left(\underbrace{k_*^T \widetilde{\bm K}^{-1} \yv}_{\hat\mean(\x)},\;\, \underbrace{k_{**} - k_*^T \widetilde{\bm K}^{-1} k_*}_{\sh^2(\x)}\right)
+  Y(\x) \mid \yv \;\sim\; \normaldist\!\left(\underbrace{\bm{k}_*^T \widetilde{\bm K}^{-1} \yv}_{\hat\mean(\x)},\;\, \underbrace{k_{**} - \bm{k}_*^T \widetilde{\bm K}^{-1} \bm{k}_*}_{\sh^2(\x)}\right)
   $$
   \vspace{0.05cm}
   \begin{itemize}
-    \item $\hat\mean(\x)$ is a linear combination of training outputs, weights from $\widetilde{\bm K}^{-1} k_*$
+    \item $\hat\mean(\x)$ is a linear combination of training outputs, weights from $\widetilde{\bm K}^{-1} \bm{k}_*$
     \item $\sh^2(\x)$ is the prior variance $k_{**}$ reduced by what the data tells us about $Y(\x)$
     \item With $\noisevar = 0$: exact interpolation; $\sh^2(\xI{i}) = 0$ at training points
   \end{itemize}
