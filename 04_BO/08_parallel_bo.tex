@@ -65,7 +65,7 @@
     \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
         \begin{itemize}
             \item Kriging believer: posterior \textbf{mean} $\surro(\confI{1})$
-            \item Constant liar: fixed value (e.g., $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
+            \item Constant liar: fixed value, e.g., $\min_i \cost(\confI{i})$ or $\max_i \cost(\confI{i})$ from archive
             \item MC fantasizing: sample from the posterior
         \end{itemize}
     \item Refit and propose $\confI{2} \in \argmax \acq(\conf)$; repeat until $q$ points assembled

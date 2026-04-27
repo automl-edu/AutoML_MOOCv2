@@ -51,7 +51,7 @@
 
 
 \begin{frame}[t]{Noise-Aware Acquisition: AEI and NEI}
-  \small
+  \footnotesize
   \begin{itemize}
     \item PI / EI use $\cmin = \min_i y_i$, but this is noisy $\leadsto$ lucky outliers dominate
     \item \textbf{Plug-in EI:} replace unknown $\cmin$ with an \textbf{effective best}
@@ -59,7 +59,7 @@
     \item \textbf{Augmented EI}~\liturl{Huang et al. 2006}{https://link.springer.com/article/10.1007/s10898-005-2454-3}: plug-in EI times a diminishing-returns penalty
     $$\acq_{\text{AEI}}(\conf) = \acq_{\text{EI}_{\cmin^*}}(\conf) \cdot \left(1 - \frac{\sqrt{\noisevar}}{\sqrt{\sh^2(\conf) + \noisevar}}\right)$$
     \item Penalty shrinks acquisition where the GP is already certain $\leadsto$ redirects budget to replication and exploration; recovers standard EI as $\noisevar \to 0$
-    \item \textbf{Noisy EI (NEI)}~\liturl{Letham et al. 2019}{https://projecteuclid.org/journals/bayesian-analysis/volume-14/issue-2/Constrained-Bayesian-Optimization-with-Noisy-Experiments/10.1214/18-BA1110.full}: MC-integrate EI over sampled posterior fantasy functions from the GP -- no plug-in needed
+    \item \textbf{Noisy EI (NEI)}~\liturl{Letham et al. 2019}{https://projecteuclid.org/journals/bayesian-analysis/volume-14/issue-2/Constrained-Bayesian-Optimization-with-Noisy-Experiments/10.1214/18-BA1110.full}: MC generalization of reinterpolation -- per sample, draw plausible noiseless values at the design points from the GP posterior, refit an interpolating GP, compute noiseless EI; average across samples -- no plug-in
     \item \textbf{LCB needs no patch:} no $\cmin$ in the formula, so a nugget GP alone suffices
   \end{itemize}
 \end{frame}

@@ -56,7 +56,7 @@ rbf_corr[, l := factor(l, levels = c("l=0.3", "l=0.7", "l=1.5"))]
 g_rbf_corr = ggplot(rbf_corr, aes(x = d, y = k, colour = l)) +
   geom_line(linewidth = 0.7) +
   scale_colour_manual(
-    values = c("l=0.3" = "blue", "l=0.7" = "darkgreen", "l=1.5" = "red"),
+    values = c("l=0.3" = "#0072B2", "l=0.7" = "#009E73", "l=1.5" = "#D55E00"),
     name = NULL
   ) +
   corr_theme()
@@ -76,7 +76,7 @@ matern_corr[, nu := factor(nu, levels = c("nu=1/2", "nu=3/2", "nu=5/2"))]
 g_matern_corr = ggplot(matern_corr, aes(x = d, y = k, colour = nu)) +
   geom_line(linewidth = 0.7) +
   scale_colour_manual(
-    values = c("nu=1/2" = "orange", "nu=3/2" = "darkgreen", "nu=5/2" = "blue"),
+    values = c("nu=1/2" = "#E69F00", "nu=3/2" = "#009E73", "nu=5/2" = "#0072B2"),
     name = NULL
   ) +
   corr_theme()
@@ -93,7 +93,7 @@ rbf_paths[, l := factor(l, levels = c("l=0.3", "l=0.7", "l=1.5"))]
 g_rbf = ggplot(rbf_paths, aes(x = x, y = y, colour = l)) +
   geom_line(linewidth = 0.5) +
   scale_colour_manual(
-    values = c("l=0.3" = "blue", "l=0.7" = "darkgreen", "l=1.5" = "red"),
+    values = c("l=0.3" = "#0072B2", "l=0.7" = "#009E73", "l=1.5" = "#D55E00"),
     name = NULL
   ) +
   labs(x = expression(x), y = expression(f(x))) +
@@ -122,7 +122,7 @@ matern_paths[, nu := factor(nu, levels = c("nu=1/2", "nu=3/2", "nu=5/2"))]
 g_matern = ggplot(matern_paths, aes(x = x, y = y, colour = nu)) +
   geom_line(linewidth = 0.5) +
   scale_colour_manual(
-    values = c("nu=1/2" = "orange", "nu=3/2" = "darkgreen", "nu=5/2" = "blue"),
+    values = c("nu=1/2" = "#E69F00", "nu=3/2" = "#009E73", "nu=5/2" = "#0072B2"),
     name = NULL
   ) +
   labs(x = expression(x), y = expression(f(x))) +

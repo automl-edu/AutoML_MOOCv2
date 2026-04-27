@@ -68,7 +68,7 @@ g = ggplot() +
   # per-path argmin -> Thompson proposal
   geom_point(aes(x = x, y = y, colour = path),
              data = proposals, size = 3.2, shape = 18) +
-  scale_colour_brewer(palette = "Set1", guide = "none") +
+  scale_colour_brewer(palette = "Dark2", guide = "none") +
   coord_cartesian(ylim = c(-2.2, 2.2)) +
   labs(x = expression(lambda), y = expression(c)) +
   theme_minimal(base_size = 13) +

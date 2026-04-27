@@ -98,7 +98,7 @@ g = ggplot() +
              data = mns, shape = 4, size = 3.5, stroke = 1.2) +
   scale_shape_manual(values = c(`TRUE` = 16, `FALSE` = 1), guide = "none") +
   scale_size_manual(values = c(`TRUE` = 1.8, `FALSE` = 1.0), guide = "none") +
-  scale_colour_brewer(palette = "Set1", name = "Gen.") +
+  scale_colour_brewer(palette = "Dark2", name = "Gen.") +
   coord_equal(xlim = c(-3.6, 0.2), ylim = c(0.2, 4), expand = FALSE) +
   labs(x = expression(lambda[1]), y = expression(lambda[2])) +
   theme_minimal(base_size = 13) +
