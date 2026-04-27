@@ -72,7 +72,7 @@ landscape_plot = function(pts, title) {
     geom_contour(aes(z = logy), colour = "white", alpha = 0.35,
                  linewidth = 0.25, bins = 8) +
     geom_point(aes(x = x1, y = x2), data = branin_minima,
-               shape = 8, colour = "#ffcc00", size = 2.8, stroke = 1.1) +
+               shape = 8, colour = "#ff1493", size = 3.2, stroke = 1.3) +
     geom_point(aes(x = x1, y = x2, size = iter), data = pts,
                shape = 21, colour = "black", fill = "#e41a1c", alpha = 0.85) +
     scale_size_continuous(range = c(1.2, 3.2), guide = "none") +
