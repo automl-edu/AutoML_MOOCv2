@@ -30,7 +30,7 @@
 
 
 \begin{frame}[t]{Noise-Aware Surrogate: Nugget GP}
-  % \textbf{Issue:} an interpolating GP forces $\sh^2(\confI{i}) = 0$ at design points -- under noise the posterior should stay uncertain.
+  % \textbf{Issue:} an interpolating GP forces $\sh^2(\confI{t}) = 0$ at design points -- under noise the posterior should stay uncertain.
   \begin{columns}[onlytextwidth,T]
     \column{.55\textwidth}
     \begin{itemize}
@@ -38,7 +38,7 @@
         $$\surro(\conf) = \bm{k}_*^T (\bm{K} + \noisevar \bm{I})^{-1} \yv$$
         $$\sh^2(\conf) = k_{**} - \bm{k}_*^T (\bm{K} + \noisevar \bm{I})^{-1} \bm{k}_*$$
       \item Posterior \textbf{smooths} through the data instead of interpolating
-      \item $\sh^2(\confI{i}) > 0$ even at design points
+      \item $\sh^2(\confI{t}) > 0$ even at design points
       \item $\noisevar$ learned via max. likelihood alongside kernel parameters
       \item We covered this before
     \end{itemize}
@@ -55,7 +55,7 @@
   \begin{itemize}
     \item PI / EI use $\cmin = \min_i y_i$, but this is noisy $\leadsto$ lucky outliers dominate
     \item \textbf{Plug-in EI:} replace unknown $\cmin$ with an \textbf{effective best}
-    $\cmin^* = \min_i \surro(\confI{i}) + \beta\, \sh(\confI{i})$; risk-aversion $\beta \ge 0$ down-weights uncertain points
+    $\cmin^* = \min_t \surro(\confI{t}) + \beta\, \sh(\confI{t})$; risk-aversion $\beta \ge 0$ down-weights uncertain points
     \item \textbf{Augmented EI}~\liturl{Huang et al. 2006}{https://link.springer.com/article/10.1007/s10898-005-2454-3}: plug-in EI times a diminishing-returns penalty
     $$\acq_{\text{AEI}}(\conf) = \acq_{\text{EI}_{\cmin^*}}(\conf) \cdot \left(1 - \frac{\sqrt{\noisevar}}{\sqrt{\sh^2(\conf) + \noisevar}}\right)$$
     \item Penalty shrinks acquisition where the GP is already certain $\leadsto$ redirects budget to replication and exploration; recovers standard EI as $\noisevar \to 0$
@@ -68,9 +68,9 @@
 \begin{frame}[t]{Which Point to Return?}
   Choice of incumbent rule benchmarked in~\liturl{Picheny et al. 2013}{https://link.springer.com/article/10.1007/s00158-013-0919-4}
   \begin{itemize}
-    \item Empirical best $\argmin_i y_i$: noisy, vulnerable to lucky outliers
-    \item \textbf{Model-based:} $\argmin_i \surro(\confI{i})$
-    \item \textbf{Risk-averse:} $\argmin_i \surro(\confI{i}) + \beta\, \sh(\confI{i})$ (Huang's plug-in)
+    \item Empirical best $\argmin_t y_t$: noisy, vulnerable to lucky outliers
+    \item \textbf{Model-based:} $\argmin_t \surro(\confI{t})$
+    \item \textbf{Risk-averse:} $\argmin_t \surro(\confI{t}) + \beta\, \sh(\confI{t})$ (Huang's plug-in)
     \item \textbf{Replication:} re-evaluate current best to sharpen its estimate
     \item \textbf{Domain-wide:} $\argmin_{\conf \in \pcs} \surro(\conf)$ -- trust only if GP is well-calibrated
   \end{itemize}

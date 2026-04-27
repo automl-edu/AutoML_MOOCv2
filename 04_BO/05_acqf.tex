@@ -30,7 +30,7 @@
     \item \textbf{Idea:} Use a \textbf{Bayesian approach} to build a surrogate model yielding estimates for the posterior mean $\surro(\conf)$ and posterior variance $\sh^2(\conf)$
     \item $\sh^2(\conf)$ expresses ``confidence''/``certainty'' in the prediction
     % \item To sequentially propose new points based on the surrogate model, we use \textbf{acquisition functions} $\acq: \pcs \to \realnum$
-    % \item Let $\cmin := \min\{\cost(\confI{1}), \ldots, \cost(\confI{t})\}$ be the best observed value so far (green in plots)
+    % \item Let $\cmin := \min\{\cost(\confI{1}), \ldots, \cost(\confI{T})\}$ be the best observed value so far (green in plots)
     % \item In the examples before, we simply used the posterior mean $\acq(\conf) = \surro(\conf)$ as acquisition function -- ignoring uncertainty
   \end{itemize}
   \vfill
@@ -62,7 +62,7 @@
 \begin{frame}[t]{Acquisition Functions}
   \begin{itemize}
     \item To sequentially propose new points based on the surrogate model, we use \textbf{acquisition functions} $\acq: \pcs \to \realnum$
-    % \item Let $\cmin := \min\{\cost(\confI{1}), \ldots, \cost(\confI{t})\}$ be the best observed value so far (green in plots)
+    % \item Let $\cmin := \min\{\cost(\confI{1}), \ldots, \cost(\confI{T})\}$ be the best observed value so far (green in plots)
     \item In the examples before, we simply used the posterior mean $\acq(\conf) = \surro(\conf)$ as acquisition function -- ignoring uncertainty
   \end{itemize}
   \vfill
@@ -98,25 +98,24 @@
 
 
 \begin{frame}[t]{Probability of Improvement}
-  \footnotesize
   \begin{itemize}
     \item Maximize $\acq_{\text{PI}}(\conf) = \PP(Y(\conf) < \cmin) = \Phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right)$
     \item $\Phi(\cdot)$ is the standard normal cdf (assuming Gaussian posterior)
     \item PI does not take the size of the improvement into account
     \item Often proposes points close to the current $\cmin$
-    \item $\acq_{\text{PI}}(\confI{i}) = 0$ at design points $\confI{i}$:\\
-    $\sh(\confI{i}) = 0$ for an interpolating GP $\Rightarrow Y(\confI{i})$ is degenerate at $\cost(\confI{i})$,\\
-    so $\PP(Y(\confI{i}) < \cmin) = \ind[\cost(\confI{i}) < \cmin] = 0$ since $\cost(\confI{i}) \ge \cmin$
+    \item $\acq_{\text{PI}}(\confI{t}) = 0$ at design points $\confI{t}$:\\
+    $\sh(\confI{t}) = 0$ for an interpolating GP $\Rightarrow Y(\confI{t})$ is degenerate at $\cost(\confI{t})$,\\
+    so $\PP(Y(\confI{t}) < \cmin) = \ind[\cost(\confI{t}) < \cmin] = 0$ since $\cost(\confI{t}) \ge \cmin$
   \end{itemize}
   \vfill
   \begin{columns}[onlytextwidth]
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.50\textwidth, height=3cm, keepaspectratio]{images/05_acqf_ei_sm_normal_fmin.pdf}
+      \includegraphics[width=0.45\textwidth, height=3cm, keepaspectratio]{images/05_acqf_ei_sm_normal_fmin.pdf}
     \end{center}
     \column{.5\textwidth}
     \begin{center}
-      \includegraphics[width=0.50\textwidth, height=3cm, keepaspectratio]{images/05_acqf_pi.pdf}
+      \includegraphics[width=0.45\textwidth, height=3cm, keepaspectratio]{images/05_acqf_pi.pdf}
     \end{center}
   \end{columns}
 \end{frame}
@@ -149,23 +148,32 @@
     \item If $Y(\conf) \sim \normaldist\left(\surro(\conf), \sh^2(\conf)\right)$, the EI has a closed form:
     $$\acq_{\text{EI}}(\conf) = (\cmin-\surro(\conf))\, \Phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right) + \sh(\conf)\, \phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right)$$
     \item Can easily show this by partial integration
-    \item $\acq_{\text{EI}}(\confI{i}) = 0$ at design points $\confI{i}$:\\
-    $\sh(\confI{i}) = 0$ for an interpolating GP $\Rightarrow Y(\confI{i})$ is degenerate at $\cost(\confI{i})$,\\
-    so $\acq_{\text{EI}}(\confI{i}) = \max(\cmin - \cost(\confI{i}),\, 0) = 0$ since $\cost(\confI{i}) \ge \cmin$
+    \item $\acq_{\text{EI}}(\confI{t}) = 0$ at design points $\confI{t}$:\\
+    $\sh(\confI{t}) = 0$ for an interpolating GP $\Rightarrow Y(\confI{t})$ is degenerate at $\cost(\confI{t})$,\\
+    so $\acq_{\text{EI}}(\confI{t}) = \max(\cmin - \cost(\confI{t}),\, 0) = 0$ since $\cost(\confI{t}) \ge \cmin$
   \end{itemize}
 \end{frame}
 
 
 \begin{frame}[t]{Expected Improvement}
   \begin{itemize}
-    \item Using EI instead of the posterior mean, we would find the global
-    minimum on our toy function
+    \item Using EI, BO explores and finds the global minimum on our toy function
   \end{itemize}
   \vfill
-  \begin{center}
-    \includegraphics[width=.55\textwidth, height=2.5cm, keepaspectratio]{images/05_acqf_ei_obj.pdf}\\
-    \includegraphics[width=.55\textwidth, height=2.5cm, keepaspectratio]{images/05_acqf_ei_acq.pdf}
-  \end{center}
+  \begin{columns}[onlytextwidth,T]
+    \column{.5\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth, height=2.2cm, keepaspectratio]{images/05_acqf_ei_iter_a_obj.pdf}\\
+      \includegraphics[width=\textwidth, height=2.2cm, keepaspectratio]{images/05_acqf_ei_iter_a_acq.pdf}\\
+      {\footnotesize Iter 1: EI peak on an unexplored region}
+    \end{center}
+    \column{.5\textwidth}
+    \begin{center}
+      \includegraphics[width=\textwidth, height=2.2cm, keepaspectratio]{images/05_acqf_ei_iter_b_obj.pdf}\\
+      \includegraphics[width=\textwidth, height=2.2cm, keepaspectratio]{images/05_acqf_ei_iter_b_acq.pdf}\\
+      {\footnotesize Iter 6: EI lands near the global minimum}
+    \end{center}
+  \end{columns}
 \end{frame}
 
 

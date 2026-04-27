@@ -3,6 +3,8 @@
 
 \begin{document}
 
+\providecommand{\confB}[1]{{\conf}^{[#1]}}  % batch slot: lambda^[k]
+
 \title[AutoML: BO]{Bayesian Optimization}
 \subtitle{Parallel Bayesian Optimization}
 \author[Bernd Bischl]{Bernd Bischl}
@@ -43,10 +45,10 @@
 
 \begin{frame}[t]{Joint / $q$-Acquisition Functions}
   \begin{itemize}
-    \item Extend acquisition to \emph{joint} criterion over batch $\batchconf = (\confI{1}, \ldots, \confI{q})$:
-        % $$\acq_q(\batchconf) = \E_{Y(\confI{1}), \ldots, Y(\confI{q})}\big[\, g(Y(\confI{1}), \ldots, Y(\confI{q}))\,\big]$$
+    \item Extend acquisition to \emph{joint} criterion over batch $\batchconf = (\confB{1}, \ldots, \confB{q})$:
+        % $$\acq_q(\batchconf) = \E_{Y(\confB{1}), \ldots, Y(\confB{q})}\big[\, g(Y(\confB{1}), \ldots, Y(\confB{q}))\,\big]$$
     \item Example: $q$-expected improvement~\liturl{Wang et al. 2020}{https://arxiv.org/abs/1602.05149}
-        $$\qEI(\batchconf) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confI{k}),\,0\right)\right]$$
+        $$\qEI(\batchconf) = \E\!\left[\max_{k=1,\ldots,q} \max\!\left(\cmin - Y(\confB{k}),\,0\right)\right]$$
     \item Reward the \textbf{best} outcome in the batch -- naturally encourages diversity
     \item No closed form; estimated via \textbf{Monte Carlo} samples from joint posterior
     \item \textbf{Optimization:} inner problem is now $q \cdot \pcsdim$-dimensional.
@@ -61,16 +63,16 @@
   \footnotesize
   Iteratively fill the batch~\liturl{Ginsbourger et al. 2010}{https://link.springer.com/chapter/10.1007/978-3-642-10701-6_6}:
   \begin{itemize}
-    \item Start with current surrogate; propose $\confI{1} \in \argmax \acq(\conf)$
-    \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
+    \item Start with current surrogate; propose $\confB{1} \in \argmax \acq(\conf)$
+    \item \textbf{Fantasize} the outcome at $\confB{1}$: replace the unknown $\cost(\confB{1})$ with
         \begin{itemize}
-            \item Kriging believer: posterior \textbf{mean} $\surro(\confI{1})$
-            \item Constant liar: fixed value, e.g., $\min_i \cost(\confI{i})$ or $\max_i \cost(\confI{i})$ from archive
+            \item Kriging believer: posterior \textbf{mean} $\surro(\confB{1})$
+            \item Constant liar: fixed value, e.g., $\min_t \cost(\confI{t})$ or $\max_t \cost(\confI{t})$ from archive
             \item MC fantasizing: sample from the posterior
         \end{itemize}
-    \item Refit and propose $\confI{2} \in \argmax \acq(\conf)$; repeat until $q$ points assembled
+    \item Refit and propose $\confB{2} \in \argmax \acq(\conf)$; repeat until $q$ points assembled
   \end{itemize}
-  \textbf{Effect:} fantasy eval lowers post. unc. around $\confI{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
+  \textbf{Effect:} fantasy eval lowers post. unc. around $\confB{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
   \begin{center}
     \includegraphics[width=0.55\textwidth]{images/08_batch_bo_kriging_believer.pdf}\\
     \footnotesize Kriging believer on Branin-EI ($q=4$): yellow $\times$ = initial design, red = earlier picks, green $\diamond$ = current pick
@@ -80,8 +82,8 @@
 
 % \begin{frame}[t]{Heuristic 2: Local Penalization}
 %   \begin{itemize}
-%     \item After selecting $\confI{k}$, multiply the acquisition function by a \textbf{penalty} ~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html} that decays with distance from $\confI{k}$:
-%     $$\tilde{\acq}_{k+1}(\conf) = \acq(\conf) \cdot \prod_{j=1}^k \varphi\!\left(\|\conf - \confI{j}\|\right)$$
+%     \item After selecting $\confB{k}$, multiply the acquisition function by a \textbf{penalty} ~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html} that decays with distance from $\confB{k}$:
+%     $$\tilde{\acq}_{k+1}(\conf) = \acq(\conf) \cdot \prod_{j=1}^k \varphi\!\left(\|\conf - \confB{j}\|\right)$$
 %     \item $\varphi$ typically a logistic / soft-step function around a Lipschitz-motivated radius
 %     \item Picks the next point from areas the previous ones do not already cover
 %     \item Cheap to compute, no refitting needed, easy to parallelize across $q$~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html}
@@ -134,39 +136,39 @@
   finish/.style ={->, mygreen!55!black, thick, >=latex},
   propose/.style={->, blue!60!black, thick, >=latex}]
 
-  \node[archive] (arch) at (0, 0) {\textbf{Shared archive}\\[-1pt]\scriptsize $(\confI{i}, \costI{i})$ + fantasies of pending};
+  \node[archive] (arch) at (0, 0) {\textbf{Shared archive}\\[-1pt]\scriptsize $(\confI{t}, \costI{t})$ + fantasies of pending};
 
   \node[worker] (w1) at (-3.0, -2.0) {worker 1\\[-1pt]\scriptsize busy: $\confI{1}$};
   \node[worker] (w2) at ( 0.0, -2.0) {worker 2\\[-1pt]\scriptsize busy: $\confI{2}$};
   \node[worker] (w3) at ( 3.0, -2.0) {worker 3\\[-1pt]\scriptsize busy: $\confI{3}$};
 
-  % Each pair of arrows: finish (up, green) and propose (down, blue), bent apart.
+  % Each pair of arrows: put (up, green) writes (lambda, cost); read (down, blue)
+  % pulls the archive so the worker can refit and propose locally.
   \draw[finish ] (w1.north) to[bend left=15]
-        node[midway, left=2pt, font=\tiny, color=mygreen!55!black] {$\cost$} (arch.south west);
+        node[midway, left=2pt, font=\tiny, color=mygreen!55!black] {put $(\conf,\cost)$} (arch.south west);
   \draw[propose] (arch.south west) to[bend left=15]
-        node[midway, right=2pt, font=\tiny, color=blue!60!black] {$\confI{\text{new}}$} (w1.north);
+        node[midway, right=2pt, font=\tiny, color=blue!60!black] {read $\hist$} (w1.north);
 
   \draw[finish ] (w2.north) to[bend left=10]
-        node[midway, left=2pt, font=\tiny, color=mygreen!55!black] {$\cost$} (arch.south);
+        node[midway, left=2pt, font=\tiny, color=mygreen!55!black] {put $(\conf,\cost)$} (arch.south);
   \draw[propose] (arch.south) to[bend left=10]
-        node[midway, right=2pt, font=\tiny, color=blue!60!black] {$\confI{\text{new}}$} (w2.north);
+        node[midway, right=2pt, font=\tiny, color=blue!60!black] {read $\hist$} (w2.north);
 
   \draw[finish ] (w3.north) to[bend right=15]
-        node[midway, right=2pt, font=\tiny, color=mygreen!55!black] {$\cost$} (arch.south east);
+        node[midway, right=2pt, font=\tiny, color=mygreen!55!black] {put $(\conf,\cost)$} (arch.south east);
   \draw[propose] (arch.south east) to[bend right=15]
-        node[midway, left=2pt, font=\tiny, color=blue!60!black] {$\confI{\text{new}}$} (w3.north);
+        node[midway, left=2pt, font=\tiny, color=blue!60!black] {read $\hist$} (w3.north);
 
   % small legend
   \node[anchor=west, align=left, font=\tiny] at (4.2, -1.0)
-    {\textcolor{mygreen!55!black}{$\rightarrow$ on finish: $\cost$}\\
-     \textcolor{blue!60!black}{$\rightarrow$ refit, propose}};
+    {\textcolor{mygreen!55!black}{$\rightarrow$ on finish: put $(\conf,\cost)$}\\
+     \textcolor{blue!60!black}{$\rightarrow$ read $\hist$, refit, propose}};
 \end{tikzpicture}
 \end{center}
 \end{frame}
 
 
-\begin{frame}[t]{Asynchronous Distributed BO}
-  \footnotesize
+\begin{frame}[t]{Asynchronous Decentralized BO}
   \begin{itemize}
     \item Picking one point at a time risks duplicating in-flight configs
     \item Avoid duplicating a \textbf{pending} config by fantasizing its outcome in the archive, e.g.,

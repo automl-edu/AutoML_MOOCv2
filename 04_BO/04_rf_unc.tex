@@ -23,12 +23,12 @@
     \item GPs struggle 
         \begin{itemize}
             \item mixed / hierarchical $\pcs$ 
-            \item high-dimensional or large $n$
+            \item high-dimensional or large $N$
         \end{itemize}
     \item Random forests handle all these naturally:
         \begin{itemize}
             \item Tree splits work on categorical and conditional features without a kernel
-            \item Training complexity $\mathcal{O}(B \cdot n \log n)$;\\
+            \item Training complexity $\mathcal{O}(B \cdot N \log N)$;\\
             B is ensemble size
             \item Robust
         \end{itemize}
@@ -38,7 +38,7 @@
   \end{itemize}
   \column{.4\textwidth}
   \begin{center}
-    \includegraphics[width=\textwidth]{images/random_forests.jpg}
+    \includegraphics[width=\textwidth]{images/forest.png}
   \end{center}
 \end{columns}
 \end{frame}
@@ -97,8 +97,8 @@
 \begin{frame}[t]{Jackknife-Based Variance Estimators}
   \begin{itemize}
     \item \textbf{Infinitesimal jackknife (IJ)}~\liturl{Wager et al. 2014}{https://jmlr.org/papers/v15/wager14a.html} gives a formally grounded variance estimate:
-        $$\widehat{\sh}^2_{IJ}(\x) = \sum_{i=1}^n \Big(\operatorname{Cov}_b(N_{ib}, \hat{f}_b(\x))\Big)^2$$
-        where $N_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
+        $$\widehat{\sh}^2_{IJ}(\x) = \sum_{i=1}^N \Big(\operatorname{Cov}_b(\nu_{ib}, \hat{f}_b(\x))\Big)^2$$
+        where $\nu_{ib}$ is how often observation $i$ appears in bootstrap sample $b$
     \item Bias-corrected variant removes systematic bias in finite forests
     \item Captures uncertainty that the law-of-total-variance estimator misses\\
     (esp.\ for small $B$)
@@ -130,7 +130,6 @@
 
 
 \begin{frame}[t]{Quantile Regression Forests}
-\footnotesize
 \begin{columns}[onlytextwidth,T]
   \column{.6\textwidth}
   \begin{itemize}
@@ -172,7 +171,7 @@
 
 \begin{frame}[t]{Summary and Discussion}
 \begin{itemize}
-  \item Use RF for mixed / conditional / large-integer $\pcs$, large $n$, cheaper $f$ with many iterations;
+  \item Use RF for mixed / conditional / large-integer $\pcs$, large $N$, cheaper $f$ with many iterations;
   GP for numeric $\pcs$ with tighter budget
   \item We discussed as uncertainty options:\\
   naive between-tree variance, law of total variance, infinitesimal jackknife, and quantile regression forests

@@ -1,12 +1,15 @@
 # Used in: 04_BO/03_gps.tex, 04_BO/05_acqf.tex, 04_BO/06_acqf_opt.tex
 #
-# Three EI illustrations on the 1D toy:
-#   1) bayesian_loop_ee:               7-point archive + well/insufficiently
-#                                      explored regions
-#   2) bayesian_loop_sm_normal_fmin:   GP fit, current best, normal density
-#                                      at the EI argmax
-#   3) bayesian_loop_6_{obj,acq}:      GP fit and EI curve after 5 BO steps
-#                                      starting from a 5-point initial design
+# EI illustrations on the 1D toy:
+#   1) 05_acqf_ei_ee:                7-point archive + well/insufficiently
+#                                    explored regions
+#   2) 05_acqf_ei_sm_normal_fmin:    GP fit, current best, normal density at
+#                                    the EI argmax
+#   3) 05_acqf_ei_iter_{a,b}_{obj,acq}: 2 BO snapshots (early and late) on the
+#                                    same toy, starting from a 5-point initial
+#                                    design. Iter A shows EI exploring an
+#                                    unvisited region; iter B shows EI landing
+#                                    near the global minimum.
 
 source("rsrc/_setup.R")
 
@@ -69,39 +72,58 @@ g = ggplot(grid, aes(x = x, y = y)) +
 
 myggsave("05_acqf_ei_sm_normal_fmin", plot = g, width = 5, height = 4)
 
-# ===== Plot 3: BO state after 5 EI proposals from a 5-point initial design ==
+# ===== Plot 3: 2 BO snapshots on the toy, early (iter 1) and late (iter 6) ==
+
+obj_plot = function(grid, archive, old_pick) {
+  g = ggplot(grid, aes(x = x, y = y)) +
+    geom_line() +
+    geom_line(aes(y = y_hat), colour = "steelblue", linetype = 2) +
+    geom_ribbon(aes(ymin = y_min, ymax = y_max), fill = "steelblue", alpha = 0.1) +
+    geom_point(aes(y = y), size = 3L, colour = "black", data = archive$data)
+  if (!is.null(old_pick)) {
+    g = g + geom_point(aes(y = y), size = 3L, colour = "grey", data = old_pick)
+  }
+  g + xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
+    labs(x = expression(lambda), y = expression(c)) + theme_minimal(base_size = 13)
+}
+
+acq_plot = function(grid, ei_argmax) {
+  ggplot(grid, aes(x = x, y = ei)) +
+    geom_line(colour = "darkred") +
+    geom_point(size = 3L, colour = "darkred", data = ei_argmax) +
+    xlim(c(0, 1)) +
+    labs(x = expression(lambda), y = "EI") + theme_minimal(base_size = 13)
+}
 
 instance$archive$clear()
 instance$eval_batch(data.table(x = c(0.100, 0.300, 0.370, 0.650, 1.000)))
 
-# Six BO steps; only the last one is plotted. The previous step's argmax is
-# kept around as the grey "old pick" decoration on the obj plot.
+# 6 BO steps; snapshot the state at iter 1 (early) and iter 6 (late).
 old_ei_argmax = NULL
 for (i in seq_len(6)) {
   update_surrogate_and_grid(surrogate, grid)
   acq_function$update()
   set(grid, j = "ei", value = acq_function$eval_dt(grid[, "x"])$acq_ei)
   ei_argmax = grid[which.max(ei), ]
+
+  if (i == 1L) {
+    myggsave("05_acqf_ei_iter_a_obj",
+             plot = obj_plot(grid, instance$archive, old_ei_argmax),
+             width = 5, height = 2)
+    myggsave("05_acqf_ei_iter_a_acq",
+             plot = acq_plot(grid, ei_argmax),
+             width = 5, height = 2)
+  }
+
   if (i < 6) {
     old_ei_argmax = ei_argmax
     instance$eval_batch(ei_argmax[, "x", with = FALSE])
   }
 }
 
-obj = ggplot(grid, aes(x = x, y = y)) +
-  geom_line() +
-  geom_line(aes(y = y_hat), colour = "steelblue", linetype = 2) +
-  geom_ribbon(aes(ymin = y_min, ymax = y_max), fill = "steelblue", alpha = 0.1) +
-  geom_point(aes(y = y), size = 3L, colour = "black", data = instance$archive$data) +
-  geom_point(aes(y = y), size = 3L, colour = "grey", data = old_ei_argmax) +
-  xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal(base_size = 13)
-
-acq = ggplot(grid, aes(x = x, y = ei)) +
-  geom_line(colour = "darkred") +
-  geom_point(size = 3L, colour = "darkred", data = ei_argmax) +
-  xlim(c(0, 1)) +
-  labs(x = expression(lambda), y = "EI") + theme_minimal(base_size = 13)
-
-myggsave("05_acqf_ei_obj", plot = obj, width = 5, height = 2)
-myggsave("05_acqf_ei_acq", plot = acq, width = 5, height = 2)
+myggsave("05_acqf_ei_iter_b_obj",
+         plot = obj_plot(grid, instance$archive, old_ei_argmax),
+         width = 5, height = 2)
+myggsave("05_acqf_ei_iter_b_acq",
+         plot = acq_plot(grid, ei_argmax),
+         width = 5, height = 2)
