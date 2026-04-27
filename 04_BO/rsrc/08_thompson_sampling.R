@@ -71,7 +71,7 @@ g = ggplot() +
   scale_colour_brewer(palette = "Set1", guide = "none") +
   coord_cartesian(ylim = c(-2.2, 2.2)) +
   labs(x = expression(lambda), y = expression(c)) +
-  theme_minimal(base_size = 10) +
+  theme_minimal(base_size = 13) +
   theme(panel.grid.minor = element_blank())
 
 myggsave("08_thompson_sampling", plot = g, width = 5, height = 2.6)

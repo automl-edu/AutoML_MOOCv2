@@ -44,7 +44,7 @@ grid[, hi   := pred$mean + pred$sd]
 noisy_theme = function() list(
   ylim(c(-1.8, 2.0)),
   labs(x = expression(lambda), y = expression(c)),
-  theme_minimal(base_size = 10),
+  theme_minimal(base_size = 13),
   theme(panel.grid.minor = element_blank())
 )
 

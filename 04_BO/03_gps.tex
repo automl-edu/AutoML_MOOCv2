@@ -138,23 +138,8 @@
     \end{itemize}
     \column{.40\textwidth}
     \begin{center}
-    \begin{tikzpicture}
-      \begin{axis}[
-        width=5cm, height=4cm,
-        xlabel={$d(\x,\x')$}, ylabel={$k$},
-        xmin=0, xmax=3, ymin=0, ymax=1.05,
-        domain=0:3, samples=80,
-        legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east, draw=none, fill=none},
-        tick label style={font=\scriptsize},
-        label style={font=\scriptsize},
-        axis lines=left,
-      ]
-        \addplot[blue, thick]           {exp(-x^2/(2*0.3^2))}; \addlegendentry{$l=0.3$}
-        \addplot[green!60!black, thick] {exp(-x^2/(2*0.7^2))}; \addlegendentry{$l=0.7$}
-        \addplot[red, thick]            {exp(-x^2/(2*1.5^2))}; \addlegendentry{$l=1.5$}
-      \end{axis}
-    \end{tikzpicture}\\[0.1cm]
-    \includegraphics[width=\textwidth]{images/03_kernel_samples_rbf.pdf}\\
+    \includegraphics[width=0.9\textwidth]{images/03_kernel_rbf_corr.pdf}\\[0.1cm]
+    \includegraphics[width=0.9\textwidth]{images/03_kernel_samples_rbf.pdf}\\
     \scriptsize 1D GP prior samples
     \end{center}
 \end{columns}
@@ -175,29 +160,8 @@
     \end{itemize}
     \column{.40\textwidth}
     \begin{center}
-    \begin{tikzpicture}
-      \begin{axis}[
-        width=5cm, height=4cm,
-        xlabel={$d(\x,\x')$}, ylabel={$k$},
-        xmin=0, xmax=3, ymin=0, ymax=1.05,
-        domain=0.0001:3, samples=120,
-        legend style={font=\scriptsize, at={(0.97,0.97)}, anchor=north east, draw=none, fill=none},
-        tick label style={font=\scriptsize},
-        label style={font=\scriptsize},
-        axis lines=left,
-      ]
-        % Matern 1/2 (exponential): exp(-d/l)
-        \addplot[orange, thick]
-          {exp(-x/1)}; \addlegendentry{$\nu=1/2$}
-        % Matern 3/2: (1 + sqrt(3) d/l) * exp(-sqrt(3) d/l)
-        \addplot[green!60!black, thick]
-          {(1 + sqrt(3)*x/1) * exp(-sqrt(3)*x/1)}; \addlegendentry{$\nu=3/2$}
-        % Matern 5/2: (1 + sqrt(5)d/l + 5d^2/(3l^2)) * exp(-sqrt(5)d/l)
-        \addplot[blue, thick]
-          {(1 + sqrt(5)*x/1 + 5*x^2/(3*1^2)) * exp(-sqrt(5)*x/1)}; \addlegendentry{$\nu=5/2$}
-      \end{axis}
-    \end{tikzpicture}\\[0.1cm]
-    \includegraphics[width=\textwidth]{images/03_kernel_samples_matern.pdf}\\
+    \includegraphics[width=0.9\textwidth]{images/03_kernel_matern_corr.pdf}\\[0.1cm]
+    \includegraphics[width=0.9\textwidth]{images/03_kernel_samples_matern.pdf}\\
     \scriptsize 1D GP prior samples; smaller $\nu$ $\to$ rougher
     \end{center}
 \end{columns}

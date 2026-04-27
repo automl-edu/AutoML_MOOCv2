@@ -57,7 +57,7 @@ band_plot = function(grid, train, mean_col, sd_col) {
                colour = "black", size = 1.2, alpha = 0.7) +
     coord_cartesian(ylim = c(-2, 2)) +
     labs(x = expression(x), y = expression(f)) +
-    theme_minimal()
+    theme_minimal(base_size = 13)
 }
 
 myggsave("04_rf_unc_var_estimators_naive",
@@ -74,7 +74,7 @@ qrf_plot = ggplot(grid, aes(x = x)) +
              colour = "black", size = 1.2, alpha = 0.7) +
   coord_cartesian(ylim = c(-2, 2)) +
   labs(x = expression(x), y = expression(f)) +
-  theme_minimal()
+  theme_minimal(base_size = 13)
 
 myggsave("04_rf_unc_var_estimators_qrf", qrf_plot,
          width = 4.2, height = 3.2)

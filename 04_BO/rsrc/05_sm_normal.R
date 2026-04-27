@@ -37,6 +37,6 @@ g = ggplot(grid, aes(x = x, y = y)) +
   geom_segment(aes(x = 0, xend = 0.1, y = ei_argmax$y_hat, yend = ei_argmax$y_hat),
                colour = "darkgrey") +
   xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal(base_size = 13)
 
 myggsave("05_sm_normal", plot = g, width = 5, height = 4)

@@ -86,7 +86,7 @@ loop_plot = function(grid,
     xlim(xlim) +
     ylim(ylim) +
     labs(x = expression(lambda), y = expression(c)) +
-    theme_minimal()
+    theme_minimal(base_size = 13)
 }
 
 

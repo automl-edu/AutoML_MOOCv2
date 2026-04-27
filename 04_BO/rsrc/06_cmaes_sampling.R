@@ -101,7 +101,7 @@ g = ggplot() +
   scale_colour_brewer(palette = "Set1", name = "Gen.") +
   coord_equal(xlim = c(-3.6, 0.2), ylim = c(0.2, 4), expand = FALSE) +
   labs(x = expression(lambda[1]), y = expression(lambda[2])) +
-  theme_minimal(base_size = 10) +
+  theme_minimal(base_size = 13) +
   theme(
     legend.position = c(0.97, 0.03),
     legend.justification = c(1, 0),

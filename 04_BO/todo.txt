@@ -1,42 +1,20 @@
-branch mergen
-quiz questions machen
-
-die pipelines grafik könnte schöner sein
-
-plot GPs better in 2D, more beautifully
 
 bobudget und bocount werden falsch verwendet auch checked ob "t" überall korrekt verwendet wird
-
-use latex autoformater and dont indent
-
-compare slides with mlr3mbo paper
-
-check fontsizes on all plots
-
-marius hat irgendwie alle meine titel auf den slides falsch angepasst
-
 RFs nutzen n statt t für size....
-
-RF tree pic looks wrong....
-
 check if x and other symbplds should be bold
-
 gucken was man für "datensets" als notation nimmt
 
-write down naming scheme for rsrc files and images with number
 
-wir können nicht lambda bei cmaes nutzen
-
-xt im local search plot nicht so gut
-
-sprache und regeln mit LLM nochmach checken
-
+RF tree pic looks wrong....
 factcheck
-
-beim plugin EI können wir nicht "c" benutzen wegen cost
-
 use rather colorbling friendly colors
 
+
+
+
+branch mergen
+quiz questions machen
+use latex autoformater and dont indent
 
 ------------------------
 
@@ -64,3 +42,89 @@ Skimmed the paper, compared to the eight slide decks. A handful of supernice, no
                                                                                                                    
   My top pick is #2 — that empirical-ablation table is exactly the kind of content the slides don't yet have and   
   that the paper uniquely contributes.        
+
+-----------------------------------------------------------------------
+
+   Going through all 8 chapters systematically. Reporting before any changes.
+                                                                           
+  Factual issues found                                                                                                
+                                                                                                                      
+  08_parallel_bo.tex — Kriging Believer / Fantasizing slide (lines 64-70)                                             
+                                                                                                                      
+  The "Constant liar" bullet has an internal contradiction:                                                           
+  Constant liar: fixed value (e.g., $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)                                 
+  - "Fixed value" is the defining property of Constant Liar (Ginsbourger 2010: CL[max], CL[mean], CL[min] are         
+  constants chosen up-front).                                                                                         
+  - The second example $\surro(\confI{1}) + c\sh(\confI{1})$ is not a fixed value — it depends on the candidate       
+  $\confI{1}$. That's an LCB-style pessimistic fantasy, not a constant liar. Either drop that example or label it as a
+   separate variant.                                                                                                  
+                                                                                                 
+  Also, c here clashes with the \cost macro convention (and earlier you specifically asked to switch c → β in         
+  07_noisy.tex for the same kind of risk-aversion factor). Should probably be β here too.                             
+                                         
+  Things I checked and they're correct                                                                                
+                                                                                                 
+  - EI closed form (05_acqf.tex line 149): standard form $(\cmin - \hat\mu)\Phi(z) + \hat\sigma \phi(z)$ with $z =    
+  (\cmin - \hat\mu)/\hat\sigma$ ✓
+  - PI formula $\Phi((\cmin - \hat\mu)/\hat\sigma)$ ✓                                                                 
+  - LCB for minimization $\hat\mu - \tau\hat\sigma$ ✓                                                                 
+  - GP posterior mean/variance with nugget, conditioning derivation ✓                                                 
+  - Marginal log-likelihood sign and decomposition ✓                                                                  
+  - Matérn formula with ARD-scaled $r$, Bessel $K_\nu$, normalization $1/(\Gamma(\nu) 2^{\nu-1}) =                    
+  2^{1-\nu}/\Gamma(\nu)$ ✓                                                                                            
+  - Matérn smoothness $\lceil\nu\rceil - 1$ times differentiable: matches for $\nu \in {1/2, 3/2, 5/2}$ ✓             
+  - Law of total variance decomposition for RF: $\frac{1}{B}\sum \sigma_b^2 + \frac{1}{B}\sum f_b^2 - \bar f^2$       
+  matches LTV identity ✓                                                                                              
+  - Naive RF variance $1/(B-1)$ (sample variance) vs LTV's $1/B$ — different convention but consistent within each    
+  slide ✓                                                                                                             
+  - Infinitesimal Jackknife formula $\sum_i \mathrm{Cov}b(N{ib}, \hat f_b(x))^2$ matches Wager 2014 ✓
+  - LogEI (Hutter, log-normal closed form): $f_{\min}\Phi(v) - \exp(\mu + \sigma^2/2)\Phi(v - \sigma)$ with $v = (\ln 
+  f_{\min}-\mu)/\sigma$ — derivation checks out ✓                                                                     
+  - AEI penalty $1 - \sqrt{\sigma_\epsilon^2}/\sqrt{\sh^2 + \sigma_\epsilon^2}$ matches Huang 2006 ✓                  
+  - qEI $\E[\max_k(\cmin - Y(\confI{k}))^+]$ ✓                                                                        
+  - Maximin / packing radius $2q = \min$ pairwise distance ✓                                                          
+  - Branin has 3 global minima → "minima" plural (01:84) is correct ✓                                                 
+  - All citations (Sacks 1989, Jones 1998, Močkus 1975, Bull 2011, Srinivas 2010, Hutter 2014, Wager 2014, Geurts     
+  2006, Meinshausen 2006, Auger 2005, Hansen 2009, Lindauer 2022, Ginsbourger 2010, Wang 2020, Kandasamy 2018, Egele  
+  2023, Picheny 2013, Letham 2019, Huang 2006, Calandra 2014, Bossek 2020, Morris 1995, Ament 2023, Hutter 2009) are  
+  real papers with correct attribution ✓                                                                              
+                                                                                                 
+  Borderline / minor (not flagging as wrong)                                                                          
+  
+  - 02_bo_basics.tex line 67: rule of thumb "$4\pcsdim$" for initial design size is on the low end (many sources say  
+  8–10$d$); defensible but worth knowing.                                                        
+  - 05_acqf.tex line 151-154: the "$\acq_{EI} = 0$ at design points" argument relies on $\hat\mu(\confI{i}) > \cmin$  
+  strictly to push the cdf argument to $-\infty$; for the actual incumbent ($\hat\mu = \cmin$, $\sh = 0$) the formula 
+  gives $0 \cdot \Phi(\cdot) + 0 \cdot \phi(\cdot)$ in a more direct way. Argument works but could be tighter.
+  - 07_noisy.tex line 62: NEI described as "MC-integrate EI over sampled posterior fantasy functions" — Letham 2019   
+  actually samples noiseless posterior values at the observed points to define plausible $\cmin$'s, not full fantasy  
+  - Infinitesimal Jackknife formula $\sum_i \mathrm{Cov}b(N{ib}, \hat f_b(x))^2$ matches Wager 2014 ✓
+  - LogEI (Hutter, log-normal closed form): $f_{\min}\Phi(v) - \exp(\mu + \sigma^2/2)\Phi(v - \sigma)$ with $v = (\ln
+  f_{\min}-\mu)/\sigma$ — derivation checks out ✓
+  - AEI penalty $1 - \sqrt{\sigma_\epsilon^2}/\sqrt{\sh^2 + \sigma_\epsilon^2}$ matches Huang 2006 ✓
+  - qEI $\E[\max_k(\cmin - Y(\confI{k}))^+]$ ✓
+  - Maximin / packing radius $2q = \min$ pairwise distance ✓
+  - Branin has 3 global minima → "minima" plural (01:84) is correct ✓
+  - All citations (Sacks 1989, Jones 1998, Močkus 1975, Bull 2011, Srinivas 2010, Hutter 2014, Wager 2014, Geurts
+  2006, Meinshausen 2006, Auger 2005, Hansen 2009, Lindauer 2022, Ginsbourger 2010, Wang 2020, Kandasamy 2018, Egele
+  2023, Picheny 2013, Letham 2019, Huang 2006, Calandra 2014, Bossek 2020, Morris 1995, Ament 2023, Hutter 2009) are
+  real papers with correct attribution ✓
+
+  Borderline / minor (not flagging as wrong)
+
+  - 02_bo_basics.tex line 67: rule of thumb "$4\pcsdim$" for initial design size is on the low end (many sources say
+  8–10$d$); defensible but worth knowing.
+  - 05_acqf.tex line 151-154: the "$\acq_{EI} = 0$ at design points" argument relies on $\hat\mu(\confI{i}) > \cmin$
+  strictly to push the cdf argument to $-\infty$; for the actual incumbent ($\hat\mu = \cmin$, $\sh = 0$) the formula
+  gives $0 \cdot \Phi(\cdot) + 0 \cdot \phi(\cdot)$ in a more direct way. Argument works but could be tighter.
+  - 07_noisy.tex line 62: NEI described as "MC-integrate EI over sampled posterior fantasy functions" — Letham 2019
+  actually samples noiseless posterior values at the observed points to define plausible $\cmin$'s, not full fantasy
+  functions. Phrasing is a bit loose but not wrong in spirit.
+
+  Want me to fix the constant-liar issue (drop the LCB-style example and switch c → β)?
+
+✻ Baked for 3m 51s
+
+※ recap: Auditing the 04_BO BO lecture slides for factual correctness; just delivered the factcheck report. Next
+  action is to fix the Constant Liar bullet in 08_parallel_bo.tex (drop the LCB-style example and rename c to β) once
+  you confirm.

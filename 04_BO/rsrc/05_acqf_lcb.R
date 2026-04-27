@@ -34,13 +34,13 @@ obj = ggplot(grid, aes(x = x, y = y)) +
   geom_line(aes(y = y_min), colour = "darkred") +
   geom_point(aes(y = y), size = 3L, colour = "black", data = instance$archive$data) +
   xlim(c(0, 1)) + ylim(c(-2, 3.8)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal(base_size = 13)
 
 acq = ggplot(grid, aes(x = x, y = cb)) +
   geom_line(colour = "darkred") +
   geom_point(size = 3L, colour = "darkred", data = cb_argmin) +
   xlim(c(0, 1)) + ylim(c(-2, 3.8)) +
-  labs(x = expression(lambda), y = bquote("LCB, " * tau == .(tau))) + theme_minimal()
+  labs(x = expression(lambda), y = bquote("LCB, " * tau == .(tau))) + theme_minimal(base_size = 13)
 
 myggsave("05_acqf_lcb_obj", plot = obj, width = 5, height = 2)
 myggsave("05_acqf_lcb_acq", plot = acq, width = 5, height = 2)

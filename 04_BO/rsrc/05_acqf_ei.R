@@ -34,7 +34,7 @@ g = ggplot() +
   geom_text(aes(x = 0.80, y = -1.8, label = "insufficiently explored"),
             data = data.table(), color = "indianred4") +
   xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal(base_size = 13)
 
 myggsave("05_acqf_ei_ee", plot = g, width = 5, height = 4)
 
@@ -65,7 +65,7 @@ g = ggplot(grid, aes(x = x, y = y)) +
   geom_segment(aes(x = 0, xend = 0.1, y = ei_argmax$y_hat, yend = ei_argmax$y_hat),
                colour = "darkgrey") +
   xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal(base_size = 13)
 
 myggsave("05_acqf_ei_sm_normal_fmin", plot = g, width = 5, height = 4)
 
@@ -95,13 +95,13 @@ obj = ggplot(grid, aes(x = x, y = y)) +
   geom_point(aes(y = y), size = 3L, colour = "black", data = instance$archive$data) +
   geom_point(aes(y = y), size = 3L, colour = "grey", data = old_ei_argmax) +
   xlim(c(0, 1)) + ylim(c(-2, 2.2)) +
-  labs(x = expression(lambda), y = expression(c)) + theme_minimal()
+  labs(x = expression(lambda), y = expression(c)) + theme_minimal(base_size = 13)
 
 acq = ggplot(grid, aes(x = x, y = ei)) +
   geom_line(colour = "darkred") +
   geom_point(size = 3L, colour = "darkred", data = ei_argmax) +
   xlim(c(0, 1)) +
-  labs(x = expression(lambda), y = "EI") + theme_minimal()
+  labs(x = expression(lambda), y = "EI") + theme_minimal(base_size = 13)
 
 myggsave("05_acqf_ei_obj", plot = obj, width = 5, height = 2)
 myggsave("05_acqf_ei_acq", plot = acq, width = 5, height = 2)

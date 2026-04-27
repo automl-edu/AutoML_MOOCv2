@@ -12,6 +12,13 @@ library(data.table)
 library(ggplot2)
 
 
+# Global default theme: bigger base_size so axis text stays readable when
+# the figure is embedded at half-slide-width or smaller. Single-panel scripts
+# call theme_minimal() with this base_size explicitly; landscape / multi-panel
+# scripts can opt out by passing their own size.
+theme_set(theme_minimal(base_size = 13))
+
+
 # myggsave
 #
 #   Convenience wrapper around ggplot2::ggsave that:

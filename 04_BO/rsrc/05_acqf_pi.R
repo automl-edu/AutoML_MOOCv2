@@ -25,6 +25,6 @@ g = ggplot(pi_normal, aes(x = y, y = d)) +
   geom_line(colour = "darkgrey") +
   geom_vline(xintercept = cmin, colour = "#00A64F", linetype = 2) +
   labs(x = expression(Y(lambda)), y = "density") +
-  theme_minimal()
+  theme_minimal(base_size = 13)
 
 myggsave("05_acqf_pi", plot = g, width = 5, height = 4)

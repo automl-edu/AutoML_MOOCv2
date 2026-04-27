@@ -42,6 +42,6 @@ g = ggplot(grid, aes(x = x)) +
              colour = "black", size = 1.2, alpha = 0.7) +
   coord_cartesian(ylim = c(-2, 2)) +
   labs(x = expression(x), y = expression(f)) +
-  theme_minimal()
+  theme_minimal(base_size = 13)
 
 myggsave("04_extra_trees", plot = g, width = 4.2, height = 3.2)

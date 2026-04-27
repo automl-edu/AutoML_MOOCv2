@@ -34,7 +34,7 @@ plot_design = function(data, title, file) {
     geom_vline(xintercept = qs, linetype = 2) +
     geom_hline(yintercept = qs, linetype = 2) +
     labs(title = title, x = expression(lambda[1]), y = expression(lambda[2])) +
-    theme_minimal()
+    theme_minimal(base_size = 13)
   g = ggMarginal(g, type = "histogram", bins = 11)
   myggsave(file, plot = g, width = 5, height = 4)
 }

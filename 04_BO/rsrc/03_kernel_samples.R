@@ -31,6 +31,59 @@ sample_path = function(x, kfun, ...) {
 x = seq(0, 3, length.out = 401)
 
 # ------------------------------------------------------------------------------
+# Shared style for the two correlation-vs-distance panels (k vs d).
+corr_theme = function() list(
+  labs(x = expression(d(x, x*minute)), y = expression(k)),
+  scale_y_continuous(limits = c(0, 1.05)),
+  scale_x_continuous(limits = c(0, 3)),
+  theme_minimal(base_size = 13),
+  theme(
+    legend.position = c(0.99, 0.99),
+    legend.justification = c(1, 1),
+    legend.background = element_rect(fill = alpha("white", 0.7), colour = NA),
+    legend.key.height = unit(0.35, "cm"),
+    panel.grid.minor = element_blank()
+  )
+)
+
+# RBF correlation curves at the same length scales as the sample-path plot.
+d = seq(0, 3, length.out = 401)
+rbf_corr = rbindlist(lapply(c(0.3, 0.7, 1.5), function(l) {
+  data.table(d = d, k = rbf_k(d, l), l = sprintf("l=%g", l))
+}))
+rbf_corr[, l := factor(l, levels = c("l=0.3", "l=0.7", "l=1.5"))]
+
+g_rbf_corr = ggplot(rbf_corr, aes(x = d, y = k, colour = l)) +
+  geom_line(linewidth = 0.7) +
+  scale_colour_manual(
+    values = c("l=0.3" = "blue", "l=0.7" = "darkgreen", "l=1.5" = "red"),
+    name = NULL
+  ) +
+  corr_theme()
+
+myggsave("03_kernel_rbf_corr", plot = g_rbf_corr, width = 4.5, height = 2.4)
+
+# Matérn correlation curves at l=1, three smoothness levels.
+matern_corr = rbindlist(lapply(c(0.5, 1.5, 2.5), function(nu) {
+  data.table(
+    d = d,
+    k = matern_k(d, nu, l = 1),
+    nu = sprintf("nu=%s", c(`0.5` = "1/2", `1.5` = "3/2", `2.5` = "5/2")[as.character(nu)])
+  )
+}))
+matern_corr[, nu := factor(nu, levels = c("nu=1/2", "nu=3/2", "nu=5/2"))]
+
+g_matern_corr = ggplot(matern_corr, aes(x = d, y = k, colour = nu)) +
+  geom_line(linewidth = 0.7) +
+  scale_colour_manual(
+    values = c("nu=1/2" = "orange", "nu=3/2" = "darkgreen", "nu=5/2" = "blue"),
+    name = NULL
+  ) +
+  corr_theme()
+
+myggsave("03_kernel_matern_corr", plot = g_matern_corr, width = 4.5, height = 2.4)
+
+# ------------------------------------------------------------------------------
 # RBF: three length scales to match the top plot's legend (0.3, 0.7, 1.5).
 rbf_paths = rbindlist(lapply(c(0.3, 0.7, 1.5), function(l) {
   data.table(x = x, y = sample_path(x, rbf_k, l = l), l = sprintf("l=%g", l))
@@ -44,7 +97,7 @@ g_rbf = ggplot(rbf_paths, aes(x = x, y = y, colour = l)) +
     name = NULL
   ) +
   labs(x = expression(x), y = expression(f(x))) +
-  theme_minimal(base_size = 9) +
+  theme_minimal(base_size = 13) +
   theme(
     legend.position = c(0.99, 0.99),
     legend.justification = c(1, 1),
@@ -73,7 +126,7 @@ g_matern = ggplot(matern_paths, aes(x = x, y = y, colour = nu)) +
     name = NULL
   ) +
   labs(x = expression(x), y = expression(f(x))) +
-  theme_minimal(base_size = 9) +
+  theme_minimal(base_size = 13) +
   theme(
     legend.position = c(0.99, 0.99),
     legend.justification = c(1, 1),
