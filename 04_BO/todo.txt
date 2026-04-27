@@ -35,6 +35,9 @@ factcheck
 
 beim plugin EI können wir nicht "c" benutzen wegen cost
 
+use rather colorbling friendly colors
+
+
 ------------------------
 
 Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    

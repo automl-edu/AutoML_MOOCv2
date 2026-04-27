@@ -15,13 +15,13 @@
 
 \begin{frame}[t]{Why Parallel BO?}
   \begin{itemize}
-    \item Modern compute budgets are \textbf{parallel}, not sequential:
-    \item Often multiple cores / nodes on clusters available 
-    \item We can try to fully parallelize the underlying objective,
+    \item Modern compute is inherently \textbf{parallel} 
+    \item Cores, nodes, GPUs sit idle if BO runs strictly one eval at a time
+    \item We can try to fully parallelize the underlying objective $\cost(\lambda)$,
       and in ML there are good chances this is possible
     \item Still attractive to generate a \textbf{batch} of $q > 1$ points to evaluate \textbf{simultaneously}
     \item Trade-off: more wall-clock speedup vs.\ fewer feedback rounds / less optimally placed points
-    \item But remember: RS sometimes hard to beat
+    \item But remember: random search sometimes hard to beat
   \end{itemize}
 \end{frame}
 
@@ -61,14 +61,14 @@
   \footnotesize
   Iteratively fill the batch~\liturl{Ginsbourger et al. 2010}{https://link.springer.com/chapter/10.1007/978-3-642-10701-6_6}:
   \begin{itemize}
-    \item Start with current surrogate; propose $\confI{1} = \argmax \acq(\conf)$
+    \item Start with current surrogate; propose $\confI{1} \in \argmax \acq(\conf)$
     \item \textbf{Fantasize} the outcome at $\confI{1}$: replace the unknown $\cost(\confI{1})$ with
         \begin{itemize}
             \item Kriging believer: posterior \textbf{mean} $\surro(\confI{1})$
             \item Constant liar: fixed value (e.g., $\cmin$ or $\surro(\confI{1}) + c\sh(\confI{1})$)
             \item MC fantasizing: sample from the posterior
         \end{itemize}
-    \item Refit and propose $\confI{2} = \argmax \acq(\conf)$; repeat until $q$ points assembled
+    \item Refit and propose $\confI{2} \in \argmax \acq(\conf)$; repeat until $q$ points assembled
   \end{itemize}
   \textbf{Effect:} fantasy eval lowers post. unc. around $\confI{k}$ $\leadsto$ EI collapses there $\leadsto$ next peak elsewhere
   \begin{center}
@@ -91,80 +91,127 @@
 
 
 \begin{frame}[t]{Thompson Sampling: Parallelism for Free}
-  \footnotesize
-  \begin{columns}[onlytextwidth,T]
-    \column{.55\textwidth}
+  % \footnotesize
+  % \begin{columns}[onlytextwidth,T]
+  %   \column{.55\textwidth}
     \begin{itemize}
       \item \textbf{Thompson sampling}~\liturl{Kandasamy et al. 2018}{https://proceedings.mlr.press/v84/kandasamy18a.html}: draw a sample path $\tilde{\cost}$ from the posterior of the surrogate, propose $\argmin_{\conf} \tilde{\cost}(\conf)$
       \item Each new posterior sample gives a different proposal $\leadsto$ draw $q$ samples to get $q$ points
-      \item Batch is diverse \textbf{by construction} -- no extra diversity mechanism needed
+      \item \textbf{Batch diversity = posterior diversity:} no extra mechanism
+      \item Spread when the GP is uncertain, concentrated when the posterior is peaked
       % \item Especially clean with GP surrogates (via random Fourier features) and with RF surrogates (sample a tree / a leaf distribution)
       \item Scales well with $q$; a go-to in large-batch / high-dim BO
     \end{itemize}
-    \column{.45\textwidth}
-    \begin{center}
-      \includegraphics[width=\textwidth]{images/08_thompson_sampling.pdf}\\[0.05cm]
-      \scriptsize $4$ posterior sample paths (colored); each path's argmin (diamond) is a Thompson proposal. Disagreement between paths $\Rightarrow$ batch diversity
-    \end{center}
-  \end{columns}
+  %   \column{.45\textwidth}
+  %   \begin{center}
+  %     \includegraphics[width=\textwidth]{images/08_thompson_sampling.pdf}\\[0.05cm]
+  %     \scriptsize $4$ posterior sample paths (colored); each path's argmin (diamond) is a Thompson proposal. Disagreement between paths $\Rightarrow$ batch diversity
+  %   \end{center}
+  % \end{columns}
 \end{frame}
 
 
-\begin{frame}[t]{Synchronous vs.\ Asynchronous Batches}
+\begin{frame}[t]{Asynchronous Decentralized BO}
   \footnotesize
-  \begin{columns}[onlytextwidth,T]
-      \column{.48\textwidth}
-      \textbf{Synchronous batch BO}
-      \begin{itemize}\setlength\itemsep{0pt}
-          \item Propose a batch of $q$ points, dispatch to $q$ workers
-          \item Wait for \textbf{all} $q$ outcomes, refit surrogate, propose next batch
-          \item Simple bookkeeping; one refit per round
-          \item Slowest config determines round length $\leadsto$ idle workers on skewed runtimes
-      \end{itemize}
-      \column{.48\textwidth}
-      \textbf{Asynchronous (ADBO}~\liturl{Egele et al. 2023}{https://arxiv.org/abs/2207.00479}\textbf{)}
-      \begin{itemize}\setlength\itemsep{0pt}
-          \item Keep $q$ workers busy at all times; react per-completion, not per-batch
-          \item On each finish: update surrogate with the \textbf{one} new observation and propose \textbf{one} new point
-      \end{itemize}
-  \end{columns}
-  \vspace{0.2cm}
-  \textbf{How ADBO avoids duplicates despite picking one point at a time:}
-  \begin{itemize}\setlength\itemsep{0pt}
-    \item Treat the $q\!-\!1$ \textbf{pending / in-flight} configs as observed by \textbf{fantasizing} their outcomes -- Kriging believer, constant liar, or MC samples
-    \item Fantasies inflate posterior certainty around pending points $\leadsto$ next $\argmax \acq$ moves elsewhere, so proposals stay diverse w.r.t.\ running work
-    \item Once a real eval returns, its fantasy is replaced by the true value and the surrogate is refit
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}[t]{Practical Considerations}
   \begin{itemize}
-    \item \textbf{Choice of $q$:} match your parallel compute, but watch the ``sample-efficiency tax''
-        \begin{itemize}
-            \item Sequential BO needs fewer evaluations to reach a target
-            \item Batch BO needs more evaluations but fewer wall-clock rounds
-        \end{itemize}
-    \item \textbf{Surrogate choice:}
-        \begin{itemize}
-            \item GP with autodiff-friendly acquisition (BoTorch) $\leadsto$ joint $q$EI is practical
-            \item RF surrogate $\leadsto$ Thompson sampling or Kriging believer is more natural
-        \end{itemize}
-    \item \textbf{Diversity sanity check:} monitor pairwise distances within batches; near-duplicates are a warning sign
-    \item \textbf{Noisy / multi-fidelity:} combines naturally with batching but inflates the design space further
+    \item Synchronous batches stall the slowest worker\\
+     $\Rightarrow$ idle compute under heterogenous runtimes. 
+    \item Asynchronous decentralized BO~\liturl{Egele et al. 2023}{https://arxiv.org/abs/2207.00479} avoids this
+    \item Keep all $q$ workers busy at all times; react \textbf{per completion}, not per batch
+    \item All workers share the same archive, fit surrogate, propose and eval
+    \item On finished eval: update surrogate with the \textbf{one} new observation and propose \textbf{one} new point
   \end{itemize}
+% ADBO topology: workers connected to a shared archive. Each worker sends its
+% completed observation up; the archive (refit with the new data plus fantasies
+% for in-flight configs) sends a new proposal down. Used in 04_BO/08_parallel_bo.tex.
+\begin{center}
+\begin{tikzpicture}[font=\scriptsize,
+  archive/.style={rectangle, rounded corners=4pt,
+                  draw=blue!60!black, fill=blue!10, thick,
+                  minimum width=4.6cm, minimum height=1.05cm, align=center},
+  worker/.style ={rectangle, rounded corners=2pt,
+                  draw=black!60, fill=gray!8, thick,
+                  minimum width=1.7cm, minimum height=0.8cm, align=center},
+  finish/.style ={->, mygreen!55!black, thick, >=latex},
+  propose/.style={->, blue!60!black, thick, >=latex}]
+
+  \node[archive] (arch) at (0, 0) {\textbf{Shared archive}\\[-1pt]\scriptsize $(\confI{i}, \costI{i})$ + fantasies of pending};
+
+  \node[worker] (w1) at (-3.0, -2.0) {worker 1\\[-1pt]\scriptsize busy: $\confI{1}$};
+  \node[worker] (w2) at ( 0.0, -2.0) {worker 2\\[-1pt]\scriptsize busy: $\confI{2}$};
+  \node[worker] (w3) at ( 3.0, -2.0) {worker 3\\[-1pt]\scriptsize busy: $\confI{3}$};
+
+  % Each pair of arrows: finish (up, green) and propose (down, blue), bent apart.
+  \draw[finish ] (w1.north) to[bend left=15]
+        node[midway, left=2pt, font=\tiny, color=mygreen!55!black] {$\cost$} (arch.south west);
+  \draw[propose] (arch.south west) to[bend left=15]
+        node[midway, right=2pt, font=\tiny, color=blue!60!black] {$\confI{\text{new}}$} (w1.north);
+
+  \draw[finish ] (w2.north) to[bend left=10]
+        node[midway, left=2pt, font=\tiny, color=mygreen!55!black] {$\cost$} (arch.south);
+  \draw[propose] (arch.south) to[bend left=10]
+        node[midway, right=2pt, font=\tiny, color=blue!60!black] {$\confI{\text{new}}$} (w2.north);
+
+  \draw[finish ] (w3.north) to[bend right=15]
+        node[midway, right=2pt, font=\tiny, color=mygreen!55!black] {$\cost$} (arch.south east);
+  \draw[propose] (arch.south east) to[bend right=15]
+        node[midway, left=2pt, font=\tiny, color=blue!60!black] {$\confI{\text{new}}$} (w3.north);
+
+  % small legend
+  \node[anchor=west, align=left, font=\tiny] at (4.2, -1.0)
+    {\textcolor{mygreen!55!black}{$\rightarrow$ on finish: $\cost$}\\
+     \textcolor{blue!60!black}{$\rightarrow$ refit, propose}};
+\end{tikzpicture}
+\end{center}
 \end{frame}
 
 
-\begin{frame}[t]{Summary}
-  \begin{enumerate}
-    \item Parallel BO proposes a batch of $q$ points per iteration to exploit parallel compute
-    \item Naive top-$q$ of $\acq$ gives near-duplicates; need joint or sequential diversification
-    \item \textbf{$q$-acquisition functions} (e.g., $q$EI) are principled but computationally heavy
-    \item \textbf{Kriging believer / fantasizing} and \textbf{local penalization} are cheap, effective heuristics
-    \item \textbf{Thompson sampling} gives diverse batches for free -- a strong default
-    \item Async batches avoid idle workers when $\cost$ runtimes vary
-  \end{enumerate}
+\begin{frame}[t]{Asynchronous Distributed BO}
+  \footnotesize
+  \begin{itemize}
+    \item Picking one point at a time risks duplicating in-flight configs
+    \item Avoid duplicating a \textbf{pending} config by fantasizing its outcome in the archive, e.g.,
+    by some (randomized) version of Kriging believer
+    \item Fantasies inflate posterior certainty around pending points $\leadsto$ $\argmax \acq$ on other workers move elsewhere,
+    so proposals stay diverse w.r.t.\ running work
+    \item When the real eval returns, its fantasy is replaced by the true value and the surrogate is refit
+  \end{itemize}
+% ADBO Gantt-style schematic: 3 workers, in-flight (dashed) vs. finished (solid)
+% configs, "now" line, and an annotation at the most recent completion.
+% Used in 04_BO/08_parallel_bo.tex on the two ADBO frames.
+\begin{center}
+\begin{tikzpicture}[font=\scriptsize, x=0.95cm, y=0.55cm]
+  \draw[->, gray!60] (0, -1.4) -- (6.4, -1.4) node[anchor=west, color=gray!80] {time};
+  \draw[gray!50, dashed] (3.6, 2.0) -- (3.6, -1.3) node[anchor=north, color=gray!80] {now};
+  \node[anchor=east] at (-0.1,  1.5) {worker 1};
+  \node[anchor=east] at (-0.1,  0.5) {worker 2};
+  \node[anchor=east] at (-0.1, -0.5) {worker 3};
+  \draw[fill=blue!15, draw=blue!60!black] (0, 1.2) rectangle (1.6,  1.8) node[pos=.5] {$\confI{1}$};
+  \draw[fill=blue!15, draw=blue!60!black, densely dashed] (1.7, 1.2) rectangle (3.4, 1.8)
+      node[pos=.5] {$\confI{4}$};
+  \draw[fill=blue!15, draw=blue!60!black] (0, 0.2) rectangle (0.9, 0.8) node[pos=.5] {$\confI{2}$};
+  \draw[fill=blue!15, draw=blue!60!black, densely dashed] (1.0, 0.2) rectangle (3.4, 0.8)
+      node[pos=.5] {$\confI{5}$};
+  \draw[fill=blue!15, draw=blue!60!black, densely dashed] (0, -0.8) rectangle (3.4, -0.2)
+      node[pos=.5] {$\confI{3}$};
+  \node[anchor=west, align=left, color=mygreen!55!black] at (3.6, 0.5)
+    {dashed = pending\\$\rightarrow$ fantasized};
+  \draw[->, mygreen!55!black, thick] (1.65, 1.5) -- (1.7, 1.5);
+  \node[anchor=south, color=mygreen!55!black] at (1.65, 1.85) {finish $\Rightarrow$ refit, propose};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[t]{Summary and Discussion}
+  \begin{itemize}
+    \item Parallel BO proposes a batch of $q$ points to exploit parallel compute; naive top-$q$ of $\acq$ collapses to near-duplicates $\leadsto$ need explicit diversification
+    \item $q$EI, Kriging believer / fantasizing, Thompson sampling as batch versions
+    \item ADBO: async workflow with fantasies for pending evals;\\
+    avoids idle workers under heterogenous runtimes
+    \item \textbf{Practical:} match $q$ to compute (watch the sample-efficiency tax)
+    \item \textbf{Diversity sanity check:} monitor pairwise distances within batches; near-duplicates are a warning sign
+  \end{itemize}
 \end{frame}
 
 
