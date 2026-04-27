@@ -107,7 +107,7 @@
     \column{.75\textwidth}
     \begin{itemize}
     \item Specific LHS design selected via, e.g., \textbf{maximin}
-    \item For a given design $\dataset$, measure min.\ pairwise distance for any metric $\rho$:
+    \item For a given design $\dataset$, measure min.\ pairwise distance for given metric $\rho$:
      $2q = \min_{\conf \neq \conf' \in \dataset} \rho(\conf, \conf')$
     \item $q$ = \textbf{packing radius}: radius of largest ball around each point s.t. no 2 balls overlap
     \item Goal: find $\dataset$ that maximizes $2q$, keeps points far apart:
@@ -240,6 +240,7 @@
       \begin{itemize}
           \item Optimizing $\surro$ directly uses the \textbf{mean prediction} as proposal rule
           \item That is pure \textbf{exploitation}, no \textbf{exploration}
+          \item NB: Hence, not yet full BO in last example
           \item Smarter proposal rules -- \textbf{acquisition functions} -- also reward visiting uncertain regions
       \end{itemize}
   \end{columns}

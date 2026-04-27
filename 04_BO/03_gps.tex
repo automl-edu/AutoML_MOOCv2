@@ -18,7 +18,7 @@
         \item Non-linear local model
         \item Accurate predictions (especially for small sample sizes)
         \item Often: uncertainty estimates
-        \item Robust, works often well without human modeler intervention
+        \item Robust, works well without human modeler intervention
     \end{itemize}
     Depending on the application:
     \begin{itemize}
@@ -38,7 +38,7 @@
     $(f(\xI{1}), \ldots, f(\xI{N}))$ is \textbf{jointly Gaussian}
     \item Fully characterized by a \textbf{mean function} $m(\x)$ and a \textbf{kernel} $k(\x, \x')$ 
     \item Kernel encodes how correlated the outputs of nearby points are
-    \item Theory of GPs comes from stochastic processes, usage on concrete data
+    \item Theory of GPs comes from stochastic processes, training and prediction for finite data
     boils down to simple linear algebra on the multivariate Gaussian
   %   \item Observing data $\dataset = \langle \xI{i}, \yI{i} \rangle_{i=1}^t$ gives a \textbf{posterior} over functions that
   %       \begin{itemize}
@@ -68,7 +68,7 @@
       \end{itemize}
       \item NB: we assume $m(\x) \equiv 0$ from now on.
       % For non-zero $m$, simply replace $\yv$ by $\yv - m(\bm{X})$ and add $m(\x)$ back to $\hat\mean(\x)$. \\
-      We can add estimated trend to the model, but in practice people usually center the outputs and use zero mean.
+      We can add estimated trend to the model, but a simple solution is to center/standardize the outputs and use zero mean.
     % \item Computationally: the noise just adds $\noisevar \bm{I}$ to the kernel matrix ($\bm{K} \to \bm{K} + \noisevar \bm{I}$)
   \end{itemize}
 \end{frame}
@@ -130,8 +130,7 @@
     \begin{itemize}
         \item $l_j$: per-dim \textbf{length scale} (\textbf{ARD}) -- larger $l_j$, longer range of correlation along dim $j$; \\
         small $l_j$ $\Rightarrow$ dim $j$ is ``relevant''
-        \item Isotropic special case: $l_j \equiv l$;\\
-        plot shows that 1D regime
+        \item Isotropic special case: $l_j \equiv l$
         \item Infinitely differentiable\\
         $\leadsto$ sample paths are \textbf{very smooth}
         \item Often too smooth for realistic response surfaces
@@ -154,9 +153,10 @@
     with ARD-scaled distance $r = \sqrt{\sum_{j=1}^{\pcsdim} (x_j - x'_j)^2 / l_j^2}$, $K_\nu$: modified Bessel function.
     \begin{itemize}
         \item $\nu$ controls \textbf{smoothness}: sample paths are $\lceil\nu\rceil - 1$ times differentiable
+        \item $\nu = 1/2$: not differentiable -- exponential kernel, Brownian-like
         \item $\nu = 3/2$: once differentiable -- ``wiggly''
         \item $\nu = 5/2$: twice differentiable -- \textbf{default for BO}
-        \item $\nu \to \infty$: recovers RBF kernel 
+        \item $\nu \to \infty$: recovers RBF kernel
     \end{itemize}
     \column{.40\textwidth}
     \begin{center}
@@ -199,7 +199,7 @@
   \small
   GP prior samples with RBF kernel; only the length scales differ:
   \begin{center}
-    \includegraphics[width=0.8\textwidth]{images/03_gp_lengthscale_2d.pdf}
+    \includegraphics[width=0.75\textwidth]{images/03_gp_lengthscale_2d.pdf}
   \end{center}
   \begin{itemize}
     \item Small $l$ $\Rightarrow$ wiggly, many local features; large $l$ $\Rightarrow$ smooth, slowly varying
@@ -220,7 +220,7 @@
   $$
     \item First term rewards fitting the data
     \item Second term penalizes model complexity
-    \item Optimize numerically with L-BFGS-B (multi-start to avoid local optima)
+    \item Optimize numerically with, e.g., L-BFGS-B (multi-start to avoid local optima)
     \item \textbf{Training cost:} each marginal-likelihood evaluation needs a Cholesky of the kernel matrix, costing $\mathcal{O}(N^3)$
     \item Alternatives: Fully Bayesian treatment via MCMC / HMC over $\bm{\theta}$
 \end{itemize}
@@ -230,23 +230,23 @@
 
 
 \begin{frame}[t]{Mixed and Hierarchical Configuration Spaces}
+  \small
   Vanilla GPs only accept numeric inputs. AutoML configuration spaces are messier.
-  \vspace{0.15cm}
   \begin{itemize}
     \item \textbf{Integer HPs:} treat as continuous during GP fit and acquisition,\\
     round to the nearest integer before evaluation
     \item \textbf{Categorical HPs:}
         \begin{itemize}
             \item One-hot encoding + continuous kernel (simple, but distorts distances)
-            \item \textbf{Hamming / overlap kernel}: $k_{\text{cat}}(c, c') = \ind[c = c']$ (or a per-level scale)
-            \item Combine with continuous kernel as a \textbf{product}: $k(\x, \x') = k_{\text{num}}(\x_{\text{num}}, \x'_{\text{num}}) \cdot k_{\text{cat}}(\x_{\text{cat}}, \x'_{\text{cat}})$
+            \item \textbf{Hamming / overlap kernel}: $k_{\text{cat}}(c, c') = \ind[c = c']$ (or a per-level scale)\\
+            Combine with continuous kernel as a \textbf{product}: $k(\x, \x') = k_{\text{num}}(\x_{\text{num}}, \x'_{\text{num}}) \cdot k_{\text{cat}}(\x_{\text{cat}}, \x'_{\text{cat}})$
         \end{itemize}
     \item \textbf{Conditional / hierarchical HPs}
         \begin{itemize}
             \item Simple fix: \textbf{imputation} -- fill inactive HPs with a default / sentinel value
-            \item Structured kernels that ignore inactive dimensions (tree-of-kernels)
-            \item In practice, \textbf{random forests} might handle this more naturally
         \end{itemize}
+    \item Dedicated GP kernels exist for these cases, e.g.,~\liturl{Garrido-Merch\'an et al. 2020}{https://arxiv.org/abs/1805.03463} and~\liturl{Ru et al. 2020}{https://arxiv.org/abs/1906.08878} (categorical / integer);~\liturl{Swersky et al. 2014}{https://arxiv.org/abs/1409.4011} (arc kernels) and~\liturl{Jenatton et al. 2017}{https://proceedings.mlr.press/v70/jenatton17a.html} (tree-structured dependencies) for conditional spaces -- but are not used that often in practice
+    \item In practice, \textbf{random forests} might handle this more naturally
   \end{itemize}
 \end{frame}
 

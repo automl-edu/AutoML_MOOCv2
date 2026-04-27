@@ -43,7 +43,7 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
         \item No closed-form expression
         \item Evaluation requires training / resampling a model
         \item Often mixed / hierarchical configuration space\\
-        (numeric / integer / cat / conditional HPs)
+        (numeric / integer / categorical / conditional HPs)
     \end{itemize}
     \item $\riskg$ notation here is simplified to the use of a single validation set,
     in practice $\riskg$ might be a resampled performance, e.g., by using CV
@@ -76,12 +76,12 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
   \begin{itemize}
     \item Simple, parallelizable, but \textbf{non-adaptive}: every config is sampled independently of previous results $\leadsto$ no exploitation of structure, budget wasted on obviously unpromising regions
     \item Scales poorly in higher-dimensional configuration spaces
-    \item Expensive objectives demand an optimizer that \textbf{learns from its own evaluations} and follows promising local directions
+    \item Expensive objectives demand an optimizer that \textbf{learns from past evaluations} and follows promising local directions
   \end{itemize}
   \vspace{0.1cm}
   \begin{center}
     \includegraphics[width=0.6\textwidth]{images/01_bo_vs_rs_branin.pdf}\\
-    \footnotesize Yellow $\star$ = global minima. RS scatters uniformly, BO concentrates around minima
+    \footnotesize $\star$ = global minima. RS scatters uniformly, BO concentrates around minima
   \end{center}
 \end{frame}
 
@@ -166,10 +166,10 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
     \item Fit a cheap \textbf{surrogate model} $\surro$ to the observations collected so far
     \item Use the surrogate to form an \textbf{acquisition function} that trades off
     \begin{itemize}
-        \item \textbf{Exploitation:} sample where $\surro$ predicts good values
-        \item \textbf{Exploration:} sample where $\surro$ is uncertain
+        \item \textbf{Exploitation:} high where $\surro$ predicts good values
+        \item \textbf{Exploration:} high where $\surro$ is uncertain
     \end{itemize}
-    \item Evaluate the true objective only at the most \textbf{informative} point, update the surrogate, repeat
+    \item Evaluate the true objective only at \textbf{most promising} point, update the surrogate, repeat
 \end{itemize}
 \vspace{0.3cm}
 \begin{center}
@@ -180,7 +180,7 @@ Many optimization problems in AutoML (e.g., HPO or NAS) share three features:
 
 \begin{frame}{BO as an AutoML Backbone}
 \begin{itemize}
-    \item BO is the \textbf{backbone} of many modern AutoML systems (e.g., SMAC, Spearmint, BoTorch, Optuna)
+    \item BO is the \textbf{backbone} of many modern AutoML systems (e.g., SMAC, BoTorch, Optuna)
     \item It is typically much more \textbf{sample-efficient} than random or evolutionary search on HPO benchmarks
     \item It provides a principled way to handle
     \begin{itemize}
@@ -198,19 +198,19 @@ The same ``expensive, noisy, black-box'' setting appears in many other parts of 
 \begin{columns}[t,onlytextwidth]
     \column{.33\textwidth}
     \begin{center}
-        \includegraphics[width=.7\textwidth,height=2cm,keepaspectratio]{images/robot_gait.png}\\[0.2cm]
+        \includegraphics[width=.75\textwidth,height=1.8cm,keepaspectratio]{images/robot_gait.png}\\[0.15cm]
         \textbf{Robotics}\\
         \footnotesize Tune a parameterized controller so a robot walks fast and stably~\liturl{Calandra et al. 2014}{https://www.ias.tu-darmstadt.de/uploads/Site/EditPublication/Calandra_ICRA2014.pdf}
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-        \includegraphics[width=.9\textwidth,height=2cm,keepaspectratio]{images/cookie.jpg}\\[0.2cm]
+        \includegraphics[width=.75\textwidth,height=1.8cm,keepaspectratio]{images/cookie.jpg}\\[0.15cm]
         \textbf{Cookies}\\
         \footnotesize Find ingredient ratios that maximize a taste / quality rating~\liturl{Kochanski et al. 2017}{https://research.google.com/pubs/archive/46507.pdf}
     \end{center}
     \column{.33\textwidth}
     \begin{center}
-        {\Huge\emoji{test-tube}\;\emoji{dna}}\\[0.3cm]
+        {\Huge\emoji{test-tube}\;\emoji{dna}}\\[0.25cm]
         \textbf{Science \& Engineering}\\
         \footnotesize Drug / material design, chip layout, physical experiments, simulator calibration
     \end{center}
@@ -239,7 +239,7 @@ Typical applications: aerodynamic shape, car crash / airfoil simulations, reserv
     \item What does the basic BO loop look like?
     \item How do we quantify uncertainty with a surrogate model?
     \item How do acquisition functions (LCB, PI, EI) balance exploration and exploitation?
-    \item Which surrogate models are useful in practice (GPs, random forests)?
+    \item How do common surrogate models (GPs, random forests) work?
     \item Which practical choices matter when implementing or using BO?
     e.g., ACQF optimization or parallelization
 \end{itemize}

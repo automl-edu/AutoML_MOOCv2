@@ -80,6 +80,17 @@
 \end{frame}
 
 
+\begin{frame}[t]{$q$-LCB / GP-BUCB}
+  \begin{itemize}
+    \item Greedy batch LCB~\liturl{Desautels et al. 2014}{https://www.jmlr.org/papers/v15/desautels14a.html}:
+    pick $\confB{1}$ via LCB, hallucinate the variance reduction at $\confB{1}$, repeat
+    \item No fantasy mean needed -- LCB has no $\cmin$, so just refit GP variance with $\confB{1}$ as a new input
+    \item $\sh$ collapses at $\confB{k}$ $\leadsto$ next LCB peak elsewhere $\leadsto$ diverse batch
+    \item Cumulative regret bounds analogous to single-point GP-LCB
+  \end{itemize}
+\end{frame}
+
+
 % \begin{frame}[t]{Heuristic 2: Local Penalization}
 %   \begin{itemize}
 %     \item After selecting $\confB{k}$, multiply the acquisition function by a \textbf{penalty} ~\liturl{González et al. 2016}{https://proceedings.mlr.press/v51/gonzalez16a.html} that decays with distance from $\confB{k}$:

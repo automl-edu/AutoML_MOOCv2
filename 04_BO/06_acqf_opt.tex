@@ -60,17 +60,18 @@
 \begin{frame}[t]{ACQFs on Log-Scale}
   % Plain EI underflows to a hard $0$ in well-explored regions ($\hat\mean(\conf) \gg \cmin$ or tiny $\sh$) $\Rightarrow$ flat plateaus, vanishing gradients, L-BFGS-B stalls. Two distinct cures both go by the name ``LogEI'':
   \begin{itemize}
-    \item \textbf{LogEI for numerical stability}~\liturl{Ament et al. 2023}{https://arxiv.org/abs/2310.20708}    \begin{itemize}
-    \item Compute $\log\mathrm{EI}(\conf)$ directly via stable log-space arithmetic (\texttt{erfcx}, \texttt{log1p}) so the value stays finite where plain EI is $0$ in float
+    \item \textbf{LogEI for numerical stability}~\liturl{Ament et al. 2023}{https://arxiv.org/abs/2310.20708}    
+    \begin{itemize}
+    \item Compute $\log\mathrm{EI}(\conf)$ directly via stable log-space arithmetic (\texttt{erfcx}, \texttt{log1p})
     \item Simple monotone transform $\Rightarrow$ same argmax as EI
     \item Available trick in BoTorch for many ACQFs
     \end{itemize}
       \item \textbf{LogEI on log-transformed targets}~\liturl{Hutter et al. 2009}{https://dl.acm.org/doi/10.1145/1569901.1569940}: 
       \begin{itemize}
-        \item Train the surrogate on $\ln \cost$ 
-        \item Helps when $y$ is heavy right-tailed
+        \item Train the surrogate on $\log \cost$
+        \item Helps when $y$ is heavily right-tailed
         \item Then EI \textbf{on the original $y$-scale} has the log-normal closed form
-    $$\acq_{\mathrm{LogEI}}(\conf) = f_{\min}\,\Phi(v) - \exp\!\big(\mu + \tfrac{1}{2}\sigma^2\big)\,\Phi(v - \sigma), \quad v = (\ln f_{\min} - \mu)/\sigma$$
+    $$\acq_{\mathrm{LogEI}}(\conf) = f_{\min}\,\Phi(v) - \exp\!\big(\mu + \tfrac{1}{2}\sigma^2\big)\,\Phi(v - \sigma), \quad v = (\log f_{\min} - \mu)/\sigma$$
     \item Often good results in practice
   \end{itemize}
   \end{itemize}
