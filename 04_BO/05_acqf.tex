@@ -104,8 +104,9 @@
     \item $\Phi(\cdot)$ is the standard normal cdf (assuming Gaussian posterior)
     \item PI does not take the size of the improvement into account
     \item Often proposes points close to the current $\cmin$
-    \item $\acq_{\text{PI}}(\conf) = 0$ at design points $\conf_i$: $\sh(\conf_i) = 0$ for an interpolating GP and $\surro(\conf_i) \ge \cmin$,\\
-    so the cdf argument $\to -\infty$ $\Rightarrow$ $\Phi(\cdot) = 0$
+    \item $\acq_{\text{PI}}(\confI{i}) = 0$ at design points $\confI{i}$:\\
+    $\sh(\confI{i}) = 0$ for an interpolating GP $\Rightarrow Y(\confI{i})$ is degenerate at $\cost(\confI{i})$,\\
+    so $\PP(Y(\confI{i}) < \cmin) = \ind[\cost(\confI{i}) < \cmin] = 0$ since $\cost(\confI{i}) \ge \cmin$
   \end{itemize}
   \vfill
   \begin{columns}[onlytextwidth]
@@ -148,10 +149,9 @@
     \item If $Y(\conf) \sim \normaldist\left(\surro(\conf), \sh^2(\conf)\right)$, the EI has a closed form:
     $$\acq_{\text{EI}}(\conf) = (\cmin-\surro(\conf))\, \Phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right) + \sh(\conf)\, \phi\!\left(\frac{\cmin - \surro(\conf)}{\sh(\conf)}\right)$$
     \item Can easily show this by partial integration
-    \item $\acq_{\text{EI}}(\conf) = 0$ at design points $\conf_i$:\\
-    $\sh(\conf_i) = 0$ for an interpolating GP $\Rightarrow$ second term vanishes;\\
-    and $\surro(\conf_i) \ge \cmin$ pushes the cdf argument to $-\infty$\\
-    $\Rightarrow$ $\Phi(\cdot) \to 0$, killing the first term as well
+    \item $\acq_{\text{EI}}(\confI{i}) = 0$ at design points $\confI{i}$:\\
+    $\sh(\confI{i}) = 0$ for an interpolating GP $\Rightarrow Y(\confI{i})$ is degenerate at $\cost(\confI{i})$,\\
+    so $\acq_{\text{EI}}(\confI{i}) = \max(\cmin - \cost(\confI{i}),\, 0) = 0$ since $\cost(\confI{i}) \ge \cmin$
   \end{itemize}
 \end{frame}
 
