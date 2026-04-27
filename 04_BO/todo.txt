@@ -33,6 +33,8 @@ sprache und regeln mit LLM nochmach checken
 
 factcheck
 
+beim plugin EI können wir nicht "c" benutzen wegen cost
+
 ------------------------
 
 Skimmed the paper, compared to the eight slide decks. A handful of supernice, non-R/non-package nuggets worth    
