@@ -17,7 +17,7 @@
   \begin{itemize}
     \item Modern compute is inherently \textbf{parallel} 
     \item Cores, nodes, GPUs sit idle if BO runs strictly one eval at a time
-    \item We can try to fully parallelize the underlying objective $\cost(\lambda)$,
+    \item We can try to fully parallelize the underlying objective $\cost(\conf)$,
       and in ML there are good chances this is possible
     \item Still attractive to generate a \textbf{batch} of $q > 1$ points to evaluate \textbf{simultaneously}
     \item Trade-off: more wall-clock speedup vs.\ fewer feedback rounds / less optimally placed points
@@ -115,7 +115,7 @@
   \footnotesize
   \begin{itemize}
     \item Synchronous batches stall the slowest worker\\
-     $\Rightarrow$ idle compute under heterogenous runtimes. 
+     $\Rightarrow$ idle compute under heterogeneous runtimes.
     \item Asynchronous decentralized BO~\liturl{Egele et al. 2023}{https://arxiv.org/abs/2207.00479} avoids this
     \item Keep all $q$ workers busy at all times; react \textbf{per completion}, not per batch
     \item All workers share the same archive, fit surrogate, propose and eval
@@ -208,7 +208,7 @@
     \item Parallel BO proposes a batch of $q$ points to exploit parallel compute; naive top-$q$ of $\acq$ collapses to near-duplicates $\leadsto$ need explicit diversification
     \item $q$EI, Kriging believer / fantasizing, Thompson sampling as batch versions
     \item ADBO: async workflow with fantasies for pending evals;\\
-    avoids idle workers under heterogenous runtimes
+    avoids idle workers under heterogeneous runtimes
     \item \textbf{Practical:} match $q$ to compute (watch the sample-efficiency tax)
     \item \textbf{Diversity sanity check:} monitor pairwise distances within batches; near-duplicates are a warning sign
   \end{itemize}
