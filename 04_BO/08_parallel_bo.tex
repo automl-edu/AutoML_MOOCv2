@@ -80,13 +80,12 @@
 \end{frame}
 
 
-\begin{frame}[t]{$q$-LCB / GP-BUCB}
+\begin{frame}[t]{$q$-LCB}
   \begin{itemize}
-    \item Greedy batch LCB~\liturl{Desautels et al. 2014}{https://www.jmlr.org/papers/v15/desautels14a.html}:
-    pick $\confB{1}$ via LCB, hallucinate the variance reduction at $\confB{1}$, repeat
-    \item No fantasy mean needed -- LCB has no $\cmin$, so just refit GP variance with $\confB{1}$ as a new input
-    \item $\sh$ collapses at $\confB{k}$ $\leadsto$ next LCB peak elsewhere $\leadsto$ diverse batch
-    \item Cumulative regret bounds analogous to single-point GP-LCB
+    \item Sample exploration weight per batch slot~\liturl{Hutter et al. 2012}{https://link.springer.com/chapter/10.1007/978-3-642-34413-8_5}: each $k = 1, \ldots, q$ draws $\tau_k \sim \mathrm{Exp}(1)$ and picks
+        $$\confB{k} \in \argmin_{\conf} \;\surro(\conf) - \tau_k \sh(\conf)$$
+    \item Different $\tau_k$ $\leadsto$ different mean / uncertainty trade-offs $\leadsto$ batch spreads automatically
+    \item Embarrassingly parallel: no fantasy, no sequential refit
   \end{itemize}
 \end{frame}
 
@@ -126,8 +125,8 @@
 \begin{frame}[t]{Asynchronous Decentralized BO}
   \footnotesize
   \begin{itemize}
-    \item Synchronous batches stall the slowest worker\\
-     $\Rightarrow$ idle compute under heterogeneous runtimes.
+    \item Synchronous batches imply slowest eval slows the whole batch\\
+     $\Rightarrow$ idle compute under heterogeneous runtimes
     \item Asynchronous decentralized BO~\liturl{Egele et al. 2023}{https://arxiv.org/abs/2207.00479} avoids this
     \item Keep all $q$ workers busy at all times; react \textbf{per completion}, not per batch
     \item All workers share the same archive, fit surrogate, propose and eval
@@ -147,7 +146,7 @@
   finish/.style ={->, mygreen!55!black, thick, >=latex},
   propose/.style={->, blue!60!black, thick, >=latex}]
 
-  \node[archive] (arch) at (0, 0) {\textbf{Shared archive}\\[-1pt]\scriptsize $(\confI{t}, \costI{t})$ + fantasies of pending};
+  \node[archive] (arch) at (0, 0) {\textbf{Shared archive}\\[-1pt]\scriptsize real $(\confI{t}, \costI{t})$ + pending $\conf$ (no $\cost$ yet)};
 
   \node[worker] (w1) at (-3.0, -2.0) {worker 1\\[-1pt]\scriptsize busy: $\confI{1}$};
   \node[worker] (w2) at ( 0.0, -2.0) {worker 2\\[-1pt]\scriptsize busy: $\confI{2}$};
@@ -180,13 +179,14 @@
 
 
 \begin{frame}[t]{Asynchronous Decentralized BO}
+  \footnotesize
   \begin{itemize}
     \item Picking one point at a time risks duplicating in-flight configs
-    \item Avoid duplicating a \textbf{pending} config by fantasizing its outcome in the archive, e.g.,
-    by some (randomized) version of Kriging believer
-    \item Fantasies inflate posterior certainty around pending points $\leadsto$ $\argmax \acq$ on other workers move elsewhere,
-    so proposals stay diverse w.r.t.\ running work
-    \item When the real eval returns, its fantasy is replaced by the true value and the surrogate is refit
+    \item Archive holds real evals + a list of \textbf{pending} $\conf$ (busy on other workers, no $\cost$ yet)
+    \item \textbf{On propose:} worker pulls the archive, locally \textbf{fantasizes} $\cost$ for each pending $\conf$
+    (e.g., posterior mean / Kriging believer or a randomized variant), fits its surrogate on real + fantasy data, picks $\argmax \acq$
+    % \item Fantasies are \textbf{local} to one propose call -- never persisted in the archive
+    \item Fantasies inflate posterior certainty at pending $\conf$ $\leadsto$ workers' $\argmax \acq$ move elsewhere; batch stays diverse w.r.t.\ running work
   \end{itemize}
 % ADBO Gantt-style schematic: 3 workers, in-flight (dashed) vs. finished (solid)
 % configs, "now" line, and an annotation at the most recent completion.
@@ -218,7 +218,7 @@
 \begin{frame}[t]{Summary and Discussion}
   \begin{itemize}
     \item Parallel BO proposes a batch of $q$ points to exploit parallel compute; naive top-$q$ of $\acq$ collapses to near-duplicates $\leadsto$ need explicit diversification
-    \item $q$EI, Kriging believer / fantasizing, Thompson sampling as batch versions
+    \item $q$EI, $qLCB$, Kriging believer / fantasizing, Thompson sampling as batch versions
     \item ADBO: async workflow with fantasies for pending evals;\\
     avoids idle workers under heterogeneous runtimes
     \item \textbf{Practical:} match $q$ to compute (watch the sample-efficiency tax)

@@ -104,6 +104,7 @@
   % \item Per iteration: mark ``potentially optimal'' rectangles -- those that could hold a better point under \textbf{some} Lipschitz constant -- and trisect them along their longest side
   % \end{itemize}
   \textbf{CMA-ES -- covariance matrix adaptation evolution strategy}
+  \footnotesize
   \begin{columns}[onlytextwidth,T]
     \column{.6\textwidth}
     \begin{itemize}
@@ -186,6 +187,7 @@
     \item Numeric $\pcs$: multi-start L-BFGS-B (w/ GP gradients)\\
     CMA-ES (+ IPOP/BIPOP restarts)
     \item Mixed / hierarchical $\pcs$: SMAC-style iterated local search 
+    \item For multi-starts, likely a good idea to start (also) from good design points 
     \item It is unclear how perfectly we have to solve the ACQF optimization problem
     and how much (overhead) budget we should spend on this
   \end{itemize}
