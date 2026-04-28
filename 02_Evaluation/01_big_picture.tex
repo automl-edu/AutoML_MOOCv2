@@ -66,7 +66,7 @@ Fundamental evaluation protocols and rigorous benchmarking practices
 \begin{frame}{Selection Effects in AutoML: An Example}
     \begin{minipage}{.58\textwidth}
         \begin{itemize}
-            \item Suppose $5$ evaluated models $f_i$, each with true performance $\mathcal{R}^\ast = 0.8$
+            \item Suppose $5$ evaluated models $f_i$, each with true performance $\mathcal{R}^\ast = 0.2$
             \item Due to finite data, each validation estimate $\mathcal{R}_\text{emp}(f_i) = \mathcal{R}^\ast + \varepsilon_i$ is noisy
             \item AutoML system selects $f^\ast = \arg\min_f \mathcal{R}_\text{emp}(f)$
             \item This optimistic gap is pure noise,\\ no real progress
