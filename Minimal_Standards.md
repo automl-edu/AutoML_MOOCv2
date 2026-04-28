@@ -13,6 +13,7 @@
 
 ## Slides
 * (Recap questions after each video (not part of the video!) → on ai-campus (or whatever platform we use))
+* The slide title has to be the name of the module. The subtitle should be the chunk's name.
 * American English
 * Concise and to the point bullet point – no long sentences (exceptions: important quotes)
 * Everything relevant has to be on the slides
